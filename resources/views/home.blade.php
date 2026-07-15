@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Dentissa | Inicio</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -16,8 +17,9 @@
             <h1>Bienvenido a Dentissa</h1>
             <p>Esta es la página de inicio de la aplicación Dentissa.</p>
             <a href="{{ route('login') }}" class="btn btn-primary">Iniciar sesión</a><br>
-            <a href="{{ route('register') }}" class="btn btn-secondary">Registrarse rtyui sexo vajhina</a>
         </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
     
