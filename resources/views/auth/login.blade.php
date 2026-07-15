@@ -9,6 +9,7 @@
 <body>
     <h1>Iniciar sesión</h1>
     <a href="{{ route('register') }}">¿No tienes una cuenta? Regístrate</a><br>
-    <a href="{{route('home')}}">Volver al inicio</a>
+    <a href="{{route('home')}}">Volver al inicio de de la página</a>
+
 </body>
 </html>
