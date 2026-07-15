@@ -16,8 +16,9 @@
             <h1>Bienvenido a Dentissa</h1>
             <p>Esta es la página de inicio de la aplicación Dentissa.</p>
             <a href="{{ route('login') }}" class="btn btn-primary">Iniciar sesión</a><br>
-            <a href="{{ route('register') }}" class="btn btn-secondary">Registrarse</a>
+            <a href="{{ route('register') }}" class="btn btn-secondary">Registrarse rtyui sexo vajhina</a>
         </div>
     </body>
 </html>
     
+
