@@ -1,16 +1,42 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 
-
+// --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+// --- AUTENTICACIÓN (Solo Invitados) ---
+Route::middleware('guest')->group(function () {
+    Route::get('/login', function () {
+        return view('auth.login');
+    })->name('login');
 
-Route::get('/register', function () {
-    return view('auth.register');
-})->name('register');
+    Route::get('/register', function () {
+        return view('auth.register');
+    })->name('register');
+
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+});
+
+// --- RUTAS PROTEGIDAS (Solo Autenticados y sin caché de historial) ---
+Route::middleware(['auth', 'prevent-back-history'])->group(function () {
+    
+    // Dashboards divididos por rol
+    Route::get('/dashboard/admin', function () {
+        return view('dashboard.admin');
+    })->name('dashboard.admin');
+
+    Route::get('/dashboard/asistente', function () {
+        return view('dashboard.asistente');
+    })->name('dashboard.asistente');
+
+    Route::get('/dashboard/paciente', function () {
+        return view('dashboard.paciente');
+    })->name('dashboard.paciente');
+
+    // Cerrar sesión
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+});

@@ -13,16 +13,11 @@ return new class extends Migration
     {
         Schema::create('citas', function (Blueprint $table) {
             $table->id();
-            
-            // Relaciones lógicas impecables
-            $table->foreignId('paciente_id')->constrained('pacientes')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('usuarios')->onDelete('restrict'); // Quién atiende/agenda // Quién atiende/agenda
-            
-            $table->dateTime('fecha_hora');
-            $table->string('motivo'); 
-            $table->text('notas')->nullable(); 
-            $table->string('estado')->default('pendiente'); // 'pendiente', 'completada', 'no_asistio'
-
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // El Paciente (Role ID: 3)
+            $table->foreignId('servicio_id')->constrained('servicios')->onDelete('cascade'); // El Tratamiento
+            $table->date('fecha');
+            $table->time('hora');
+            $table->enum('estado', ['pendiente', 'confirmada', 'cancelada'])->default('pendiente');
             $table->timestamps();
         });
     }

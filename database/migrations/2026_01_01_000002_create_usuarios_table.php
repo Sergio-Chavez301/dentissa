@@ -12,17 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('usuarios', function (Blueprint $table) {
-                    $table->id();
-                    $table->string('username')->unique();                    
-                    $table->string('nombre');
-                    $table->string('apellidos');
-                    $table->string('email')->unique()->nullable();
-                    $table->string('password');
-                    
-                    // Relación obligatoria con la tabla Roles
-                    $table->foreignId('user_id')->constrained('usuarios')->onDelete('restrict');
-                    $table->timestamps();
-                });
+            $table->id();
+            $table->string('username')->unique();                    
+            $table->string('nombre');
+            $table->string('apellidos');
+            $table->string('email')->unique()->nullable();
+            $table->string('password');
+            
+            // Relación corregida con la tabla 'roles' (asegúrate de que la migración de roles se cree antes que esta)
+            $table->foreignId('role_id')->constrained('roles')->onDelete('restrict');            
+            $table->rememberToken(); // Recomendado para la opción "Recordarme en este equipo" del login
+            $table->timestamps();
+        });
     }
 
     /**

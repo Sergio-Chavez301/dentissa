@@ -13,13 +13,13 @@ class UsuariosSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
+        DB::table('usuarios')->insert([
             [
-                'name' => 'Sergio',
+                'nombre' => 'Sergio',
                 'apellidos' => 'Chavez',
                 'username' => 'sergiochavez',
                 'email' => 'administrador@example.com',
-                'rol_id' => 1,
+                'role_id' => 1, 
                 'password' => bcrypt('123456789'),
                 'created_at' => now(),
                 'updated_at' => now()
