@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('casos_clinicos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Paciente bajo tratamiento
-            $table->string('tratamiento_base'); // Ej: "Ortodoncia Correctiva"
-            $table->integer('progreso')->default(0); // Porcentaje de avance (0 a 100)
+            $table->foreignId('user_id')->constrained('usuarios')->onDelete('cascade'); 
+            $table->string('tratamiento_base');
+            $table->integer('progreso')->default(0);
             $table->enum('estado', ['activo', 'finalizado'])->default('activo');
             $table->timestamps();
-        });
+});
     }
 
     /**

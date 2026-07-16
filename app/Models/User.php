@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use Notifiable;
 
+    // Nombre exacto de tu tabla de usuarios
     protected $table = 'usuarios';
 
     protected $fillable = [
@@ -18,7 +18,7 @@ class User extends Authenticatable
         'apellidos',
         'email',
         'password',
-        'role_id', // Tu llave foránea exacta
+        'role_id',
     ];
 
     protected $hidden = [
@@ -26,15 +26,19 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $casts = [
-        'password' => 'hashed',
-    ];
-
-    /**
-     * Relación con el modelo de Rol.
-     */
+    // Relación con el Rol
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function citas()
+    {
+        return $this->hasMany(Cita::class, 'user_id');
+    }
+
+    public function casosClinicos()
+    {
+        return $this->hasMany(CasoClinico::class, 'user_id');
     }
 }

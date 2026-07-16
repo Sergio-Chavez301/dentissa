@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController; // Importamos el controlador del Admin
 
 // --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
@@ -25,9 +26,8 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     
     // Dashboards divididos por rol
-    Route::get('/dashboard/admin', function () {
-        return view('dashboard.admin');
-    })->name('dashboard.admin');
+    // CAMBIO CLAVE: Ahora apunta al método index de tu AdminController para cargar la base de datos
+    Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin');
 
     Route::get('/dashboard/asistente', function () {
         return view('dashboard.asistente');
