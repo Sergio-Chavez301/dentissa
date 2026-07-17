@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('casos_clinicos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('usuarios')->onDelete('cascade'); 
+            $table->foreignId('paciente_id')->constrained('pacientes')->onDelete('cascade'); 
             $table->string('tratamiento_base');
             $table->integer('progreso')->default(0);
             $table->enum('estado', ['activo', 'finalizado'])->default('activo');
             $table->timestamps();
-});
+        });
     }
 
     /**

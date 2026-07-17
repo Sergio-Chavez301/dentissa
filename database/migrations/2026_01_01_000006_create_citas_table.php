@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('citas', function (Blueprint $table) {
             $table->id();
-            // CAMBIO AQUÍ: Se especifica que la llave foránea apunta a la tabla 'usuarios'
-            $table->foreignId('user_id')->constrained('usuarios')->onDelete('cascade'); 
+            $table->foreignId('paciente_id')->constrained('pacientes')->onDelete('cascade'); 
             $table->foreignId('servicio_id')->constrained('servicios')->onDelete('cascade');
             $table->date('fecha');
             $table->time('hora');

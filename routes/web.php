@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\AdminController; // Importamos el controlador del Admin
+use App\Http\Controllers\AdminController; 
+use App\Http\Controllers\UserController; 
+use App\Http\Controllers\SolicitudCitaController; // <-- IMPORTANTE: Importamos el controlador de solicitudes
 
 // --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
@@ -26,7 +28,6 @@ Route::middleware('guest')->group(function () {
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     
     // Dashboards divididos por rol
-    // CAMBIO CLAVE: Ahora apunta al método index de tu AdminController para cargar la base de datos
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin');
 
     Route::get('/dashboard/asistente', function () {
@@ -37,6 +38,14 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         return view('dashboard.paciente');
     })->name('dashboard.paciente');
 
+    // CRUD de Usuarios del sistema (Personal de la clínica)
+    Route::resource('users', UserController::class);
+
+  /*  // --- NUEVO: Rutas para Solicitudes de Citas desde la Web ---
+    Route::get('/dashboard/solicitudes', [SolicitudCitaController::class, 'index'])->name('solicitudes.index');
+    Route::post('/dashboard/solicitudes/{id}/aprobar', [SolicitudCitaController::class, 'aprobar'])->name('solicitudes.aprobar');
+    Route::post('/dashboard/solicitudes/{id}/rechazar', [SolicitudCitaController::class, 'rechazar'])->name('solicitudes.rechazar');
+*/
     // Cerrar sesión
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

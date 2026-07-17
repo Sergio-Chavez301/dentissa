@@ -10,17 +10,8 @@ class CasosClinicosTableSeeder extends Seeder
     public function run(): void
     {
         DB::table('casos_clinicos')->insert([
-            // Casos para Pacientes (usando IDs 3, 4, 5 y 6 de tu base de datos)
             [
-                'user_id' => 4, 
-                'tratamiento_base' => 'Limpieza Dental Profunda',
-                'progreso' => 100,
-                'estado' => 'finalizado',
-                'created_at' => now()->subDays(10),
-                'updated_at' => now()->subDays(9),
-            ],
-            [
-                'user_id' => 4,
+                'paciente_id' => 2, // Mariana Fuentes
                 'tratamiento_base' => 'Carillas de Porcelana',
                 'progreso' => 45,
                 'estado' => 'activo',
@@ -28,15 +19,7 @@ class CasosClinicosTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'user_id' => 5,
-                'tratamiento_base' => 'Resina Fotopolimerizable',
-                'progreso' => 100,
-                'estado' => 'finalizado',
-                'created_at' => now()->subDays(5),
-                'updated_at' => now()->subDays(4),
-            ],
-            [
-                'user_id' => 5,
+                'paciente_id' => 3, // Alejandro Ruiz
                 'tratamiento_base' => 'Tratamiento de Conducto',
                 'progreso' => 20,
                 'estado' => 'activo',
@@ -44,7 +27,7 @@ class CasosClinicosTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'user_id' => 6,
+                'paciente_id' => 4, // Beatriz Mendoza (Extracción)
                 'tratamiento_base' => 'Extracción de Cordales',
                 'progreso' => 90,
                 'estado' => 'activo',
@@ -52,20 +35,19 @@ class CasosClinicosTableSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'user_id' => 6,
+                'paciente_id' => 4, // Beatriz Mendoza (Blanqueamiento)
                 'tratamiento_base' => 'Blanqueamiento Dental LED',
                 'progreso' => 50,
                 'estado' => 'activo',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
-            // Caso de Sergio
             [
-                'user_id' => 3, 
+                'paciente_id' => 1, // Sergio Chávez
                 'tratamiento_base' => 'Ortodoncia Correctiva',
                 'progreso' => 75,
                 'estado' => 'activo',
-                'created_at' => now()->subMonths(1),
+                'created_at' => now(),
                 'updated_at' => now(),
             ],
         ]);

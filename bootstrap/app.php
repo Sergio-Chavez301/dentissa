@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\PreventBackHistory;
+use App\Http\Middleware\UserOnlineStatus;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,9 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         
-        // Registramos tu middleware preventivo con su alias
+        // Alias para middlewares que invocas manualmente en rutas
         $middleware->alias([
-            'prevent-back-history' => \App\Http\Middleware\PreventBackHistory::class,
+            'prevent-back-history' => PreventBackHistory::class,
+        ]);
+
+        // Middleware que se ejecuta automáticamente en todas las rutas web
+        $middleware->web(append: [
+            UserOnlineStatus::class,
         ]);
 
     })

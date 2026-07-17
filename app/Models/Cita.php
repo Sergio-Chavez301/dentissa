@@ -2,27 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Cita extends Model
 {
-    protected $table = 'citas';
+    use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'servicio_id',
-        'fecha',
-        'hora',
-        'estado',
-    ];
+    protected $fillable = ['paciente_id', 'servicio_id', 'fecha', 'hora', 'estado'];
 
-    // Relación: La cita pertenece a un paciente (Usuario)
-    public function user()
+    // Relación con Paciente (¡Muy importante!)
+    public function paciente()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Paciente::class, 'paciente_id');
     }
 
-    // Relación: La cita corresponde a un servicio específico
+    // Relación con Servicio
     public function servicio()
     {
         return $this->belongsTo(Servicio::class, 'servicio_id');

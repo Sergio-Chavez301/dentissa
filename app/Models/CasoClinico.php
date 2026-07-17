@@ -2,23 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class CasoClinico extends Model
 {
-    // Nombre exacto de tu tabla
+    use HasFactory;
+
+    // CORRECCIÓN: Le indicamos a Laravel el nombre exacto de la tabla en español
     protected $table = 'casos_clinicos';
 
     protected $fillable = [
-        'user_id',
+        'paciente_id',
         'tratamiento_base',
         'progreso',
         'estado',
     ];
 
-    // Relación: El caso clínico pertenece a un paciente (Usuario)
-    public function user()
+    // Relación con Paciente
+    public function paciente()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(Paciente::class, 'paciente_id');
     }
 }

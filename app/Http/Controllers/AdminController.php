@@ -2,47 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Usuario;
 use App\Models\Cita;
 use App\Models\CasoClinico;
 use App\Models\Servicio;
-use App\Models\User;
+use App\Models\Paciente; // <-- Agregamos el modelo Paciente
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
-    /**
-     * Muestra el panel de administración principal.
-     */
     public function index()
     {
-        // 1. Datos para los 4 bloques del componente "Datos Rápidos"
+        // 1. Datos para las tarjetas (Apuntando directamente a la tabla pacientes)
         $citasHoyCount = Cita::whereDate('fecha', Carbon::today())->count();
-        $pacientesCount = User::where('role_id', 3)->count(); // Rol 3 = Paciente
+        $pacientesCount = Paciente::count(); // <-- CORREGIDO: Cuenta directo los pacientes
         $casosActivosCount = CasoClinico::where('estado', 'activo')->count();
         $serviciosCount = Servicio::count();
 
-        // 2. Citas del día de hoy con sus relaciones de paciente (user) y tratamiento (servicio)
+        // 2. Citas del día de hoy con sus relaciones correctas
         $citasHoy = Cita::whereDate('fecha', Carbon::today())
-            ->with(['user', 'servicio'])
+            ->with(['paciente', 'servicio']) // <-- CORREGIDO: Usa 'paciente' en lugar de 'user'
             ->orderBy('hora', 'asc')
             ->get();
 
-        // 3. Casos Clínicos Activos (los últimos 5 con actualizaciones más recientes)
+        // 3. Casos Clínicos Activos (los últimos 5 actualizados)
         $casosActivos = CasoClinico::where('estado', 'activo')
-            ->with('user')
+            ->with('paciente') // <-- CORREGIDO: Carga el paciente clínico asignado
             ->latest('updated_at')
             ->take(5)
             ->get();
 
-        // 4. Últimos 5 pacientes (role_id: 3) que se registraron en la plataforma
-        $ultimosPacientes = User::where('role_id', 3)
-            ->latest()
+        // 4. Últimos 5 pacientes registrados en la plataforma
+        $ultimosPacientes = Paciente::latest() // <-- CORREGIDO: Busca en la tabla pacientes
             ->take(5)
             ->get();
 
-        // Mandamos todo bien empaquetado a la vista 'dashboard.admin'
         return view('dashboard.admin', compact(
             'citasHoyCount',
             'pacientesCount',
