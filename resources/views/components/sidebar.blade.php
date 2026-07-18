@@ -25,17 +25,23 @@
                     <i class="bi bi-people me-2 fs-5"></i> <span>Usuarios</span>
                 </a>
             </li>
+
+            <li class="mb-2">
+                <a href="{{ route('patients.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('patients*') ? 'active-dentissa' : 'link-hover' }}">
+                    <i class="bi bi-person-badge me-2 fs-5"></i> <span>Pacientes</span>
+                </a>
+            </li>
             
             <!-- 3. Citas -->
             <li class="mb-2">
-                <a href="#" class="nav-link text-dark d-flex align-items-center py-2 px-3 link-hover">
+                <a href="{{ route('citas.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('citas*') ? 'active-dentissa' : 'link-hover' }}">
                     <i class="bi bi-calendar-event me-2 fs-5"></i> <span>Citas</span>
                 </a>
             </li>
 
             <!-- 4. Solicitudes Web -->
             <li class="mb-2">
-                <a href="#" class="nav-link text-dark d-flex align-items-center justify-content-between py-2 px-3 link-hover">
+                <a href="{{ route('solicitudes.index')}}" class="nav-link text-dark d-flex align-items-center justify-content-between py-2 px-3 {{ request()->routeIs('solicitudes*') ? 'active-dentissa' : 'link-hover' }}">
                     <div class="d-flex align-items-center">
                         <i class="bi bi-envelope-check me-2 fs-5"></i> <span>Solicitudes Web</span>
                     </div>

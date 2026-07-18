@@ -13,27 +13,27 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // 1. Datos para las tarjetas (Apuntando directamente a la tabla pacientes)
+        // 1. Datos para las tarjetas
         $citasHoyCount = Cita::whereDate('fecha', Carbon::today())->count();
-        $pacientesCount = Paciente::count(); // <-- CORREGIDO: Cuenta directo los pacientes
+        $pacientesCount = Paciente::count();
         $casosActivosCount = CasoClinico::where('estado', 'activo')->count();
         $serviciosCount = Servicio::count();
 
         // 2. Citas del día de hoy con sus relaciones correctas
         $citasHoy = Cita::whereDate('fecha', Carbon::today())
-            ->with(['paciente', 'servicio']) // <-- CORREGIDO: Usa 'paciente' en lugar de 'user'
+            ->with(['paciente', 'servicio']) 
             ->orderBy('hora', 'asc')
             ->get();
 
-        // 3. Casos Clínicos Activos (los últimos 5 actualizados)
+        // 3. Casos Clínicos Activos
         $casosActivos = CasoClinico::where('estado', 'activo')
-            ->with('paciente') // <-- CORREGIDO: Carga el paciente clínico asignado
+            ->with('paciente')
             ->latest('updated_at')
             ->take(5)
             ->get();
 
         // 4. Últimos 5 pacientes registrados en la plataforma
-        $ultimosPacientes = Paciente::latest() // <-- CORREGIDO: Busca en la tabla pacientes
+        $ultimosPacientes = Paciente::latest() 
             ->take(5)
             ->get();
 

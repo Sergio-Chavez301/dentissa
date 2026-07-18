@@ -14,7 +14,7 @@ class Cita extends Model
     // Relación con Paciente (¡Muy importante!)
     public function paciente()
     {
-        return $this->belongsTo(Paciente::class, 'paciente_id');
+        return $this->belongsTo(Patient::class, 'paciente_id');
     }
 
     // Relación con Servicio

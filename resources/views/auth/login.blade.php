@@ -17,15 +17,25 @@
 <body class="h-full flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-gray-50">
     <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-150">
         
-        <!-- Identidad Corporativa (Mismo formato de tu Sidebar) -->
-        <div class="text-center flex flex-col items-center">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo Melissa López" class="mb-2" style="max-height: 75px;">
-            <h2 class="text-2xl font-bold tracking-tight text-[#1e1e24] mb-0">
-                Melissa López N.
-            </h2>
-            <span class="text-xs uppercase font-semibold tracking-widest mt-1 text-dentissa">
-                Odontología Integral
-            </span>
+        <!-- Contenedor superior con icono de retorno -->
+        <div class="relative flex items-center justify-center mb-6">
+            <!-- Enlace para regresar al Home -->
+            <a href="/" class="absolute left-0 text-gray-400 hover:text-dentissa transition-colors" title="Regresar al inicio">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+
+            <!-- Identidad Corporativa -->
+            <div class="text-center flex flex-col items-center">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo Melissa López" class="mb-2" style="max-height: 75px;">
+                <h2 class="text-2xl font-bold tracking-tight text-[#1e1e24] mb-0">
+                    Melissa López N.
+                </h2>
+                <span class="text-xs uppercase font-semibold tracking-widest mt-1 text-dentissa">
+                    Odontología Integral
+                </span>
+            </div>
         </div>
 
         <!-- Formulario de Entrada -->

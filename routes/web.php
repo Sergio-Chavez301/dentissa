@@ -4,7 +4,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController; 
 use App\Http\Controllers\UserController; 
-use App\Http\Controllers\SolicitudCitaController; // <-- IMPORTANTE: Importamos el controlador de solicitudes
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\CitaController;
+use App\Http\Controllers\SolicitudCitaController;
+use App\Http\Controllers\solicitudController;
 
 // --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
@@ -38,14 +41,18 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         return view('dashboard.paciente');
     })->name('dashboard.paciente');
 
-    // CRUD de Usuarios del sistema (Personal de la clínica)
+    // CRUD de Usuarios del sistema
     Route::resource('users', UserController::class);
 
-  /*  // --- NUEVO: Rutas para Solicitudes de Citas desde la Web ---
-    Route::get('/dashboard/solicitudes', [SolicitudCitaController::class, 'index'])->name('solicitudes.index');
-    Route::post('/dashboard/solicitudes/{id}/aprobar', [SolicitudCitaController::class, 'aprobar'])->name('solicitudes.aprobar');
-    Route::post('/dashboard/solicitudes/{id}/rechazar', [SolicitudCitaController::class, 'rechazar'])->name('solicitudes.rechazar');
-*/
+    // CRUD de Pacientes 
+    Route::resource('patients', PatientController::class);
+
+    //CRUD de Citas
+    Route::resource('citas', CitaController::class);
+
+    
+    Route::resource('solicitudes', SolicitudController::class);
+
     // Cerrar sesión
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
