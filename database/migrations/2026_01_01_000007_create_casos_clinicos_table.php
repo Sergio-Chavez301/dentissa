@@ -6,14 +6,11 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('casos_clinicos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('paciente_id')->constrained('pacientes')->onDelete('cascade'); 
+            $table->foreignId('paciente_id')->constrained('pacientes')->cascadeOnDelete();
             $table->string('tratamiento_base');
             $table->integer('progreso')->default(0);
             $table->enum('estado', ['activo', 'finalizado'])->default('activo');
@@ -21,9 +18,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('casos_clinicos');

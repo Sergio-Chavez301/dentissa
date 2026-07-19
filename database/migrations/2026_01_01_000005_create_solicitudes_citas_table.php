@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('solicitudes_citas', function (Blueprint $table) {
@@ -19,17 +16,13 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->dateTime('fecha_hora_propuesta');
             $table->text('motivo_consulta')->nullable();
-            
-            // Estado para el control administrativo de la web
-            $table->string('estado')->default('pendiente'); // 'pendiente', 'confirmada', 'cancelada'
-
+            $table->enum('estado', ['esperando_confirmacion', 'cancelada', 'confirmada'])
+                ->default('esperando_confirmacion');
+            $table->date('fecha_nacimiento');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('solicitudes_citas');
