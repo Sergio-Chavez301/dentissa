@@ -10,10 +10,31 @@
         <ul class="list-group list-group-flush">
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Paciente:</strong> {{ $cita->paciente->nombre }} {{ $cita->paciente->apellidos }}</li>
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Tratamiento:</strong> {{ $cita->servicio->nombre }}</li>
-            <li class="list-group-item d-flex justify-content-between px-0"><strong>Fecha:</strong> {{ $cita->fecha }}</li>
-            <li class="list-group-item d-flex justify-content-between px-0"><strong>Hora:</strong> {{ $cita->hora }}</li>
-            <li class="list-group-item d-flex justify-content-between px-0"><strong>Estado:</strong> {{ ucfirst($cita->estado) }}</li>
+            <li class="list-group-item d-flex justify-content-between px-0"><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</li>
+            <li class="list-group-item d-flex justify-content-between px-0"><strong>Hora:</strong> {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</li>
+            
+            <!-- Estado con lógica profesional -->
+            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                <strong>Estado:</strong>
+                @switch($cita->estado)
+                    @case(\App\Models\Cita::ESTADO_EN_ESPERA)
+                        <span class="badge rounded-pill bg-warning-subtle text-warning">En Espera</span>
+                        @break
+                    @case(\App\Models\Cita::ESTADO_REALIZADA)
+                        <span class="badge rounded-pill bg-success-subtle text-success">Realizada</span>
+                        @break
+                    @case(\App\Models\Cita::ESTADO_NO_PRESENTO)
+                        <span class="badge rounded-pill bg-secondary-subtle text-secondary">No se presentó</span>
+                        @break
+                    @case(\App\Models\Cita::ESTADO_CANCELADA)
+                        <span class="badge rounded-pill bg-danger-subtle text-danger">Cancelada</span>
+                        @break
+                    @default
+                        <span class="badge rounded-pill bg-light text-dark">{{ ucfirst($cita->estado) }}</span>
+                @endswitch
+            </li>
         </ul>
+        
         <div class="mt-4 text-end">
             <a href="{{ route('citas.edit', $cita->id) }}" class="btn btn-outline-secondary">Editar</a>
         </div>

@@ -45,13 +45,18 @@
                     <div class="d-flex align-items-center">
                         <i class="bi bi-envelope-check me-2 fs-5"></i> <span>Solicitudes Web</span>
                     </div>
-                    <span class="badge rounded-pill" style="background-color: #d75078; font-size: 0.65rem;">Nuevas</span>
+                    
+                    @if($nuevasSolicitudes > 0)
+                        <span class="badge rounded-pill" style="background-color: #d75078; font-size: 0.65rem;">
+                            {{ $nuevasSolicitudes }} Nuevas
+                        </span>
+                    @endif
                 </a>
             </li>
             
             <!-- 5. Casos Clínicos -->
             <li class="mb-2">
-                <a href="#" class="nav-link text-dark d-flex align-items-center py-2 px-3 link-hover">
+                <a href="{{ route('casos.index')}}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('casos*') ? 'active-dentissa' : 'link-hover' }}">
                     <i class="bi bi-file-earmark-medical me-2 fs-5"></i> <span>Casos Clínicos</span>
                 </a>
             </li>

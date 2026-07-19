@@ -10,15 +10,24 @@ use Illuminate\Http\Request;
 class CitaController extends Controller
 {
     public function index()
-    {
-        // Cargamos las relaciones para evitar problemas de N+1 y mostrar los nombres correctamente
-        $citas = Cita::with(['paciente', 'servicio'])->orderBy('fecha', 'asc')->get();
-        return view('citas.index', compact('citas'));
-    }
+        {
+
+            $citas = Cita::with(['paciente', 'servicio'])
+                ->orderByRaw("
+                    CASE 
+                        WHEN estado = '" . Cita::ESTADO_EN_ESPERA . "' THEN 0 
+                        ELSE 1 
+                    END ASC, 
+                    fecha ASC, 
+                    hora ASC
+                ")
+                ->get();
+
+            return view('citas.index', compact('citas'));
+        }
 
     public function create()
     {
-        // Necesitamos enviar los pacientes y servicios para llenar los selects del formulario
         $pacientes = Patient::all();
         $servicios = Servicio::all();
         return view('citas.create', compact('pacientes', 'servicios'));
@@ -33,8 +42,8 @@ class CitaController extends Controller
             'hora' => 'required',
         ]);
 
-        // Agregamos el estado por defecto
-        $validated['estado'] = 'pendiente';
+        // Usamos la constante definida en el modelo
+        $validated['estado'] = Cita::ESTADO_EN_ESPERA;
 
         Cita::create($validated);
 
@@ -57,12 +66,17 @@ class CitaController extends Controller
     {
         $cita = Cita::findOrFail($id);
         
-        $validated = $request->validate([
-            'estado' => 'required|in:pendiente,confirmada,cancelada',
+        // Validamos usando las constantes para mayor seguridad
+        $request->validate([
+            'estado' => 'required|in:' . Cita::ESTADO_REALIZADA . ',' . Cita::ESTADO_CANCELADA,
         ]);
 
-        $cita->update($validated);
+        $cita->update(['estado' => $request->estado]);
 
-        return redirect()->route('citas.index')->with('success', 'Cita actualizada correctamente.');
+        $mensaje = $request->estado === Cita::ESTADO_REALIZADA 
+            ? 'Cita marcada como realizada correctamente.' 
+            : 'Cita cancelada correctamente.';
+
+        return redirect()->route('citas.index')->with('success', $mensaje);
     }
 }

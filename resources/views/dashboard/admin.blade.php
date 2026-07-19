@@ -123,13 +123,13 @@
             <div class="card p-4 shadow-sm border-0 bg-white mb-4">
                 <h5 class="fw-bold mb-3" style="color: #1e1e24;">Acciones Rápidas</h5>
                 <div class="d-grid gap-2">
-                    <a href="#" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
+                    <a href="{{ route('citas.create')}}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
                         <i class="bi bi-calendar-plus me-2"></i>Nueva Cita
                     </a>
                     <a href="{{ route('patients.create') }}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
                         <i class="bi bi-person-plus me-2"></i>Registrar Paciente
                     </a>
-                    <a href="#" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
+                    <a href="{{ route('casos.create')}}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
                         <i class="bi bi-clipboard-plus me-2"></i>Nuevo Caso Clínico
                     </a>
                 </div>

@@ -6,6 +6,7 @@ use App\Models\Cita;
 use App\Models\CasoClinico;
 use App\Models\Servicio;
 use App\Models\Paciente; // <-- Agregamos el modelo Paciente
+use App\Models\Patient;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +16,7 @@ class AdminController extends Controller
     {
         // 1. Datos para las tarjetas
         $citasHoyCount = Cita::whereDate('fecha', Carbon::today())->count();
-        $pacientesCount = Paciente::count();
+        $pacientesCount = Patient::count();
         $casosActivosCount = CasoClinico::where('estado', 'activo')->count();
         $serviciosCount = Servicio::count();
 
@@ -33,7 +34,7 @@ class AdminController extends Controller
             ->get();
 
         // 4. Últimos 5 pacientes registrados en la plataforma
-        $ultimosPacientes = Paciente::latest() 
+        $ultimosPacientes = Patient::latest() 
             ->take(5)
             ->get();
 

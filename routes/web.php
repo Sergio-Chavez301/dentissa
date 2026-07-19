@@ -8,6 +8,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\SolicitudCitaController;
 use App\Http\Controllers\solicitudController;
+use App\Http\Controllers\CasoClinicoController;
 
 // --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
@@ -50,8 +51,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     //CRUD de Citas
     Route::resource('citas', CitaController::class);
 
-    
+    //CRUD de solicitudes
     Route::resource('solicitudes', SolicitudController::class);
+
+    //CRUD de casos clinicos
+    Route::resource('casos', CasoClinicoController::class);
 
     // Cerrar sesión
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

@@ -44,27 +44,63 @@
                                 <i class="bi bi-clock me-1 text-muted"></i> {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}
                             </td>
                             <td>
-                                <!-- Colores personalizados para el estado -->
-                                @if(strtolower($cita->estado) === 'confirmada')
-                                    <span class="badge rounded-pill bg-success-subtle text-success px-2.5 py-1">Confirmada</span>
-                                @elseif(strtolower($cita->estado) === 'pendiente')
-                                    <span class="badge rounded-pill bg-warning-subtle text-warning px-2.5 py-1">Pendiente</span>
-                                @elseif(strtolower($cita->estado) === 'cancelada')
-                                    <span class="badge rounded-pill bg-danger-subtle text-danger px-2.5 py-1">Cancelada</span>
-                                @else
-                                    <span class="badge rounded-pill bg-secondary-subtle text-secondary px-2.5 py-1">{{ ucfirst($cita->estado) }}</span>
+                                @switch($cita->estado)
+                                    @case(\App\Models\Cita::ESTADO_EN_ESPERA)
+                                        <span class="badge rounded-pill bg-warning-subtle text-warning px-2.5 py-1">En Espera</span>
+                                        @break
+                                    @case(\App\Models\Cita::ESTADO_REALIZADA)
+                                        <span class="badge rounded-pill bg-success-subtle text-success px-2.5 py-1">Realizada</span>
+                                        @break
+                                    @case(\App\Models\Cita::ESTADO_NO_PRESENTO)
+                                        <span class="badge rounded-pill bg-secondary-subtle text-secondary px-2.5 py-1">No se presentó</span>
+                                        @break
+                                    @case(\App\Models\Cita::ESTADO_CANCELADA)
+                                        <span class="badge rounded-pill bg-danger-subtle text-danger px-2.5 py-1">Cancelada</span>
+                                        @break
+                                    @default
+                                        <span class="badge rounded-pill bg-light text-dark px-2.5 py-1">{{ ucfirst($cita->estado) }}</span>
+                                @endswitch
+                            </td>
+                           <td class="text-end">
+                            <div class="d-flex justify-content-end gap-1">
+                                <!-- Botón Ver -->
+                                <a href="{{ route('citas.show', $cita->id) }}" class="btn btn-sm btn-light border" title="Ver Detalles">
+                                    <i class="bi bi-eye-fill text-muted"></i>
+                                </a>
+                                
+                                <!-- Botón Editar -->
+                                <a href="{{ route('citas.edit', $cita->id) }}" class="btn btn-sm btn-light border" title="Editar">
+                                    <i class="bi bi-pencil-fill text-muted"></i>
+                                </a>
+
+                                <!-- Acciones rápidas (Solo si está en espera) -->
+                                @if($cita->estado === \App\Models\Cita::ESTADO_EN_ESPERA)
+                                    <!-- Formulario Realizada -->
+                                    <form action="{{ route('citas.update', $cita->id) }}" method="POST" class="m-0">
+                                        @csrf 
+                                        @method('PUT')
+                                        <input type="hidden" name="fecha" value="{{ $cita->fecha }}">
+                                        <input type="hidden" name="hora" value="{{ $cita->hora }}">
+                                        <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_REALIZADA }}">
+                                        <button type="submit" class="btn btn-sm btn-light border" title="Marcar Realizada">
+                                            <i class="bi bi-check-lg text-success"></i>
+                                        </button>
+                                    </form>
+
+                                    <!-- Formulario Cancelar -->
+                                    <form action="{{ route('citas.update', $cita->id) }}" method="POST" class="m-0">
+                                        @csrf 
+                                        @method('PUT')
+                                        <input type="hidden" name="fecha" value="{{ $cita->fecha }}">
+                                        <input type="hidden" name="hora" value="{{ $cita->hora }}">
+                                        <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_CANCELADA }}">
+                                        <button type="submit" class="btn btn-sm btn-light border" title="Cancelar">
+                                            <i class="bi bi-x-lg text-danger"></i>
+                                        </button>
+                                    </form>
                                 @endif
-                            </td>
-                            <td class="text-end">
-                                <div class="btn-group" role="group">
-                                    <a href="{{ route('citas.show', $cita->id) }}" class="btn btn-sm btn-light border" title="Ver Detalles">
-                                        <i class="bi bi-eye-fill text-muted"></i>
-                                    </a>
-                                    <a href="{{ route('citas.edit', $cita->id) }}" class="btn btn-sm btn-light border" title="Editar">
-                                        <i class="bi bi-pencil-fill text-muted"></i>
-                                    </a>
-                                </div>
-                            </td>
+                            </div>
+                        </td>
                         </tr>
                     @empty
                         <tr>

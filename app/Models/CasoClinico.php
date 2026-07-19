@@ -9,8 +9,12 @@ class CasoClinico extends Model
 {
     use HasFactory;
 
-    // CORRECCIÓN: Le indicamos a Laravel el nombre exacto de la tabla en español
     protected $table = 'casos_clinicos';
+
+    // Definición de constantes para los estados
+    const ESTADO_ACTIVO = 'activo';
+    const ESTADO_FINALIZADO = 'finalizado';
+    const ESTADO_SUSPENDIDO = 'suspendido';
 
     protected $fillable = [
         'paciente_id',
@@ -19,9 +23,19 @@ class CasoClinico extends Model
         'estado',
     ];
 
-    // Relación con Paciente
+    /**
+     * Relación con el modelo Paciente.
+     */
     public function paciente()
     {
-        return $this->belongsTo(Paciente::class, 'paciente_id');
+        return $this->belongsTo(Patient::class, 'paciente_id');
+    }
+
+    /**
+     * Scope para filtrar casos activos (útil para el dashboard).
+     */
+    public function scopeActivos($query)
+    {
+        return $query->where('estado', self::ESTADO_ACTIVO);
     }
 }

@@ -9,16 +9,14 @@ class SolicitudCita extends Model
 {
     use HasFactory;
 
-    protected $table = 'solicitudes_citas'; // Definimos el nombre de tu tabla
+    // Constantes para estados
+    const ESTADO_ESPERANDO_CONFIRMACION = 'esperando_confirmacion';
+    const ESTADO_CANCELADA               = 'cancelada';
+    const ESTADO_CONFIRMADA              = 'confirmada';
 
+    protected $table = 'solicitudes_citas';
     protected $fillable = [
-        'nombre', 
-        'apellidos', 
-        'telefono', 
-        'email', 
-        'fecha_hora_propuesta', 
-        'motivo_consulta', 
-        'estado',
-        'fecha_nacimiento'
+        'nombre', 'apellidos', 'telefono', 'email', 
+        'fecha_hora_propuesta', 'motivo_consulta', 'estado', 'fecha_nacimiento'
     ];
-}   
+}

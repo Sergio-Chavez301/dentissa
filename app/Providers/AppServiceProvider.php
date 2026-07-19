@@ -1,12 +1,12 @@
 <?php
 
-
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\View;
+use App\Models\SolicitudCita;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Si un usuario ya logueado intenta ir a /login, lo mandamos al dashboard
+        // 1. Lógica de redirección para usuarios autenticados
         RedirectIfAuthenticated::redirectUsing(function () {
             $user = Auth::user();
             
@@ -40,5 +40,16 @@ class AppServiceProvider extends ServiceProvider
             
             return '/';
         });
+
+        // 2. Lógica para compartir el conteo de solicitudes en todas las vistas
+        View::composer('*', function ($view) {
+            // Asegúrate de que el usuario esté logueado para no hacer consultas innecesarias
+            if (Auth::check()) {
+                $nuevasSolicitudes = SolicitudCita::where('estado', 'esperando_confirmacion')->count();
+                $view->with('nuevasSolicitudes', $nuevasSolicitudes);
+            } else {
+                $view->with('nuevasSolicitudes', 0);
+            }
+        });
     }
-} 
+}
