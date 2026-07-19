@@ -60,8 +60,7 @@
                         <option value="" disabled selected>Selecciona una opción...</option>
                         <option value="1" {{ old('role_id') == 1 ? 'selected' : '' }}>Administrador (Acceso total)</option>
                         <option value="2" {{ old('role_id') == 2 ? 'selected' : '' }}>Asistente</option>
-                        <option value="3" {{ old('role_id') == 3 ? 'selected' : '' }}>Odontólogo</option>
-                        <option value="4" {{ old('role_id') == 4 ? 'selected' : '' }}>Recepcionista</option>
+                        <option value="3" {{ old('role_id') == 3 ? 'selected' : '' }}>Paciente</option>
                     </select>
                     @error('role_id')
                         <div class="invalid-feedback">{{ $message }}</div>

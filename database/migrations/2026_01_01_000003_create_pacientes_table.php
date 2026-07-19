@@ -13,6 +13,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('apellidos');
             $table->string('telefono');
+            $table->string('email')->nullable();
             $table->date('fecha_nacimiento');
             $table->text('alergias')->nullable();
             $table->text('enfermedades')->nullable();

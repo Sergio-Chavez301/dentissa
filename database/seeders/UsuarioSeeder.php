@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UsuarioSeeder extends Seeder
 {
@@ -19,7 +20,7 @@ class UsuarioSeeder extends Seeder
                 'nombre' => 'Melissa',
                 'apellidos' => 'López N.',
                 'email' => 'dra.melissa@dentissa.com',
-                'password' => '$2y$12$eaebX0oItb0JOOvOiu/k4uws6RAP3I/zEYnQImAijiuk8oaZ225z2',
+                'password' => Hash::make('password'),
                 'role_id' => 1,
                 'remember_token' => 'xSenhD0LG9vTxu5jo9yyuKsDxWhqfvnLyxgESHWXzSG4DI9iZlsZr6HH4zjF',
                 'created_at' => '2026-07-17 02:02:28',
@@ -32,7 +33,7 @@ class UsuarioSeeder extends Seeder
                 'nombre' => 'Ana',
                 'apellidos' => 'Gómez Pérez',
                 'email' => 'asistente@dentissa.com',
-                'password' => '$2y$12$7ur5kCYTeKo3TsFgwGwQxudqierovJYXJgL.dETSvRTGZ5rEyrVnm',
+                'password' => Hash::make('password'),
                 'role_id' => 2,
                 'remember_token' => 'ljshLfSbLhFuN7FOUQu11v0lj2yjF3qMP1rjTsEO761T0oOrOUeibzlVNLqw',
                 'created_at' => '2026-07-17 02:02:29',
@@ -45,7 +46,7 @@ class UsuarioSeeder extends Seeder
                 'nombre' => 'Carlos',
                 'apellidos' => 'Mendoza Torres',
                 'email' => 'dr.carlos@dentissa.com',
-                'password' => '$2y$12$jNqkPBd9pw7aFFwO800tM.kVfQxY4jYNH9JPMtrZWgXfmoY/nJjom',
+                'password' => Hash::make('password'),
                 'role_id' => 2,
                 'remember_token' => '5UQuPMovSiVMKRe4rAGOjXiCvtYFTFIWpEew1t6OgGtmQ8DkSVl8SCGzCmJI',
                 'created_at' => '2026-07-17 02:02:29',
@@ -58,7 +59,7 @@ class UsuarioSeeder extends Seeder
                 'nombre' => 'pipilin',
                 'apellidos' => 'sou joto',
                 'email' => 'pepe@gmail.com',
-                'password' => '$2y$12$/wZpfqe/1qUdF/Da.1a.aOMwELtUqWaq9CleBPeCIUpERhbeNurGi',
+                'password' => Hash::make('password'),
                 'role_id' => 2,
                 'remember_token' => null,
                 'created_at' => '2026-07-17 02:18:55',

@@ -27,6 +27,10 @@
                 <p class="fw-semibold text-dark fs-5">{{ $patient->telefono }}</p>
             </div>
             <div class="col-md-4">
+                <label class="text-muted small">Correo</label>
+                <p class="fw-semibold text-dark fs-5">{{ $patient->email ?? 'No registrado' }}</p>
+            </div>
+            <div class="col-md-4">
                 <label class="text-muted small">Fecha de Nacimiento</label>
                 <p class="fw-semibold text-dark fs-5">{{ $patient->fecha_nacimiento }}</p>
             </div>

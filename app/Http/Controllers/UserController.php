@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +36,7 @@ class UserController extends Controller
             'apellidos' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:usuarios,username',
             'email' => 'required|string|email|max:255|unique:usuarios,email',
-            'role_id' => 'required|integer|in:1,2,3,4', 
+            'role_id' => 'required|integer|in:1,2,3', 
             'password' => 'required|string|min:8|confirmed',
         ], [
             'username.unique' => 'Este nombre de usuario ya está en uso.',
@@ -91,7 +90,7 @@ class UserController extends Controller
             'apellidos' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:usuarios,username,' . $usuario->id,
             'email' => 'required|string|email|max:255|unique:usuarios,email,' . $usuario->id,
-            'role_id' => 'required|integer|in:1,2,3,4',
+            'role_id' => 'required|integer|in:1,2,3',
             'password' => 'nullable|string|min:8|confirmed', 
         ], [
             'username.unique' => 'Este nombre de usuario ya está en uso.',

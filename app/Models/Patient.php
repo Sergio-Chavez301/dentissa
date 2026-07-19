@@ -16,6 +16,7 @@ class Patient extends Model
         'nombre', 
         'apellidos', 
         'telefono', 
+        'email',
         'fecha_nacimiento', 
         'alergias', 
         'enfermedades', 

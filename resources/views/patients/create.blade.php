@@ -41,6 +41,14 @@
                     @enderror
                 </div>
 
+                <div class="col-md-6">
+                    <label for="email" class="form-label fw-semibold text-dark">Correo electrónico</label>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" placeholder="ejemplo@correo.com">
+                    @error('email')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="col-md-3">
                     <label for="fecha_nacimiento" class="form-label fw-semibold text-dark">Fecha Nacimiento</label>
                     <input type="date" class="form-control @error('fecha_nacimiento') is-invalid @enderror" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ old('fecha_nacimiento') }}" required>

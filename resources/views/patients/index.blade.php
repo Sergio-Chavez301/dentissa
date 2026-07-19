@@ -27,6 +27,7 @@
                     <tr class="text-muted" style="font-size: 0.85rem;">
                         <th>Nombre Completo</th>
                         <th>Teléfono</th>
+                        <th>Correo</th>
                         <th>Fecha de Nacimiento</th>
                         <th class="text-end">Acciones</th>
                     </tr>
@@ -36,6 +37,7 @@
                         <tr>
                             <td class="fw-semibold text-dark">{{ $patient->nombre }} {{ $patient->apellidos }}</td>
                             <td>{{ $patient->telefono }}</td>
+                            <td>{{ $patient->email ?? 'No registrado' }}</td>
                             <td>
                                 <span class="badge bg-light text-dark border px-2.5 py-1">
                                     {{ $patient->fecha_nacimiento }}

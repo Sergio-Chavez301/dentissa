@@ -36,6 +36,12 @@
                     @error('telefono') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
+                <div class="col-md-6">
+                    <label for="email" class="form-label fw-semibold text-dark">Correo electrónico</label>
+                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $patient->email) }}" placeholder="ejemplo@correo.com">
+                    @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
+
                 <!-- Fecha Nacimiento -->
                 <div class="col-md-3">
                     <label for="fecha_nacimiento" class="form-label fw-semibold text-dark">Fecha Nacimiento</label>
