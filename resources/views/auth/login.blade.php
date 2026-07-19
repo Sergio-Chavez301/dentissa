@@ -96,6 +96,18 @@
                     Ingresar al Sistema
                 </button>
             </div>
+
+            @if (session('status'))
+                <div class="rounded-lg bg-green-50 p-3 text-sm text-green-700">
+                    {{ session('status') }}
+                </div>
+            @endif
+
+            <div class="text-sm text-center">
+                <a href="{{ route('password.request') }}" class="font-medium text-dentissa hover:text-[#c24066]">
+                    ¿Olvidaste tu contraseña?
+                </a>
+            </div>
         </form>
         
     </div>

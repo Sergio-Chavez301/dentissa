@@ -26,6 +26,11 @@ Route::middleware('guest')->group(function () {
     })->name('register');
 
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
+
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
 // --- RUTAS PROTEGIDAS (Solo Autenticados y sin caché de historial) ---
@@ -41,6 +46,10 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/dashboard/paciente', function () {
         return view('dashboard.paciente');
     })->name('dashboard.paciente');
+
+    // Perfil del usuario autenticado
+    Route::get('/profile', [UserController::class, 'showProfile'])->name('profile.show');
+    Route::post('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
 
     // CRUD de Usuarios del sistema
     Route::resource('users', UserController::class);

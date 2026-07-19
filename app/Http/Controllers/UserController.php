@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -115,7 +116,7 @@ class UserController extends Controller
             $data['password'] = Hash::make($request->password);
         }
 
-        $usuario->update($data);
+        DB::table('usuarios')->where('id', $usuario->id)->update($data);
 
         return redirect()->route('users.index')
             ->with('success', 'Los datos del usuario han sido actualizados.');
@@ -124,6 +125,46 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+    public function showProfile()
+    {
+        $usuario = Auth::user();
+
+        return view('users.profile', compact('usuario'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $usuario = Auth::user();
+
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'apellidos' => 'required|string|max:255',
+            'username' => 'required|string|max:50|unique:usuarios,username,' . $usuario->id,
+            'email' => 'required|string|email|max:255|unique:usuarios,email,' . $usuario->id,
+            'password' => 'nullable|string|min:8|confirmed',
+        ], [
+            'username.unique' => 'Este nombre de usuario ya está en uso.',
+            'email.unique' => 'Este correo electrónico ya está registrado.',
+            'password.confirmed' => 'Las contraseñas escritas no coinciden.',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+        ]);
+
+        $data = [
+            'nombre' => $request->nombre,
+            'apellidos' => $request->apellidos,
+            'username' => $request->username,
+            'email' => $request->email,
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        DB::table('usuarios')->where('id', $usuario->id)->update($data);
+
+        return redirect()->route('profile.show')->with('success', 'Tu perfil ha sido actualizado correctamente.');
+    }
+
     public function destroy(string $id)
     {
         $usuario = User::findOrFail($id);
