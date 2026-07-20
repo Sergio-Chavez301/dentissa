@@ -39,9 +39,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // Dashboards divididos por rol
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin');
 
-    Route::get('/dashboard/asistente', function () {
-        return view('dashboard.asistente');
-    })->name('dashboard.asistente');
+    Route::get('/dashboard/asistente', [AdminController::class, 'asistente'])->name('dashboard.asistente');
 
     Route::get('/dashboard/paciente', function () {
         return view('dashboard.paciente');
@@ -59,7 +57,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     //CRUD de Citas
     Route::resource('citas', CitaController::class);
-        //disponivilidad de citas
+    
+    // Disponibilidad de citas
     Route::get('/api/disponibilidad', [CitaController::class, 'verificarDisponibilidad'])->name('api.disponibilidad');
 
     //CRUD de Solicitudes
@@ -70,7 +69,6 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     //CRUD de Servicios
     Route::resource('servicios', ServicioController::class);
-
 
     // Cerrar Sesión
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

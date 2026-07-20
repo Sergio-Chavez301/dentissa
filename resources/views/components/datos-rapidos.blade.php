@@ -1,5 +1,4 @@
 @props(['citas', 'pacientes', 'casos', 'servicios'])
-
 <div class="row g-3 mb-4">
     <!-- Tarjeta 1: Citas del Día -->
     <div class="col-12 col-sm-6 col-xl-3">
