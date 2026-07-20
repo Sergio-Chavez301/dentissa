@@ -6,8 +6,11 @@
             <i class="bi bi-arrow-left me-1"></i> Volver al listado
         </a>
         <h1 class="h2 fw-bold" style="color: #1e1e24;">Editar Cita #{{ $cita->id }}</h1>
-        <p class="text-muted">Actualiza la información de la cita o cambia su estado actual.</p>
     </div>
+
+    @if(session('error'))
+        <div class="alert alert-danger mb-4">{{ session('error') }}</div>
+    @endif
 
     <div class="card p-4 shadow-sm border-0 bg-white" style="max-width: 800px;">
         <form action="{{ route('citas.update', $cita->id) }}" method="POST">
@@ -24,26 +27,28 @@
                     <input type="text" class="form-control bg-light" value="{{ $cita->servicio->nombre }}" disabled>
                 </div>
 
+                <!-- Fecha con onchange para cargar horarios -->
                 <div class="col-md-6">
                     <label for="fecha" class="form-label fw-semibold text-dark">Fecha</label>
-                    <input type="date" class="form-control" id="fecha" name="fecha" value="{{ old('fecha', $cita->fecha) }}" required>
+                    <input type="date" class="form-control" id="fecha" name="fecha" value="{{ old('fecha', $cita->fecha) }}" onchange="cargarHorarios()" required>
                 </div>
+
+                <!-- Hora como select para cargar dinámicamente -->
                 <div class="col-md-6">
                     <label for="hora" class="form-label fw-semibold text-dark">Hora</label>
-                    <input type="time" class="form-control" id="hora" name="hora" value="{{ old('hora', $cita->hora) }}" required>
+                    <select id="hora" name="hora" class="form-select" required>
+                        <option value="{{ $cita->hora }}">{{ substr($cita->hora, 0, 5) }} (Actual)</option>
+                    </select>
                 </div>
 
                 <div class="col-md-12 mt-3">
                     <label for="estado" class="form-label fw-semibold text-dark">Estado de la Cita</label>
-                    <select class="form-select @error('estado') is-invalid @enderror" id="estado" name="estado" required>
+                    <select class="form-select" id="estado" name="estado" required>
                         <option value="{{ \App\Models\Cita::ESTADO_EN_ESPERA }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_EN_ESPERA ? 'selected' : '' }}>En Espera</option>
                         <option value="{{ \App\Models\Cita::ESTADO_REALIZADA }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_REALIZADA ? 'selected' : '' }}>Realizada</option>
                         <option value="{{ \App\Models\Cita::ESTADO_NO_PRESENTO }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_NO_PRESENTO ? 'selected' : '' }}>No se presentó</option>
                         <option value="{{ \App\Models\Cita::ESTADO_CANCELADA }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_CANCELADA ? 'selected' : '' }}>Cancelada</option>
                     </select>
-                    @error('estado')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
                 </div>
             </div>
 
@@ -55,4 +60,31 @@
             </div>
         </form>
     </div>
+
+    <script>
+        function cargarHorarios() {
+            let fecha = document.getElementById('fecha').value;
+            let selectHora = document.getElementById('hora');
+            
+            if (!fecha) return;
+            selectHora.innerHTML = '<option>Cargando horarios...</option>';
+
+            fetch(`{{ route('api.disponibilidad') }}?fecha=${fecha}`)
+                .then(response => response.json())
+                .then(data => {
+                    selectHora.innerHTML = '<option value="">Seleccione una hora</option>';
+                    if(data.horarios && data.horarios.length > 0) {
+                        data.horarios.forEach(h => {
+                            let isSelected = (h === "{{ $cita->hora }}" || h === "{{ substr($cita->hora, 0, 5) }}") ? 'selected' : '';
+                            selectHora.innerHTML += `<option value="${h}" ${isSelected}>${h.substring(0, 5)}</option>`;
+                        });
+                    } else {
+                        selectHora.innerHTML = '<option value="">No hay disponibilidad</option>';
+                    }
+                });
+        }
+
+        // Cargar los horarios apenas cargue la página con la fecha actual
+        document.addEventListener('DOMContentLoaded', cargarHorarios);
+    </script>
 </x-plantilla>

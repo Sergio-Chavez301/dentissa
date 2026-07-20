@@ -107,23 +107,32 @@ class CitaController extends Controller
         return view('citas.edit', compact('cita'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $cita = Cita::findOrFail($id);
+public function update(Request $request, string $id)
+{
+    $cita = Cita::findOrFail($id);
+    
+    $request->validate([
+        'fecha'  => 'required|date',
+        'hora'   => 'required',
+        'estado' => 'required',
+    ]);
+
+    // Verificamos disponibilidad SOLO si la fecha o la hora han cambiado
+    if ($request->fecha !== $cita->fecha || $request->hora !== $cita->hora) {
+        $horariosDisponibles = Cita::getHorariosDisponibles($request->fecha);
         
-        $request->validate([
-            'estado' => 'required|in:' . Cita::ESTADO_REALIZADA . ',' . Cita::ESTADO_CANCELADA,
-        ]);
-
-        $cita->update(['estado' => $request->estado]);
-
-        $mensaje = $request->estado === Cita::ESTADO_REALIZADA 
-            ? 'Cita marcada como realizada correctamente.' 
-            : 'Cita cancelada correctamente.';
-
-        return redirect()->route('citas.index')->with('success', $mensaje);
+        // Si el horario nuevo NO está en la lista de disponibles, bloqueamos
+        if (!in_array($request->hora, $horariosDisponibles)) {
+            return back()->withInput()->with('error', 'El horario seleccionado no está disponible.');
+        }
     }
+
+    $cita->update([
+        'fecha'  => $request->fecha,
+        'hora'   => $request->hora,
+        'estado' => $request->estado,
+    ]);
+
+    return redirect()->route('citas.index')->with('success', 'Cita actualizada correctamente.');
+}
 }
