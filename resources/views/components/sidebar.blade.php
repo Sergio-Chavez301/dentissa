@@ -63,7 +63,7 @@
             
             <!-- 6. Servicios -->
             <li class="mb-2">
-                <a href="#" class="nav-link text-dark d-flex align-items-center py-2 px-3 link-hover">
+                <a href="{{ route('servicios.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('servicios*') ? 'active-dentissa' : 'link-hover' }}">
                     <i class="bi bi-gear-fill me-2 fs-5"></i> <span>Servicios</span>
                 </a>
             </li>

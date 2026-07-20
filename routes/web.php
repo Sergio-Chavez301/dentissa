@@ -6,9 +6,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController; 
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\CitaController;
-use App\Http\Controllers\SolicitudCitaController;
 use App\Http\Controllers\solicitudController;
 use App\Http\Controllers\CasoClinicoController;
+use App\Http\Controllers\ServicioController;
 
 // --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
@@ -60,12 +60,15 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     //CRUD de Citas
     Route::resource('citas', CitaController::class);
 
-    //CRUD de solicitudes
+    //CRUD de Solicitudes
     Route::resource('solicitudes', SolicitudController::class);
 
-    //CRUD de casos clinicos
+    //CRUD de Casos Clinicos
     Route::resource('casos', CasoClinicoController::class);
 
-    // Cerrar sesión
+    //CRUD de Servicios
+    Route::resource('servicios', ServicioController::class);
+
+    // Cerrar Sesión
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
