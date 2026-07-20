@@ -1,5 +1,5 @@
 <x-plantilla>
-    <x-slot:title>Gestión de Servicios | Dentissa</x-slot:title>
+    <x-slot:title>Catálogo de Servicios | Dentissa</x-slot:title>
 
     <div class="d-flex justify-content-between align-items-center pb-2 mb-4 border-bottom">
         <div>
@@ -13,11 +13,18 @@
         </div>
     </div>
 
-    <!-- Alertas de Éxito -->
+    <!-- Gestión de Alertas -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
@@ -25,7 +32,7 @@
         <div class="table-responsive">
             <table class="table align-middle table-hover">
                 <thead>
-                    <tr class="text-muted" style="font-size: 0.85rem;">
+                    <tr class="text-muted" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
                         <th>Nombre</th>
                         <th>Descripción</th>
                         <th>Precio</th>
@@ -36,7 +43,7 @@
                     @forelse($servicios as $servicio)
                         <tr>
                             <td class="fw-semibold text-dark">{{ $servicio->nombre }}</td>
-                            <td class="text-muted">{{ $servicio->descripcion ?? 'Sin descripción' }}</td>
+                            <td class="text-muted">{{ $servicio->descripcion ?? '---' }}</td>
                             <td class="fw-medium text-dark">${{ number_format($servicio->precio, 2) }}</td>
                             <td class="text-end">
                                 <div class="d-flex justify-content-end gap-1">
@@ -58,8 +65,8 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center text-muted py-4">
-                                <i class="bi bi-clipboard-x fs-3 d-block mb-2 text-secondary"></i>
+                            <td colspan="4" class="text-center py-5 text-muted">
+                                <i class="bi bi-clipboard-x fs-2 d-block mb-2 text-light"></i>
                                 No hay servicios registrados actualmente.
                             </td>
                         </tr>

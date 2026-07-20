@@ -13,4 +13,12 @@ class Servicio extends Model
         'descripcion',
         'precio',
     ];
+
+    /**
+     * Relación con las citas: Un servicio puede tener muchas citas asociadas.
+     */
+    public function citas()
+    {
+        return $this->hasMany(Cita::class, 'servicio_id');
+    }
 }

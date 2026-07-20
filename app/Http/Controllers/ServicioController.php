@@ -83,6 +83,13 @@ class ServicioController extends Controller
     public function destroy(string $id)
     {
         $servicio = Servicio::findOrFail($id);
+
+        // Validación de integridad: No borrar si tiene citas relacionadas
+        if ($servicio->citas()->exists()) {
+            return redirect()->route('servicios.index')
+                ->with('error', 'No se puede eliminar el servicio porque tiene citas históricas asociadas.');
+        }
+
         $servicio->delete();
 
         return redirect()->route('servicios.index')
