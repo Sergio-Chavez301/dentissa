@@ -14,10 +14,10 @@
         </a>
     </div>
 
-    <!-- Datos Personales -->
+    <!-- Datos Personales y Médicos -->
     <div class="card p-4 shadow-sm border-0 bg-white mb-4" style="max-width: 900px;">
         <h5 class="text-muted text-uppercase small fw-bold mb-4">Información Personal</h5>
-        <div class="row">
+        <div class="row mb-4">
             <div class="col-md-4">
                 <label class="text-muted small">Nombre Completo</label>
                 <p class="fw-semibold text-dark fs-5">{{ $patient->nombre }} {{ $patient->apellidos }}</p>
@@ -33,6 +33,30 @@
             <div class="col-md-4">
                 <label class="text-muted small">Fecha de Nacimiento</label>
                 <p class="fw-semibold text-dark fs-5">{{ $patient->fecha_nacimiento }}</p>
+            </div>
+        </div>
+
+        <hr class="text-muted">
+
+        <h5 class="text-muted text-uppercase small fw-bold mt-3 mb-3">Información Médica</h5>
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <label class="text-muted small">Alergias</label>
+                <div class="p-2 bg-light rounded border-start border-4 border-danger">
+                    <p class="mb-0 text-dark">{{ $patient->alergias ?? 'Ninguna registrada' }}</p>
+                </div>
+            </div>
+            <div class="col-md-12 mb-3">
+                <label class="text-muted small">Enfermedades Crónicas</label>
+                <div class="p-2 bg-light rounded border-start border-4 border-primary">
+                    <p class="mb-0 text-dark">{{ $patient->enfermedades ?? 'Ninguna registrada' }}</p>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <label class="text-muted small">Tratamientos Actuales</label>
+                <div class="p-2 bg-light rounded border-start border-4 border-info">
+                    <p class="mb-0 text-dark">{{ $patient->tratamientos ?? 'Ninguno registrado' }}</p>
+                </div>
             </div>
         </div>
     </div>
