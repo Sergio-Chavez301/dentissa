@@ -59,6 +59,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     //CRUD de Citas
     Route::resource('citas', CitaController::class);
+        //disponivilidad de citas
+    Route::get('/api/disponibilidad', [CitaController::class, 'verificarDisponibilidad'])->name('api.disponibilidad');
 
     //CRUD de Solicitudes
     Route::resource('solicitudes', SolicitudController::class);
@@ -68,6 +70,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     //CRUD de Servicios
     Route::resource('servicios', ServicioController::class);
+
 
     // Cerrar Sesión
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
