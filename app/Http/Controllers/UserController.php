@@ -53,7 +53,7 @@ class UserController extends Controller
             'email' => $request->email,
             'role_id' => $request->role_id,
             'password' => Hash::make($request->password), 
-            'activo' => $request->has('activo') ? 1 : 0, 
+            'activo' => 1, 
         ]);
 
         return redirect()->route('users.index')
