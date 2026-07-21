@@ -13,10 +13,10 @@ class AdminController extends Controller
 {
     public function index()
     {
-        // 1. Datos para las tarjetas
+        // 1. Datos para las tarjetas (Opcional: puedes filtrar también el contador si quieres que coincida con la tabla)
         $citasHoyCount = Cita::whereDate('fecha', Carbon::today())->count();
         $pacientesCount = Patient::count();
-        $casosActivosCount = CasoClinico::where('estado', 'activo')->count();
+        $casosActivosCount = CasoClinico::where('estado', 'activo')->where('progreso', '<', 100)->count();
         $serviciosCount = Servicio::count();
 
         // 2. Citas del día de hoy con sus relaciones correctas
@@ -25,8 +25,9 @@ class AdminController extends Controller
             ->orderBy('hora', 'asc')
             ->get();
 
-        // 3. Casos Clínicos Activos
+        // 3. Casos Clínicos Activos (FILTRANDO los que ya llegaron al 100%)
         $casosActivos = CasoClinico::where('estado', 'activo')
+            ->where('progreso', '<', 100) // <--- Filtro aplicado aquí
             ->with('paciente')
             ->latest('updated_at')
             ->take(5)
@@ -47,37 +48,39 @@ class AdminController extends Controller
             'ultimosPacientes'
         ));
     }
-public function asistente()
-{
-    // Datos para las tarjetas
-    $citas = Cita::whereDate('fecha', Carbon::today())->count();
-    $pacientes = Patient::count();
-    $casos = CasoClinico::where('estado', 'activo')->count();
-    $servicios = Servicio::count();
 
-    // Datos para las tablas
-    $citasHoy = Cita::whereDate('fecha', Carbon::today())
-        ->with(['paciente', 'servicio'])
-        ->orderBy('hora', 'asc')
-        ->get();
+    public function asistente()
+    {
+        // Datos para las tarjetas
+        $citas = Cita::whereDate('fecha', Carbon::today())->count();
+        $pacientes = Patient::count();
+        $casos = CasoClinico::where('estado', 'activo')->where('progreso', '<', 100)->count(); // Opcional para el contador
+        $servicios = Servicio::count();
 
-    $casosActivos = CasoClinico::where('estado', 'activo')
-        ->with('paciente')
-        ->latest('updated_at')
-        ->take(5)
-        ->get();
+        // Datos para las tablas
+        $citasHoy = Cita::whereDate('fecha', Carbon::today())
+            ->with(['paciente', 'servicio'])
+            ->orderBy('hora', 'asc')
+            ->get();
 
-    // --- AQUÍ VA LO QUE PREGUNTABAS ---
-    $ultimosPacientes = Patient::latest()->take(5)->get();
+        // Casos Clínicos Activos (FILTRANDO los que ya llegaron al 100%)
+        $casosActivos = CasoClinico::where('estado', 'activo')
+            ->where('progreso', '<', 100) // <--- Filtro aplicado aquí también
+            ->with('paciente')
+            ->latest('updated_at')
+            ->take(5)
+            ->get();
 
-    return view('dashboard.asistente', compact(
-        'citas',
-        'pacientes',
-        'casos',
-        'servicios',
-        'citasHoy',
-        'casosActivos',
-        'ultimosPacientes' 
-    ));
-}
+        $ultimosPacientes = Patient::latest()->take(5)->get();
+
+        return view('dashboard.asistente', compact(
+            'citas',
+            'pacientes',
+            'casos',
+            'servicios',
+            'citasHoy',
+            'casosActivos',
+            'ultimosPacientes' 
+        ));
+    }
 }
