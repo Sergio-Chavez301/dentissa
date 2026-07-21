@@ -6,7 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController; 
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\CitaController;
-use App\Http\Controllers\solicitudController;
+use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\CasoClinicoController;
 use App\Http\Controllers\ServicioController;
 
@@ -14,6 +14,12 @@ use App\Http\Controllers\ServicioController;
 Route::get('/', function () {
     return view('home');
 })->name('home');
+
+// Ruta pública para que el prospecto envíe su solicitud de cita
+Route::post('/solicitud-cita', [SolicitudController::class, 'storePublic'])->name('solicitud.storePublic');
+
+// Disponibilidad de citas (Pública para que cargue dinámicamente en el modal)
+Route::get('/api/disponibilidad', [CitaController::class, 'verificarDisponibilidad'])->name('api.disponibilidad');
 
 // --- AUTENTICACIÓN (Solo Invitados) ---
 Route::middleware('guest')->group(function () {
@@ -38,9 +44,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     
     // Dashboards divididos por rol
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin');
-
     Route::get('/dashboard/asistente', [AdminController::class, 'asistente'])->name('dashboard.asistente');
-
     Route::get('/dashboard/paciente', function () {
         return view('dashboard.paciente');
     })->name('dashboard.paciente');
@@ -49,25 +53,12 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::get('/profile', [UserController::class, 'showProfile'])->name('profile.show');
     Route::post('/profile', [UserController::class, 'updateProfile'])->name('profile.update');
 
-    // CRUD de Usuarios del sistema
+    // CRUDs
     Route::resource('users', UserController::class);
-
-    // CRUD de Pacientes 
     Route::resource('patients', PatientController::class);
-
-    //CRUD de Citas
     Route::resource('citas', CitaController::class);
-    
-    // Disponibilidad de citas
-    Route::get('/api/disponibilidad', [CitaController::class, 'verificarDisponibilidad'])->name('api.disponibilidad');
-
-    //CRUD de Solicitudes
     Route::resource('solicitudes', SolicitudController::class);
-
-    //CRUD de Casos Clinicos
     Route::resource('casos', CasoClinicoController::class);
-
-    //CRUD de Servicios
     Route::resource('servicios', ServicioController::class);
 
     // Cerrar Sesión
