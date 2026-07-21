@@ -54,19 +54,21 @@
                     @enderror
                 </div>
 
-                <!-- Rol / Puesto -->
-                <div class="col-md-12">
-                    <label for="role_id" class="form-label fw-semibold text-dark">Puesto / Rol en la clínica</label>
-                    <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
-                        <option value="1" {{ old('role_id', $usuario->role_id) == 1 ? 'selected' : '' }}>Administrador (Acceso total)</option>
-                        <option value="2" {{ old('role_id', $usuario->role_id) == 2 ? 'selected' : '' }}>Asistente</option>
-                        <option value="3" {{ old('role_id', $usuario->role_id) == 3 ? 'selected' : '' }}>Odontólogo</option>
-                        <option value="4" {{ old('role_id', $usuario->role_id) == 4 ? 'selected' : '' }}>Recepcionista</option>
-                    </select>
-                    @error('role_id')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
+                <!-- Rol / Puesto (Dinámico desde la BD) -->
+<div class="col-md-12">
+    <label for="role_id" class="form-label fw-semibold text-dark">Puesto / Rol en la clínica</label>
+    <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
+        <option value="" disabled>Selecciona una opción...</option>
+        @foreach($roles as $role)
+            <option value="{{ $role->id }}" {{ old('role_id', $usuario->role_id) == $role->id ? 'selected' : '' }}>
+                {{ ucfirst($role->name) }}
+            </option>
+        @endforeach
+    </select>
+    @error('role_id')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+</div>
 
                 <!-- Interruptor de Estado de Cuenta -->
                 <div class="col-12 mt-4">

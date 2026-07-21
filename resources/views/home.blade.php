@@ -33,6 +33,33 @@
                 min-height: 60vh;
             }
         }
+        .service-card, .case-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 12px;
+        }
+        .service-card:hover, .case-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(215, 80, 120, 0.15);
+        }
+        .discount-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: #ffc107;
+            color: #000;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 50rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        footer a {
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        footer a:hover {
+            color: var(--color-rosa) !important;
+        }
     </style>
 </head>
 <body>  
@@ -44,8 +71,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <div class="d-flex mt-3 mt-lg-0">
-                    <a href="{{ route('login') }}" class="btn btn-outline-secondary w-100 w-lg-auto">Iniciar sesión</a>
+                <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0">
+                    <a href="{{ route('login') }}" class="btn btn-outline-secondary">Iniciar sesión</a>
                 </div>
             </div>
         </div>
@@ -82,6 +109,146 @@
                     <h4 class="text-rosa">¿Ya eres paciente?</h4>
                     <p class="text-muted">Accede a tu historial clínico y gestiona tus citas desde nuestro panel exclusivo.</p>
                     <a href="{{ route('login') }}" class="btn btn-outline-secondary btn-lg mt-3 w-100">Acceder al Panel</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE SERVICIOS E IMÁGENES -->
+    <section class="py-5 bg-light border-top border-bottom">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="text-uppercase text-rosa fw-bold small tracking-wider">Tratamientos Integrales</span>
+                <h2 class="fw-bold text-dark">Nuestros Servicios Destacados</h2>
+                <p class="text-muted">Cuidamos cada detalle de tu sonrisa con tecnología de vanguardia.</p>
+            </div>
+            
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col">
+                    <div class="card service-card h-100 shadow-sm bg-white overflow-hidden">
+                        <img src="{{ asset('img/servicio-ortodoncia.jpg') }}" class="card-img-top" alt="Ortodoncia Avanzada" style="height: 200px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h4 class="card-title text-rosa fw-bold h5">Ortodoncia Avanzada</h4>
+                            <p class="card-text text-muted small mt-2">Alinea tus dientes y mejora tu mordida con brackets estéticos y opciones modernas adaptadas a ti.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card service-card h-100 shadow-sm bg-white overflow-hidden">
+                        <img src="{{ asset('img/servicio-sonrisa.jpg') }}" class="card-img-top" alt="Diseño de Sonrisa" style="height: 200px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h4 class="card-title text-rosa fw-bold h5">Diseño de Sonrisa</h4>
+                            <p class="card-text text-muted small mt-2">Blanqueamientos profesionales, carillas y restauraciones estéticas para devolverle el brillo natural a tus dientes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card service-card h-100 shadow-sm bg-white overflow-hidden">
+                        <img src="{{ asset('img/servicio-preventiva.jpg') }}" class="card-img-top" alt="Odontología Preventiva" style="height: 200px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h4 class="card-title text-rosa fw-bold h5">Odontología Preventiva</h4>
+                            <p class="card-text text-muted small mt-2">Limpiezas profundas, revisiones periódicas y selladores para prevenir cualquier molestia futura.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE DESCUENTOS Y PROMOCIONES -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <span class="text-uppercase text-rosa fw-bold small">Ahorra en tu salud bucal</span>
+            <h2 class="fw-bold text-dark">Promociones Especiales</h2>
+            <p class="text-muted">Aprovecha nuestros descuentos vigentes por tiempo limitado.</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card case-card p-4 position-relative border-0 shadow-sm text-white" style="background: linear-gradient(135deg, #d75078, #f2b0a6);">
+                    <span class="discount-badge">20% OFF</span>
+                    <h3 class="fw-bold h4">Blanqueamiento Láser</h3>
+                    <p class="small mb-3">Luze una sonrisa más blanca y deslumbrante en una sola sesión con la más alta tecnología.</p>
+                    <button type="button" class="btn btn-light text-rosa fw-bold" data-bs-toggle="modal" data-bs-target="#modalSolicitud">Aprovechar Promoción</button>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card case-card p-4 position-relative border-0 shadow-sm text-white" style="background: linear-gradient(135deg, #4a5568, #2d3748);">
+                    <span class="discount-badge">GRATIS</span>
+                    <h3 class="fw-bold h4">Valoración y Diagnóstico</h3>
+                    <p class="small mb-3">Tu primera consulta de evaluación general y presupuesto inicial no tienen ningún costo.</p>
+                    <button type="button" class="btn btn-light text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#modalSolicitud">Agendar Gratis</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE CASOS DE ÉXITO (ANTES / DESPUÉS) -->
+    <section class="py-5 bg-light border-top">
+        <div class="container">
+            <div class="text-center mb-5">
+                <span class="text-uppercase text-rosa fw-bold small">Resultados Reales</span>
+                <h2 class="fw-bold text-dark">Casos de Éxito</h2>
+                <p class="text-muted">Transformaciones que devuelven la confianza al sonreír.</p>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                <div class="col">
+                    <div class="card case-card h-100 shadow-sm bg-white overflow-hidden">
+                        <img src="{{ asset('img/caso1.jpg') }}" class="card-img-top" alt="Caso de éxito ortodoncia" style="height: 250px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h4 class="text-rosa fw-bold h5">Corrección de Mordida y Alineación</h4>
+                            <p class="text-muted small">Tratamiento ortodóncico integral de 14 meses con resultados funcionales y estéticos sobresalientes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col">
+                    <div class="card case-card h-100 shadow-sm bg-white overflow-hidden">
+                        <img src="{{ asset('img/caso2.jpg') }}" class="card-img-top" alt="Caso de éxito diseño de sonrisa" style="height: 250px; object-fit: cover;">
+                        <div class="card-body p-4">
+                            <h4 class="text-rosa fw-bold h5">Rehabilitación y Carillas Estéticas</h4>
+                            <p class="text-muted small">Devolución de la armonía y brillo natural a la sonrisa mediante carillas de porcelana de alta durabilidad.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN DE COMENTARIOS / TESTIMONIOS -->
+    <section class="container py-5">
+        <div class="text-center mb-5">
+            <span class="text-uppercase text-rosa fw-bold small">Testimonios</span>
+            <h2 class="fw-bold text-dark">Lo que dicen nuestros pacientes</h2>
+            <p class="text-muted">La satisfacción de quienes confían en nosotros es nuestra mejor carta de presentación.</p>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm p-4 bg-white">
+                    <div class="mb-3 text-warning">★★★★★</div>
+                    <p class="text-muted fst-italic small">"Excelente atención por parte de la Dra. Melissa. Muy profesional, cuidadosa y el consultorio impecable. Cero dolor."</p>
+                    <h6 class="fw-bold text-dark mt-auto mb-0">— Mariana G.</h6>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm p-4 bg-white">
+                    <div class="mb-3 text-warning">★★★★★</div>
+                    <p class="text-muted fst-italic small">"Me hice un diseño de sonrisa y el cambio fue radical. Explicaron todo el proceso detalladamente y el resultado superó mis expectativas."</p>
+                    <h6 class="fw-bold text-dark mt-auto mb-0">— Carlos R.</h6>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 border-0 shadow-sm p-4 bg-white">
+                    <div class="mb-3 text-warning">★★★★★</div>
+                    <p class="text-muted fst-italic small">"Llevé a mis hijos a revisión y su trato con los niños es maravilloso. 100% recomendados para toda la familia."</p>
+                    <h6 class="fw-bold text-dark mt-auto mb-0">— Sofía M.</h6>
                 </div>
             </div>
         </div>
@@ -157,10 +324,45 @@
         </div>
     </div>
 
-    <!-- Pie de página -->
-    <footer class="py-4 text-center border-top">
-        <div class="container">
-            <p class="text-muted mb-0">&copy; {{ date('Y') }} Melissa López N. - Odontología Integral</p>
+    <!-- Pie de página con Contactos e Información -->
+    <footer class="bg-dark text-white pt-5 pb-4 border-top">
+        <div class="container text-center text-md-start">
+            <div class="row g-4">
+                <!-- Columna 1: Marca -->
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-rosa fw-bold mb-3">Melissa López N.</h5>
+                    <p class="text-white-55 small">Odontología Integral de alta calidad orientada a brindarte la mejor sonrisa y salud bucal con un trato humano y profesional.</p>
+                </div>
+
+                <!-- Columna 2: Contacto -->
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-rosa fw-bold mb-3">Contacto</h5>
+                    <p class="text-white-55 small mb-1">📞 Teléfono: +52 (55) 1234-5678</p>
+                    <p class="text-white-55 small mb-1">✉️ Correo: contacto@melissalopez.com</p>
+                    <p class="text-white-55 small mb-0">🕒 Lunes a Sábado: 9:00 am - 7:00 pm</p>
+                </div>
+
+                <!-- Columna 3: Enlaces de Interés / Equipo -->
+                <div class="col-md-4 mb-3">
+                    <h5 class="text-rosa fw-bold mb-3">Enlaces de Interés</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <a href="{{ route('acerca-de') }}" class="text-white-55 small">👥 Conoce al Equipo de Desarrollo</a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{ route('login') }}" class="text-white-55 small">🔐 Iniciar Sesión en el Panel</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="border-secondary my-4">
+
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="text-white-55 small mb-0">&copy; {{ date('Y') }} Melissa López N. - Todos los derechos reservados.</p>
+                </div>
+            </div>
         </div>
     </footer>
 

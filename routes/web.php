@@ -14,7 +14,9 @@ use App\Http\Controllers\ServicioController;
 Route::get('/', function () {
     return view('home');
 })->name('home');
-
+Route::get('/acerca-de', function(){
+    return view('acerca-de');
+})->name('acerca-de');
 // Ruta pública para que el prospecto envíe su solicitud de cita
 Route::post('/solicitud-cita', [SolicitudController::class, 'storePublic'])->name('solicitud.storePublic');
 

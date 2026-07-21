@@ -53,14 +53,16 @@
                     @enderror
                 </div>
 
-                <!-- Rol / Puesto -->
+                <!-- Rol / Puesto (Dinámico desde la BD) -->
                 <div class="col-md-12">
                     <label for="role_id" class="form-label fw-semibold text-dark">Puesto / Rol en la clínica</label>
                     <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
                         <option value="" disabled selected>Selecciona una opción...</option>
-                        <option value="1" {{ old('role_id') == 1 ? 'selected' : '' }}>Administrador (Acceso total)</option>
-                        <option value="2" {{ old('role_id') == 2 ? 'selected' : '' }}>Asistente</option>
-                        <option value="3" {{ old('role_id') == 3 ? 'selected' : '' }}>Paciente</option>
+                        @foreach($roles as $role)
+                            <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
+                                {{ ucfirst($role->name) }}
+                            </option>
+                        @endforeach
                     </select>
                     @error('role_id')
                         <div class="invalid-feedback">{{ $message }}</div>

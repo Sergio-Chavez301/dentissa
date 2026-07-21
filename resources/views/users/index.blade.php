@@ -46,17 +46,22 @@
                             <td>{{ $usuario->nombre }} {{ $usuario->apellidos }}</td>
                             <td>{{ $usuario->email ?? 'Sin correo registrado' }}</td>
                             <td>
-                                <!-- Colores personalizados dependiendo del Rol -->
-                                @if($usuario->role_id === 1)
-                                    <span class="badge rounded-pill bg-danger-subtle text-danger px-2.5 py-1">Administrador</span>
-                                @elseif($usuario->role_id === 2)
-                                    <span class="badge rounded-pill bg-primary-subtle text-primary px-2.5 py-1">Asistente</span>
-                                @elseif($usuario->role_id === 3)
-                                    <span class="badge rounded-pill bg-info-subtle text-info px-2.5 py-1">Odontólogo</span>
-                                @elseif($usuario->role_id === 4)
-                                    <span class="badge rounded-pill bg-success-subtle text-success px-2.5 py-1">Recepcionista</span>
+                                <!-- Rol dinámico desde la Base de Datos -->
+                                @if($usuario->role)
+                                    @php
+                                        $badgeClass = match($usuario->role_id) {
+                                            1 => 'bg-danger-subtle text-danger',
+                                            2 => 'bg-primary-subtle text-primary',
+                                            3 => 'bg-info-subtle text-info',
+                                            4 => 'bg-success-subtle text-success',
+                                            default => 'bg-secondary-subtle text-secondary',
+                                        };
+                                    @endphp
+                                    <span class="badge rounded-pill {{ $badgeClass }} px-2.5 py-1">
+                                        {{ ucfirst($usuario->role->name) }}
+                                    </span>
                                 @else
-                                    <span class="badge rounded-pill bg-secondary-subtle text-secondary px-2.5 py-1">{{ $usuario->role?->name ?? 'Sin Rol' }}</span>
+                                    <span class="badge rounded-pill bg-secondary-subtle text-secondary px-2.5 py-1">Sin Rol</span>
                                 @endif
                             </td>
                             <td class="text-end">
@@ -94,4 +99,4 @@
             </table>
         </div>
     </div>
-</x-plantilla>
+</x-plantilla> 

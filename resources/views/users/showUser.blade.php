@@ -20,18 +20,14 @@
                 <h4 class="fw-bold mb-1" style="color: #1e1e24;">{{ $usuario->nombre }}</h4>
                 <p class="text-muted mb-3">{{ $usuario->apellidos }}</p>
 
-                <!-- Distintivo de Rol -->
+                <!-- Distintivo de Rol Dinámico desde la BD -->
                 <div class="mb-4">
-                    @if($usuario->role_id === 1)
-                        <span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-1.5 fs-7">Administrador</span>
-                    @elseif($usuario->role_id === 2)
-                        <span class="badge rounded-pill bg-primary-subtle text-primary px-3 py-1.5 fs-7">Asistente</span>
-                    @elseif($usuario->role_id === 3)
-                        <span class="badge rounded-pill bg-info-subtle text-info px-3 py-1.5 fs-7">Odontólogo</span>
-                    @elseif($usuario->role_id === 4)
-                        <span class="badge rounded-pill bg-success-subtle text-success px-3 py-1.5 fs-7">Recepcionista</span>
+                    @if($usuario->role)
+                        <span class="badge rounded-pill bg-primary-subtle text-primary px-3 py-1.5 fs-7">
+                            {{ ucfirst($usuario->role->name) }}
+                        </span>
                     @else
-                        <span class="badge rounded-pill bg-secondary-subtle text-secondary px-3 py-1.5 fs-7">{{ $usuario->role?->name ?? 'Sin Rol' }}</span>
+                        <span class="badge rounded-pill bg-secondary-subtle text-secondary px-3 py-1.5 fs-7">Sin Rol</span>
                     @endif
                 </div>
 
@@ -57,7 +53,7 @@
                         <p class="text-muted mb-1 small uppercase fw-semibold" style="letter-spacing: 0.5px;">Nombre de Usuario</p>
                         <div class="d-flex align-items-center">
                             <span class="badge bg-light text-dark border px-2.5 py-1.5 fs-6">
-                                @​{{ $usuario->username }}
+                                @{{ $usuario->username }}
                             </span>
                         </div>
                     </div>
@@ -75,6 +71,7 @@
                             {{ $usuario->created_at ? $usuario->created_at->format('d/m/Y a las h:i A') : 'No registrada' }}
                         </p>
                     </div>
+
                     <!-- Estado de Cuenta -->
                     <div class="col-md-6">
                         <p class="text-muted mb-1 small uppercase fw-semibold">Estado de Acceso</p>
@@ -82,8 +79,7 @@
                             @if($usuario->activo)
                                 <span class="text-success"><i class="bi bi-check-circle-fill me-1"></i> Activo</span>
                                 
-                                <!-- Indicador de presencia (En línea) -->
-                                @if($usuario->isOnline())
+                                @if(method_exists($usuario, 'isOnline') && $usuario->isOnline())
                                     <span class="badge bg-success-subtle text-success ms-2">En línea</span>
                                 @else
                                     <span class="badge bg-secondary-subtle text-secondary ms-2">Desconectado</span>
