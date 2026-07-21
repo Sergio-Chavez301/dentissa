@@ -1,9 +1,16 @@
-<nav class="col-md-3 col-lg-2 d-md-block sidebar collapse collapse-horizontal" id="sidebarMenu" style="background-color: #ffffff; border-right: 1px solid #e0e0e0; height: 100vh; position: sticky; top: 0;">
+<nav class="col-md-3 col-lg-2 d-md-block bg-white border-end sidebar collapse" id="sidebarMenu" style="height: 100vh; position: sticky; top: 0; z-index: 1000;">
     <div class="position-sticky pt-3 d-flex flex-column h-100 px-3" style="overflow-y: auto; max-height: 100vh; scrollbar-width: thin; -ms-overflow-style: none;">
         
+        <!-- Botón para cerrar en móviles (Opcional si usas offcanvas o toggler personalizado) -->
+        <div class="d-flex d-md-none justify-content-end mb-2">
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Cerrar menú">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
         <a href="#" class="d-flex flex-column align-items-center mb-4 text-decoration-none py-2 text-center">
             <img src="{{ asset('img/logo.png') }}" alt="Logo Melissa López" class="img-fluid mb-2" style="max-height: 75px;">
-            <span class="fs-5 fw-bold mb-0" style="letter-spacing: 0.5px; color: #1e1e24;">Melissa López N.</span>
+            <span class="fs-5 fw-bold mb-0 text-break" style="letter-spacing: 0.5px; color: #1e1e24;">Melissa López N.</span>
             <small class="text-uppercase fw-semibold" style="color: #d75078; font-size: 0.65rem; letter-spacing: 1.5px;">Odontología Integral</small>
         </a>
 
@@ -94,9 +101,9 @@
         <hr style="background-color: #e0e0e0; opacity: 0.8; margin-top: 15px; margin-bottom: 10px;">
 
         <div class="dropdown pb-4">
-            <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle py-2 px-1" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+            <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle py-2 px-1 text-truncate" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person-circle fs-4 me-2" style="color: #d75078;"></i>
-                <strong>{{ Auth::user()->nombre }}</strong>
+                <strong class="text-truncate">{{ Auth::user()->nombre }}</strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-light text-small shadow" aria-labelledby="dropdownUser">
                 <li><a class="dropdown-item" href="#">Mi Perfil</a></li>

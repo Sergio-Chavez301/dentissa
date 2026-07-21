@@ -16,18 +16,20 @@
         }
     </style>
 
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-4 border-bottom">
+    <!-- Encabezado responsivo -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center pb-3 mb-4 border-bottom gap-3">
         <div>
-            <h1 class="h2 fw-bold" style="color: #1e1e24;">Bienvenido de nuevo, {{ Auth::user()->nombre ?? 'Usuario' }}</h1>
-            <p class="text-muted">Gestión clínica y administrativa de Odontología Integral</p>
+            <h1 class="h4 h3-lg fw-bold text-break mb-1" style="color: #1e1e24;">Bienvenido de nuevo, {{ Auth::user()->nombre ?? 'Usuario' }}</h1>
+            <p class="text-muted mb-0 small fs-md-6">Gestión clínica y administrativa de Odontología Integral</p>
         </div>
-        <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-toolbar align-self-start align-self-md-auto">
             <span class="badge bg-dentissa py-2 px-3 fs-6 rounded-pill shadow-sm text-white">
                 <i class="bi bi-calendar3 me-1"></i> {{ now()->format('d/m/Y') }}
             </span>
         </div>
     </div>
 
+    <!-- Componente de datos rápidos -->
     <x-datos-rapidos 
         :citas="$citasHoyCount" 
         :pacientes="$pacientesCount" 
@@ -35,16 +37,19 @@
         :servicios="$serviciosCount" 
     />
 
+    <!-- Contenido Principal -->
     <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="card p-4 shadow-sm border-0 bg-white mb-4">
+        <!-- Columna Izquierda (Tablas) -->
+        <div class="col-12 col-lg-8">
+            <!-- Próximas Citas -->
+            <div class="card p-3 p-md-4 shadow-sm border-0 bg-white mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold mb-0" style="color: #1e1e24;">
+                    <h5 class="fw-bold mb-0 fs-6 fs-md-5" style="color: #1e1e24;">
                         <i class="bi bi-clock-history text-dentissa me-2"></i>Próximas Citas de Hoy
                     </h5>
                 </div>
                 <div class="table-responsive">
-                    <table class="table align-middle table-hover">
+                    <table class="table align-middle table-hover text-nowrap">
                         <thead>
                             <tr class="text-muted" style="font-size: 0.85rem;">
                                 <th>Hora</th>
@@ -57,7 +62,6 @@
                             @forelse($citasHoy as $cita)
                                 <tr>
                                     <td class="fw-semibold text-dark">{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</td>
-                                    <!-- CORREGIDO: $cita->paciente en lugar de $cita->user -->
                                     <td>{{ $cita->paciente->nombre ?? 'N/A' }} {{ $cita->paciente->apellidos ?? '' }}</td>
                                     <td>{{ $cita->servicio->nombre ?? 'Tratamiento General' }}</td>
                                     <td>
@@ -78,31 +82,31 @@
                 </div>
             </div>
 
-            <div class="card p-4 shadow-sm border-0 bg-white">
+            <!-- Casos Clínicos Activos -->
+            <div class="card p-3 p-md-4 shadow-sm border-0 bg-white">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold mb-0" style="color: #1e1e24;">
+                    <h5 class="fw-bold mb-0 fs-6 fs-md-5" style="color: #1e1e24;">
                         <i class="bi bi-file-earmark-medical text-dentissa me-2"></i>Casos Clínicos Activos
                     </h5>
                 </div>
                 <div class="table-responsive">
-                    <table class="table align-middle table-hover">
+                    <table class="table align-middle table-hover text-nowrap">
                         <thead>
                             <tr class="text-muted" style="font-size: 0.85rem;">
                                 <th>ID</th>
                                 <th>Paciente</th>
                                 <th>Tratamiento Base</th>
-                                <th>Progreso</th>
+                                <th style="min-width: 140px;">Progreso</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($casosActivos as $caso)
                                 <tr>
                                     <td class="text-muted">#{{ $caso->id }}</td>
-                                    <!-- CORREGIDO: $caso->paciente en lugar de $caso->user -->
                                     <td class="fw-semibold">{{ $caso->paciente->nombre ?? 'Desconocido' }} {{ $caso->paciente->apellidos ?? '' }}</td>
                                     <td>{{ $caso->tratamiento_base ?? 'No especificado' }}</td>
                                     <td>
-                                        <div class="d-flex align-items-center">
+                                        <div class="d-flex align-items-center" style="min-width: 120px;">
                                             <div class="progress w-100 me-2" style="height: 6px;">
                                                 <div class="progress-bar bg-dentissa" role="progressbar" style="width: {{ $caso->progreso ?? 0 }}%"></div>
                                             </div>
@@ -119,9 +123,11 @@
             </div>
         </div>
 
-        <div class="col-lg-4">
-            <div class="card p-4 shadow-sm border-0 bg-white mb-4">
-                <h5 class="fw-bold mb-3" style="color: #1e1e24;">Acciones Rápidas</h5>
+        <!-- Columna Derecha (Acciones y Pacientes Recientes) -->
+        <div class="col-12 col-lg-4">
+            <!-- Acciones Rápidas -->
+            <div class="card p-3 p-md-4 shadow-sm border-0 bg-white mb-4">
+                <h5 class="fw-bold mb-3 fs-6 fs-md-5" style="color: #1e1e24;">Acciones Rápidas</h5>
                 <div class="d-grid gap-2">
                     <a href="{{ route('citas.create')}}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
                         <i class="bi bi-calendar-plus me-2"></i>Nueva Cita
@@ -135,8 +141,9 @@
                 </div>
             </div>
 
-            <div class="card p-4 shadow-sm border-0 bg-white">
-                <h5 class="fw-bold mb-3" style="color: #1e1e24;">Últimos Pacientes</h5>
+            <!-- Últimos Pacientes -->
+            <div class="card p-3 p-md-4 shadow-sm border-0 bg-white">
+                <h5 class="fw-bold mb-3 fs-6 fs-md-5" style="color: #1e1e24;">Últimos Pacientes</h5>
                 <ul class="list-group list-group-flush">
                     @forelse($ultimosPacientes as $paciente)
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0 bg-transparent">
