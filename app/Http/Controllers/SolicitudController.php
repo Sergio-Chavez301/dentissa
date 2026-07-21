@@ -36,7 +36,7 @@ class SolicitudController extends Controller
         
         return view('solicitudes.show', compact('solicitud', 'servicios'));
     }
-
+//solisitudes
 public function storePublic(Request $request)
     {
         $request->validate([
