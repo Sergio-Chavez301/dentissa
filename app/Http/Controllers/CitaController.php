@@ -89,18 +89,14 @@ class CitaController extends Controller
         return redirect()->route('citas.index')->with('success', 'Cita agendada exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
+
     public function show(string $id)
     {
         $cita = Cita::with(['paciente', 'servicio'])->findOrFail($id);
         return view('citas.show', compact('cita'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+
     public function edit(string $id)
     {
         $cita = Cita::findOrFail($id);
