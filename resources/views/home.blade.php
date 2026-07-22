@@ -377,7 +377,7 @@
             if (!fecha) return;
             selectHora.innerHTML = '<option>Cargando horarios...</option>';
 
-            fetch(`{{ url('/api/disponibilidad') }}?fecha=${fecha}`)
+            fetch(`/api/disponibilidad?fecha=${fecha}`)
                 .then(r => r.json())
                 .then(data => {
                     selectHora.innerHTML = '<option value="">Seleccione una hora</option>';
