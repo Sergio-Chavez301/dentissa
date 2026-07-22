@@ -66,8 +66,8 @@ class SolicitudController extends Controller
             'motivo_consulta'      => $request->motivo_consulta,
             'estado'               => SolicitudCita::ESTADO_ESPERANDO_CONFIRMACION,
         ]);
+        return redirect('/');
 
-        return back()->with('success', '¡Tu solicitud de cita ha sido enviada con éxito! Nos pondremos en contacto o la confirmaremos pronto.');
     }
 
     public function update(Request $request, string $id)
