@@ -265,7 +265,6 @@
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-4">Completa tus datos y nos pondremos en contacto o confirmaremos tu cita pronto.</p>
                     
-                    <!-- FORMULARIO CORREGIDO CON LA RUTA Y MÉTODO POST -->
                     <form action="{{ route('solicitud.storePublic') }}" method="POST">
                         @csrf
                         
@@ -378,7 +377,7 @@
             if (!fecha) return;
             selectHora.innerHTML = '<option>Cargando horarios...</option>';
 
-            fetch(`/api/disponibilidad?fecha=${fecha}`)
+            fetch(`{{ url('/api/disponibilidad') }}?fecha=${fecha}`)
                 .then(r => r.json())
                 .then(data => {
                     selectHora.innerHTML = '<option value="">Seleccione una hora</option>';
