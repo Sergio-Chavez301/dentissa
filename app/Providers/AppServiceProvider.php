@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\URL;
 use App\Models\SolicitudCita;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +24,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // 0. Forzar HTTPS en entorno de producción (Railway) para evitar errores de contenido mixto
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+
         // 1. Lógica de redirección para usuarios autenticados
         RedirectIfAuthenticated::redirectUsing(function () {
             $user = Auth::user();
