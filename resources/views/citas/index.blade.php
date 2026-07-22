@@ -13,7 +13,35 @@
         </div>
     </div>
 
-    <!-- Alertas de Éxito -->
+    <!-- ALERTA DE CREDENCIALES Y WHATSAPP (PACIENTE NUEVO) -->
+    @if(session('temp_password') && session('temp_telefono'))
+        @php
+            $telefonoLimpio = preg_replace('/[^0-9]/', '', session('temp_telefono'));
+            $mensaje = "Hola " . session('temp_nombre') . ", tu cuenta en Dentissa ha sido creada con éxito. Tus credenciales de acceso son:\nUsuario: " . session('temp_username') . "\nContraseña: " . session('temp_password') . "\nPuedes iniciar sesión en: " . url('/login');
+            $urlWhatsApp = "https://wa.me/" . $telefonoLimpio . "?text=" . urlencode($mensaje);
+        @endphp
+
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4 border-0 d-flex justify-content-between align-items-center" role="alert">
+            <div class="pe-4">
+                <i class="bi bi-whatsapp me-2"></i><strong>¡Cuenta creada con éxito!</strong> 
+                Usuario: <code class="fw-bold bg-white text-dark px-2 py-1 rounded mx-1">{{ session('temp_username') }}</code>
+                Contraseña: <code class="fw-bold bg-white text-dark px-2 py-1 rounded mx-1">{{ session('temp_password') }}</code>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ $urlWhatsApp }}" target="_blank" class="btn btn-success btn-sm d-flex align-items-center gap-1">
+                    <i class="bi bi-whatsapp"></i> Enviar por WhatsApp
+                </a>
+                <button type="button" class="btn-close position-relative p-2" data-bs-dismiss="alert" aria-label="Close" style="top: 0; right: 0;"></button>
+            </div>
+        </div>
+
+        @php
+            // Limpiamos la sesión justo después de pintarla para que no persista al recargar
+            session()->forget(['temp_password', 'temp_telefono', 'temp_nombre', 'temp_username']);
+        @endphp
+    @endif
+
+    <!-- Alertas de Éxito Generales -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}

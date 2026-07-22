@@ -13,6 +13,7 @@ class Patient extends Model
     protected $table = 'pacientes';
 
     protected $fillable = [
+        'user_id',
         'nombre', 
         'apellidos', 
         'telefono', 
@@ -24,8 +25,15 @@ class Patient extends Model
     ];
 
     /**
+     * Relación con la tabla de Usuarios (Acceso Web)
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
      * Relación con Citas
-     * Asumiendo que tu tabla de citas se llama 'citas'
      */
     public function citas()
     {
@@ -34,7 +42,6 @@ class Patient extends Model
 
     /**
      * Relación con Casos Clínicos
-     * Asumiendo que tu modelo se llama CasoClinico y la tabla 'casos_clinicos'
      */
     public function casosClinicos()
     {

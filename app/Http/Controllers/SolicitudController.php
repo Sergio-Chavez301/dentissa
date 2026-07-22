@@ -6,7 +6,10 @@ use App\Models\SolicitudCita;
 use App\Models\Cita; 
 use App\Models\Patient;
 use App\Models\Servicio;
+use App\Models\User; // <-- Asegúrate de importar el modelo User
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash; // <-- Importante para la contraseña
+use Illuminate\Support\Str; // <-- Importante para generar la clave aleatoria
 use Carbon\Carbon;
 
 class SolicitudController extends Controller
@@ -36,8 +39,8 @@ class SolicitudController extends Controller
         
         return view('solicitudes.show', compact('solicitud', 'servicios'));
     }
-//solisitudes
-public function storePublic(Request $request)
+
+    public function storePublic(Request $request)
     {
         $request->validate([
             'nombre'           => 'required|string|max:255',
@@ -50,7 +53,6 @@ public function storePublic(Request $request)
             'motivo_consulta'  => 'nullable|string',
         ]);
 
-        // Cortamos la hora a 5 caracteres (HH:MM) para prevenir segundos duplicados
         $horaLimpia = substr($request->hora_propuesta, 0, 5);
         $fechaHoraCompleta = $request->fecha_propuesta . ' ' . $horaLimpia . ':00';
 
@@ -82,14 +84,29 @@ public function storePublic(Request $request)
                 'fecha_nacimiento' => 'nullable|date', 
             ]);
 
+            // 1. Creamos la cuenta de acceso web (usuario)
+            $passwordTemporal = Str::random(8); 
+            $usuario = User::create([
+                'nombre'    => $solicitud->nombre,
+                'apellidos' => $solicitud->apellidos,
+                'username'  => Str::slug($solicitud->nombre . '.' . $solicitud->apellidos . '-' . rand(100, 999), ''),
+                'email'     => $solicitud->email,
+                'password'  => Hash::make($passwordTemporal),
+                'role_id'   => 3, // Rol Paciente
+                'activo'    => 1,
+            ]);
+
+            // 2. Creamos el paciente vinculando el user_id recién creado
             $paciente = Patient::create([
                 'nombre'           => $solicitud->nombre,
                 'apellidos'        => $solicitud->apellidos,
                 'email'            => $solicitud->email,
                 'telefono'         => $solicitud->telefono,
                 'fecha_nacimiento' => $request->input('fecha_nacimiento', $solicitud->fecha_nacimiento),
+                'user_id'          => $usuario->id, // <-- Enlace clave
             ]);
 
+            // 3. Creamos la cita oficial
             Cita::create([
                 'paciente_id' => $paciente->id,
                 'servicio_id' => $request->servicio_id,
@@ -98,13 +115,22 @@ public function storePublic(Request $request)
                 'estado'      => Cita::ESTADO_EN_ESPERA, 
             ]);
 
+            // 4. Cambiamos el estado de la solicitud
             $solicitud->update(['estado' => SolicitudCita::ESTADO_CONFIRMADA]);
             
-            return redirect()->route('solicitudes.index')->with('success', 'Cita agendada correctamente y paciente registrado para ' . $solicitud->nombre . '.');
+            // 5. Guardamos en sesión para activar el botón de WhatsApp en la vista
+            session([
+                'temp_password' => $passwordTemporal,
+                'temp_telefono' => $paciente->telefono,
+                'temp_nombre'   => $paciente->nombre,            
+                'temp_username' => $usuario->username,
+            ]);
+
+            return redirect()->route('citas.index')->with('success', 'Cita agendada correctamente y cuenta de acceso creada para ' . $solicitud->nombre . '.');
         }
 
         $solicitud->update(['estado' => SolicitudCita::ESTADO_CANCELADA]);
         
-        return redirect()->route('solicitudes.index')->with('success', 'Solicitud de ' . $solicitud->nombre . ' rechazada.');
+        return redirect()->route('citas.index')->with('success', 'Solicitud de ' . $solicitud->nombre . ' rechazada.');
     }
 }

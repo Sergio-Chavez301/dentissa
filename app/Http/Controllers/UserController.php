@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Role; // Importa tu modelo Role
+use App\Models\Role;
+use App\Models\Patient;
+use App\Models\Cita;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -151,9 +153,24 @@ class UserController extends Controller
                 ->with('error', 'No puedes eliminar tu propio usuario mientras tienes la sesión activa.');
         }
 
+        // Si este usuario tiene un perfil de paciente asociado, eliminamos en cascada sus dependencias
+        $patient = Patient::where('user_id', $usuario->id)->first();
+
+        if ($patient) {
+            // 1. Eliminar sus casos clínicos
+            $patient->casosClinicos()->delete();
+
+            // 2. Eliminar sus citas
+            Cita::where('paciente_id', $patient->id)->delete();
+
+            // 3. Eliminar el registro del paciente
+            $patient->delete();
+        }
+
+        // Finalmente eliminamos al usuario
         $usuario->delete();
 
         return redirect()->route('users.index')
-            ->with('success', 'El usuario ha sido eliminado correctamente del sistema.');
+            ->with('success', 'El usuario, su perfil de paciente, citas y casos clínicos han sido eliminados correctamente del sistema.');
     }
 }

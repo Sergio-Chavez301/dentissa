@@ -47,9 +47,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // Dashboards divididos por rol
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin');
     Route::get('/dashboard/asistente', [AdminController::class, 'asistente'])->name('dashboard.asistente');
-    Route::get('/dashboard/paciente', function () {
-        return view('dashboard.paciente');
-    })->name('dashboard.paciente');
+    
+    // Panel del paciente vinculado al PatientController
+    Route::get('/dashboard/paciente', [PatientController::class, 'dashboard'])->name('dashboard.paciente');
 
     // Perfil del usuario autenticado
     Route::get('/profile', [UserController::class, 'showProfile'])->name('profile.show');
@@ -58,6 +58,13 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // CRUDs
     Route::resource('users', UserController::class);
     Route::resource('patients', PatientController::class);
+    
+    // Ruta personalizada para generar y enviar credenciales de WhatsApp a pacientes existentes
+    Route::get('/patients/{id}/credenciales-whatsapp', [PatientController::class, 'enviarCredencialesWhatsApp'])->name('patients.whatsapp');
+
+    // Ruta para generar una nueva contraseña de acceso al paciente
+    Route::post('/patients/{patient}/reset-password', [PatientController::class, 'resetPassword'])->name('patients.reset-password');
+
     Route::resource('citas', CitaController::class);
     Route::resource('solicitudes', SolicitudController::class);
     Route::resource('casos', CasoClinicoController::class);

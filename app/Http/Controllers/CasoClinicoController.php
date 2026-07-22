@@ -4,13 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Models\CasoClinico;
 use App\Models\Patient;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class CasoClinicoController extends Controller
 {
     public function index()
     {
-        $casos = CasoClinico::with('paciente')->orderBy('created_at', 'desc')->get();
+        $casos = CasoClinico::with('paciente')->get();
         return view('casos.index', compact('casos'));
     }
 
@@ -20,45 +23,104 @@ class CasoClinicoController extends Controller
         return view('casos.create', compact('pacientes'));
     }
 
-public function store(Request $request)
-{
-    $pacienteId = null;
+    public function store(Request $request)
+    {
+        // 1. Validamos de forma condicional si viene un paciente nuevo o uno existente
+        $rules = [
+            'tratamiento_base' => 'required|string|max:255',
+            'progreso'         => 'required|integer|min:0|max:100',
+            'estado'           => 'nullable|string',
+        ];
 
-    // Si el checkbox está marcado, el nombre 'nuevo_paciente' llegará en el request
-    if ($request->has('nuevo_paciente')) {
-        $validatedPaciente = $request->validate([
-            'nombre'           => 'required|string|max:255',
-            'apellidos'        => 'required|string|max:255',
-            'telefono'         => 'required|string|max:20',
-            'fecha_nacimiento' => 'required|date',
-            'alergias'         => 'nullable|string',
-            'enfermedades'     => 'nullable|string',
-            'tratamientos'     => 'nullable|string',
+        if ($request->has('nuevo_paciente')) {
+            $rules['nombre']           = 'required|string|max:255';
+            $rules['apellidos']        = 'required|string|max:255';
+            $rules['email']            = 'nullable|email|max:255|unique:pacientes,email';
+            $rules['telefono']         = 'nullable|string|max:20';
+            $rules['fecha_nacimiento'] = 'nullable|date';
+            $rules['alergias']         = 'nullable|string';
+            $rules['enfermedades']     = 'nullable|string';
+            $rules['tratamientos']     = 'nullable|string';
+        } else {
+            $rules['paciente_id'] = 'required|exists:pacientes,id';
+        }
+
+        $validated = $request->validate($rules);
+
+        $passwordTemporal = null;
+        $usernameCreado = null;
+
+        // 2. Si se marcó la opción de nuevo paciente, lo creamos incluyendo su correo
+        if ($request->has('nuevo_paciente')) {
+            $patient = Patient::create([
+                'nombre'           => $validated['nombre'],
+                'apellidos'        => $validated['apellidos'],
+                'email'            => $validated['email'] ?? null,
+                'telefono'         => $validated['telefono'] ?? null,
+                'fecha_nacimiento' => $validated['fecha_nacimiento'] ?? null,
+                'alergias'         => $validated['alergias'] ?? null,
+                'enfermedades'     => $validated['enfermedades'] ?? null,
+                'tratamientos'     => $validated['tratamientos'] ?? null,
+            ]);
+            
+            $pacienteId = $patient->id;
+        } else {
+            $pacienteId = $validated['paciente_id'];
+            $patient = Patient::findOrFail($pacienteId);
+        }
+
+        // 3. Creamos el caso clínico asociado al paciente
+        $caso = CasoClinico::create([
+            'paciente_id'      => $pacienteId,
+            'tratamiento_base' => $validated['tratamiento_base'],
+            'progreso'         => $validated['progreso'],
+            'estado'           => $request->input('estado', 'activo'),
         ]);
-        
-        $nuevoPaciente = Patient::create($validatedPaciente);
-        $pacienteId = $nuevoPaciente->id;
-    } else {
-        // Si NO está marcado, validamos que se seleccionó un paciente existente
-        $request->validate([
-            'paciente_id' => 'required|exists:pacientes,id'
-        ]);
-        $pacienteId = $request->paciente_id;
+
+        // 4. Gestión automática de cuenta web para el paciente (si no la tiene)
+        if (!$patient->user_id) {
+            $usernameBase = Str::slug($patient->nombre . '.' . $patient->apellidos, '');
+            $username = $usernameBase . rand(100, 999);
+            while (User::where('username', $username)->exists()) {
+                $username = $usernameBase . rand(100, 999);
+            }
+
+            $passwordTemporal = Str::random(8);
+
+            // Se asigna su correo real (o el comodín si se dejó totalmente en blanco)
+            $usuario = User::create([
+                'nombre'    => $patient->nombre,
+                'apellidos' => $patient->apellidos,
+                'username'  => $username,
+                'email'     => $patient->email ?? 'paciente_' . $patient->id . '@dentissa.com',
+                'password'  => Hash::make($passwordTemporal),
+                'role_id'   => 3, 
+                'activo'    => 1,
+            ]);
+
+            $patient->update(['user_id' => $usuario->id]);
+            $usernameCreado = $usuario->username;
+        } else {
+            if ($patient->user) {
+                $usernameCreado = $patient->user->username;
+            }
+        }
+
+        // 5. Redirección con éxito
+        $redirect = redirect()->route('casos.index')
+                              ->with('success', 'Caso clínico registrado exitosamente.');
+
+        if ($passwordTemporal) {
+            $redirect->with([
+                'temp_password' => $passwordTemporal,
+                'temp_telefono' => $patient->telefono,
+                'temp_nombre'   => $patient->nombre,
+                'temp_username' => $usernameCreado,
+            ]);
+        }
+
+        return $redirect;
     }
-
-    // Validación del caso
-    $validatedCaso = $request->validate([
-        'tratamiento_base' => 'required|string|max:255',
-        'progreso'         => 'required|integer|min:0|max:100',
-    ]);
-
-    $validatedCaso['paciente_id'] = $pacienteId;
-    $validatedCaso['estado'] = CasoClinico::ESTADO_ACTIVO;
-
-    CasoClinico::create($validatedCaso);
-
-    return redirect()->route('casos.index')->with('success', 'Caso y paciente registrados exitosamente.');
-}
 
     public function show(string $id)
     {
@@ -69,24 +131,32 @@ public function store(Request $request)
     public function edit(string $id)
     {
         $caso = CasoClinico::findOrFail($id);
-        return view('casos.edit', compact('caso'));
+        $patients = Patient::all();
+        return view('casos.edit', compact('caso', 'patients'));
     }
 
     public function update(Request $request, string $id)
     {
         $caso = CasoClinico::findOrFail($id);
+
         $validated = $request->validate([
-            'progreso' => 'required|integer|min:0|max:100',
-            'estado'   => 'required|in:' . CasoClinico::ESTADO_ACTIVO . ',' . CasoClinico::ESTADO_FINALIZADO,
+            'paciente_id'      => 'required|exists:pacientes,id',
+            'tratamiento_base' => 'required|string|max:255',
+            'descripcion'      => 'nullable|string',
+            'progreso'         => 'required|integer|min:0|max:100',
+            'estado'           => 'required|in:activo,pausado,completado',
         ]);
+
         $caso->update($validated);
-        return redirect()->route('casos.index')->with('success', 'Progreso actualizado.');
+
+        return redirect()->route('casos.index')->with('success', 'Caso clínico actualizado correctamente.');
     }
 
     public function destroy(string $id)
     {
         $caso = CasoClinico::findOrFail($id);
         $caso->delete();
-        return redirect()->route('casos.index')->with('success', 'Caso eliminado.');
+
+        return redirect()->route('casos.index')->with('success', 'Caso clínico eliminado correctamente.');
     }
 }

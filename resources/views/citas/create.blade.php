@@ -40,8 +40,9 @@
                     <div class="row g-3">
                         <div class="col-md-6"><label class="form-label">Nombre</label><input type="text" name="nombre" class="form-control" disabled></div>
                         <div class="col-md-6"><label class="form-label">Apellidos</label><input type="text" name="apellidos" class="form-control" disabled></div>
+                        <div class="col-md-6"><label class="form-label">Correo Electrónico</label><input type="email" name="email" class="form-control" disabled></div>
                         <div class="col-md-6"><label class="form-label">Teléfono</label><input type="text" name="telefono" class="form-control" disabled></div>
-                        <div class="col-md-6"><label class="form-label">Fecha Nacimiento</label><input type="date" name="fecha_nacimiento" class="form-control" disabled></div>
+                        <div class="col-md-12"><label class="form-label">Fecha Nacimiento</label><input type="date" name="fecha_nacimiento" class="form-control" disabled></div>
                         <div class="col-md-12"><label class="form-label">Alergias</label><textarea name="alergias" class="form-control" rows="2" disabled></textarea></div>
                         <div class="col-md-12"><label class="form-label">Enfermedades Crónicas</label><textarea name="enfermedades" class="form-control" rows="2" disabled></textarea></div>
                         <div class="col-md-12"><label class="form-label">Tratamientos Actuales</label><textarea name="tratamientos" class="form-control" rows="2" disabled></textarea></div>
@@ -84,18 +85,38 @@
             const selectorDiv = document.getElementById('selectorPaciente');
             const formNuevo = document.getElementById('formNuevoPaciente');
             const selectPaciente = document.getElementById('paciente_id');
-            const inputs = formNuevo.querySelectorAll('input, textarea');
+            
+            const inputNombre = formNuevo.querySelector('input[name="nombre"]');
+            const inputApellidos = formNuevo.querySelector('input[name="apellidos"]');
+            const inputEmail = formNuevo.querySelector('input[name="email"]');
 
             if (checkbox.checked) {
                 selectorDiv.style.display = 'none';
                 selectPaciente.disabled = true;
+                selectPaciente.value = ""; 
+                
                 formNuevo.style.display = 'block';
-                inputs.forEach(i => { i.disabled = false; });
+                
+                formNuevo.querySelectorAll('input, textarea').forEach(i => { 
+                    i.disabled = false; 
+                });
+                inputNombre.setAttribute('required', 'required');
+                inputApellidos.setAttribute('required', 'required');
+                inputEmail.setAttribute('required', 'required');
+
             } else {
                 selectorDiv.style.display = 'block';
                 selectPaciente.disabled = false;
+                
                 formNuevo.style.display = 'none';
-                inputs.forEach(i => { i.disabled = true; });
+                
+                formNuevo.querySelectorAll('input, textarea').forEach(i => { 
+                    i.disabled = true; 
+                    i.value = ""; 
+                });
+                inputNombre.removeAttribute('required');
+                inputApellidos.removeAttribute('required');
+                inputEmail.removeAttribute('required');
             }
         }
 

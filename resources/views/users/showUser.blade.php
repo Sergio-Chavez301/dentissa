@@ -53,7 +53,7 @@
                         <p class="text-muted mb-1 small uppercase fw-semibold" style="letter-spacing: 0.5px;">Nombre de Usuario</p>
                         <div class="d-flex align-items-center">
                             <span class="badge bg-light text-dark border px-2.5 py-1.5 fs-6">
-                                @{{ $usuario->username }}
+                                {{ $usuario->username }}
                             </span>
                         </div>
                     </div>
@@ -68,7 +68,7 @@
                     <div class="col-md-6">
                         <p class="text-muted mb-1 small uppercase fw-semibold" style="letter-spacing: 0.5px;">Fecha de Registro</p>
                         <p class="fs-6 text-dark fw-medium">
-                            {{ $usuario->created_at ? $usuario->created_at->format('d/m/Y a las h:i A') : 'No registrada' }}
+                            {{ $usuario->created_at ? $usuario->created_at->format('d/m/Y \a \l\a\s h:i A') : 'No registrada' }}
                         </p>
                     </div>
 

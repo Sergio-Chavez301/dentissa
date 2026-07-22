@@ -29,7 +29,9 @@
             <tbody>
                 @foreach($casos as $caso)
                 <tr>
-                    <td class="fw-semibold text-dark">{{ $caso->paciente->nombre }} {{ $caso->paciente->apellidos }}</td>
+                    <td class="fw-semibold text-dark">
+                        {{ $caso->paciente->nombre ?? 'Sin nombre' }} {{ $caso->paciente->apellidos ?? '' }}
+                    </td>
                     <td>{{ $caso->tratamiento_base }}</td>
                     <td style="width: 200px;">
                         <div class="progress" style="height: 8px;"><div class="progress-bar bg-primary" style="width: {{ $caso->progreso }}%;"></div></div>

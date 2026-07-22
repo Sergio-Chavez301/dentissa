@@ -44,19 +44,20 @@
                     </div>
                 </div>
 
-                <!-- Formulario Completo de Nuevo Paciente -->
-                <div id="formCompletoPaciente" class="col-md-12 p-3 bg-light rounded border mt-2" style="display: none;">
-                    <h6 class="fw-bold mb-3 text-dark">Datos del Nuevo Paciente</h6>
-                    <div class="row g-3">
-                        <div class="col-md-6"><label class="form-label">Nombre</label><input type="text" name="nombre" class="form-control"></div>
-                        <div class="col-md-6"><label class="form-label">Apellidos</label><input type="text" name="apellidos" class="form-control"></div>
-                        <div class="col-md-6"><label class="form-label">Teléfono</label><input type="text" name="telefono" class="form-control"></div>
-                        <div class="col-md-6"><label class="form-label">Fecha Nacimiento</label><input type="date" name="fecha_nacimiento" class="form-control"></div>
-                        <div class="col-md-12"><label class="form-label">Alergias</label><textarea name="alergias" class="form-control" rows="2"></textarea></div>
-                        <div class="col-md-12"><label class="form-label">Enfermedades Crónicas</label><textarea name="enfermedades" class="form-control" rows="2"></textarea></div>
-                        <div class="col-md-12"><label class="form-label">Tratamientos Actuales</label><textarea name="tratamientos" class="form-control" rows="2"></textarea></div>
-                    </div>
-                </div>
+              <!-- Formulario Completo de Nuevo Paciente -->
+<div id="formCompletoPaciente" class="col-md-12 p-3 bg-light rounded border mt-2" style="display: none;">
+    <h6 class="fw-bold mb-3 text-dark">Datos del Nuevo Paciente</h6>
+    <div class="row g-3">
+        <div class="col-md-6"><label class="form-label">Nombre</label><input type="text" name="nombre" class="form-control"></div>
+        <div class="col-md-6"><label class="form-label">Apellidos</label><input type="text" name="apellidos" class="form-control"></div>
+        <div class="col-md-6"><label class="form-label">Correo Electrónico</label><input type="email" name="email" class="form-control"></div>
+        <div class="col-md-6"><label class="form-label">Teléfono</label><input type="text" name="telefono" class="form-control"></div>
+        <div class="col-md-6"><label class="form-label">Fecha Nacimiento</label><input type="date" name="fecha_nacimiento" class="form-control"></div>
+        <div class="col-md-12"><label class="form-label">Alergias</label><textarea name="alergias" class="form-control" rows="2"></textarea></div>
+        <div class="col-md-12"><label class="form-label">Enfermedades Crónicas</label><textarea name="enfermedades" class="form-control" rows="2"></textarea></div>
+        <div class="col-md-12"><label class="form-label">Tratamientos Actuales</label><textarea name="tratamientos" class="form-control" rows="2"></textarea></div>
+    </div>
+</div>
             </div>
 
             <!-- Botones de Acción iguales al registro de paciente -->

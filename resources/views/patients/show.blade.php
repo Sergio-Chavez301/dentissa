@@ -1,7 +1,7 @@
 <x-plantilla>
     <x-slot:title>Ficha del Paciente | Dentissa</x-slot:title>
 
-    <!-- Header con botón de volver -->
+    <!-- Header con botón de volver y acciones -->
     <div class="pb-2 mb-4 border-bottom d-flex justify-content-between align-items-center">
         <div>
             <a href="{{ route('patients.index') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
@@ -9,10 +9,84 @@
             </a>
             <h1 class="h2 fw-bold" style="color: #1e1e24;">Ficha del Paciente</h1>
         </div>
-        <a href="{{ route('patients.edit', $patient->id) }}" class="btn text-white border-0 py-2 px-4 fw-semibold shadow-sm bg-dentissa">
-            <i class="bi bi-pencil-fill me-2"></i> Editar Información
-        </a>
+        <div class="d-flex gap-2">
+            <!-- Botón Editar -->
+            <a href="{{ route('patients.edit', $patient->id) }}" class="btn text-white border-0 py-2 px-3 fw-semibold shadow-sm bg-dentissa">
+                <i class="bi bi-pencil-fill me-2"></i> Editar Información
+            </a>
+
+            <!-- Botón Eliminar con Alerta de Confirmación -->
+            <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar a este paciente? Esta acción borrará permanentemente su cuenta de acceso, sus citas y todos sus registros.');">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger text-white border-0 py-2 px-3 fw-semibold shadow-sm">
+                    <i class="bi bi-trash-fill me-2"></i> Eliminar Paciente
+                </button>
+            </form>
+        </div>
     </div>
+
+    <!-- Alertas de Éxito o Error Generales -->
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert" style="max-width: 900px;">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
+    <!-- CONTENEDOR DE CREDENCIALES Y RESTABLECIMIENTO -->
+    @if($patient->user)
+        @php
+            $telefonoLimpio = preg_replace('/[^0-9]/', '', session('temp_telefono') ?? $patient->telefono ?? '');
+            $username = session('temp_username') ?? $patient->user->username;
+            $passwordTemporal = session('temp_password'); // Solo disponible al crear o al dar clic en generar nueva
+
+            if ($passwordTemporal) {
+                $mensaje = "Hola " . (session('temp_nombre') ?? $patient->nombre) . ", tus credenciales de acceso a Dentissa son:\nUsuario: " . $username . "\nContraseña temporal: " . $passwordTemporal . "\nInicia sesión en: " . url('/login');
+            } else {
+                $mensaje = "Hola " . $patient->nombre . ", te recordamos que tu usuario de acceso a Dentissa es: " . $username . "\nInicia sesión en: " . url('/login');
+            }
+
+            $urlWhatsApp = !empty($telefonoLimpio) ? "https://wa.me/" . $telefonoLimpio . "?text=" . urlencode($mensaje) : "#";
+        @endphp
+
+        <div class="card shadow-sm border-0 mb-4 bg-light-subtle border-start border-4 border-success p-3" style="max-width: 900px;">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div style="flex: 1; min-width: 280px;">
+                    <h6 class="text-success fw-bold mb-1"><i class="bi bi-shield-lock-fill me-2"></i>Cuenta de Acceso Web del Paciente</h6>
+                    <p class="mb-0 text-muted small">
+                        Usuario: <code class="fw-bold bg-white text-dark px-2 py-1 rounded border">{{ $username }}</code>
+                        @if($passwordTemporal)
+                            <span class="ms-2">Contraseña temporal: <code class="fw-bold bg-white text-dark px-2 py-1 rounded border text-danger">{{ $passwordTemporal }}</code></span>
+                        @else
+                            <span class="ms-2 text-muted">(Contraseña protegida / Encriptada)</span>
+                        @endif
+                        <span class="ms-2">Estado: <span class="badge bg-success-subtle text-success">Activo</span></span>
+                    </p>
+                </div>
+                
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <!-- Botón para generar nueva contraseña -->
+                    <form action="{{ route('patients.whatsapp', $patient->id) }}" method="GET" onsubmit="return confirm('¿Deseas generar una nueva contraseña para este paciente? La anterior dejará de funcionar.');">
+                        <button type="submit" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1 px-3 py-2 fw-semibold">
+                            <i class="bi bi-key-fill"></i> Generar Contraseña
+                        </button>
+                    </form>
+
+                    <!-- Botón de WhatsApp -->
+                    @if(!empty($telefonoLimpio))
+                        <a href="{{ $urlWhatsApp }}" target="_blank" class="btn btn-success btn-sm d-inline-flex align-items-center gap-2 px-3 py-2 fw-semibold shadow-sm">
+                            <i class="bi bi-whatsapp fs-5"></i> Enviar por WhatsApp
+                        </a>
+                    @else
+                        <button class="btn btn-secondary btn-sm" disabled title="El paciente no tiene un teléfono registrado">
+                            <i class="bi bi-whatsapp"></i> Sin teléfono
+                        </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Datos Personales y Médicos -->
     <div class="card p-4 shadow-sm border-0 bg-white mb-4" style="max-width: 900px;">
@@ -24,7 +98,7 @@
             </div>
             <div class="col-md-4">
                 <label class="text-muted small">Teléfono</label>
-                <p class="fw-semibold text-dark fs-5">{{ $patient->telefono }}</p>
+                <p class="fw-semibold text-dark fs-5">{{ $patient->telefono ?? 'No registrado' }}</p>
             </div>
             <div class="col-md-4">
                 <label class="text-muted small">Correo</label>
@@ -32,7 +106,7 @@
             </div>
             <div class="col-md-4">
                 <label class="text-muted small">Fecha de Nacimiento</label>
-                <p class="fw-semibold text-dark fs-5">{{ $patient->fecha_nacimiento }}</p>
+                <p class="fw-semibold text-dark fs-5">{{ $patient->fecha_nacimiento ?? 'No registrada' }}</p>
             </div>
         </div>
 
@@ -112,7 +186,7 @@
                     @forelse($patient->citas as $cita)
                         <tr>
                             <td>{{ $cita->fecha }}</td>
-                            <td>{{ $cita->motivo }}</td>
+                            <td>{{ $cita->motivo ?? 'Consulta general' }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="2" class="text-center text-muted py-3">No hay citas registradas.</td></tr>
