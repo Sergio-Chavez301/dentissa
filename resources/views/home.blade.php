@@ -265,6 +265,7 @@
                 <div class="modal-body p-4">
                     <p class="text-muted small mb-4">Completa tus datos y nos pondremos en contacto o confirmaremos tu cita pronto.</p>
                     
+                    <!-- FORMULARIO CORREGIDO CON LA RUTA Y MÉTODO POST -->
                     <form action="{{ route('solicitud.storePublic') }}" method="POST">
                         @csrf
                         
