@@ -4,26 +4,38 @@
     <!-- Header con botón de volver y acciones -->
     <div class="pb-2 mb-4 border-bottom d-flex justify-content-between align-items-center">
         <div>
-            <a href="{{ route('patients.index') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
-                <i class="bi bi-arrow-left me-1"></i> Volver al listado
-            </a>
-            <h1 class="h2 fw-bold" style="color: #1e1e24;">Ficha del Paciente</h1>
+            @if(Auth::user()->role_id == 3)
+                <a href="{{ route('dashboard.paciente') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al inicio
+                </a>
+            @else
+                <a href="{{ route('patients.index') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
+                    <i class="bi bi-arrow-left me-1"></i> Volver al listado
+                </a>
+            @endif
+            <h1 class="h2 fw-bold" style="color: #1e1e24;">
+                @if(Auth::user()->role_id == 3) Mi Expediente Personal @else Ficha del Paciente @endif
+            </h1>
         </div>
-        <div class="d-flex gap-2">
-            <!-- Botón Editar -->
-            <a href="{{ route('patients.edit', $patient->id) }}" class="btn text-white border-0 py-2 px-3 fw-semibold shadow-sm bg-dentissa">
-                <i class="bi bi-pencil-fill me-2"></i> Editar Información
-            </a>
 
-            <!-- Botón Eliminar con Alerta de Confirmación -->
-            <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar a este paciente? Esta acción borrará permanentemente su cuenta de acceso, sus citas y todos sus registros.');">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger text-white border-0 py-2 px-3 fw-semibold shadow-sm">
-                    <i class="bi bi-trash-fill me-2"></i> Eliminar Paciente
-                </button>
-            </form>
-        </div>
+        <!-- Ocultar botones de edición y eliminación si el usuario es un paciente (role_id == 3) -->
+        @if(Auth::user()->role_id != 3)
+            <div class="d-flex gap-2">
+                <!-- Botón Editar -->
+                <a href="{{ route('patients.edit', $patient->id) }}" class="btn text-white border-0 py-2 px-3 fw-semibold shadow-sm bg-dentissa">
+                    <i class="bi bi-pencil-fill me-2"></i> Editar Información
+                </a>
+
+                <!-- Botón Eliminar con Alerta de Confirmación -->
+                <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de eliminar a este paciente? Esta acción borrará permanentemente su cuenta de acceso, sus citas y todos sus registros.');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger text-white border-0 py-2 px-3 fw-semibold shadow-sm">
+                        <i class="bi bi-trash-fill me-2"></i> Eliminar Paciente
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 
     <!-- Alertas de Éxito o Error Generales -->
@@ -34,12 +46,12 @@
         </div>
     @endif
 
-    <!-- CONTENEDOR DE CREDENCIALES Y RESTABLECIMIENTO -->
-    @if($patient->user)
+    <!-- CONTENEDOR DE CREDENCIALES Y RESTABLECIMIENTO (Solo visible para Admin/Asistente o si aplica) -->
+    @if(Auth::user()->role_id != 3 && $patient->user)
         @php
             $telefonoLimpio = preg_replace('/[^0-9]/', '', session('temp_telefono') ?? $patient->telefono ?? '');
             $username = session('temp_username') ?? $patient->user->username;
-            $passwordTemporal = session('temp_password'); // Solo disponible al crear o al dar clic en generar nueva
+            $passwordTemporal = session('temp_password');
 
             if ($passwordTemporal) {
                 $mensaje = "Hola " . (session('temp_nombre') ?? $patient->nombre) . ", tus credenciales de acceso a Dentissa son:\nUsuario: " . $username . "\nContraseña temporal: " . $passwordTemporal . "\nInicia sesión en: " . url('/login');

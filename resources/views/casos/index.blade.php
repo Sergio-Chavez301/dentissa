@@ -6,9 +6,13 @@
             <h1 class="h2 fw-bold" style="color: #1e1e24;">Casos Clínicos</h1>
             <p class="text-muted">Gestión y seguimiento de tratamientos.</p>
         </div>
-        <a href="{{ route('casos.create') }}" class="btn text-white bg-dentissa shadow-sm px-3">
-            <i class="bi bi-plus-lg me-1"></i>Nuevo Caso
-        </a>
+        
+        {{-- Ocultar el botón "Nuevo Caso" si el usuario es un paciente (role_id == 3) --}}
+        @if(auth()->check() && auth()->user()->role_id != 3)
+            <a href="{{ route('casos.create') }}" class="btn text-white bg-dentissa shadow-sm px-3">
+                <i class="bi bi-plus-lg me-1"></i>Nuevo Caso
+            </a>
+        @endif
     </div>
 
     @if(session('success'))
@@ -23,11 +27,15 @@
                     <th>Tratamiento</th>
                     <th>Progreso</th>
                     <th>Estado</th>
-                    <th class="text-end">Acciones</th>
+                    
+                    {{-- Ocultar el encabezado de "Acciones" si es paciente --}}
+                    @if(auth()->check() && auth()->user()->role_id != 3)
+                        <th class="text-end">Acciones</th>
+                    @endif
                 </tr>
             </thead>
             <tbody>
-                @foreach($casos as $caso)
+                @forelse($casos as $caso)
                 <tr>
                     <td class="fw-semibold text-dark">
                         {{ $caso->paciente->nombre ?? 'Sin nombre' }} {{ $caso->paciente->apellidos ?? '' }}
@@ -38,12 +46,23 @@
                         <small class="text-muted">{{ $caso->progreso }}%</small>
                     </td>
                     <td><span class="badge bg-light text-dark border">{{ ucfirst($caso->estado) }}</span></td>
-                    <td class="text-end">
-                        <a href="{{ route('casos.show', $caso->id) }}" class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></a>
-                        <a href="{{ route('casos.edit', $caso->id) }}" class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></a>
+                    
+                    {{-- Ocultar los botones de acción si es paciente --}}
+                    @if(auth()->check() && auth()->user()->role_id != 3)
+                        <td class="text-end">
+                            <a href="{{ route('casos.show', $caso->id) }}" class="btn btn-sm btn-light border"><i class="bi bi-eye"></i></a>
+                            <a href="{{ route('casos.edit', $caso->id) }}" class="btn btn-sm btn-light border"><i class="bi bi-pencil"></i></a>
+                        </td>
+                    @endif
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="{{ (auth()->check() && auth()->user()->role_id == 3) ? 4 : 5 }}" class="text-center text-muted py-4">
+                        <i class="bi bi-folder-x fs-3 d-block mb-2 text-secondary"></i>
+                        No hay casos clínicos registrados actualmente.
                     </td>
                 </tr>
-                @endforeach
+                @endforelse
             </tbody>
         </table>
     </div>

@@ -7,6 +7,7 @@ use App\Models\Cita;
 use App\Models\Servicio;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str; 
 
@@ -17,9 +18,27 @@ class CitaController extends Controller
      */
     public function index()
     {
-        $citas = Cita::with(['paciente', 'servicio'])
-            ->orderByRaw("CASE WHEN estado = '" . Cita::ESTADO_EN_ESPERA . "' THEN 0 ELSE 1 END ASC, fecha ASC, hora ASC")
-            ->get();
+        $user = Auth::user();
+
+        // Si el usuario es un paciente (role_id == 3), filtramos solo sus citas usando paciente_id
+        if ($user && $user->role_id == 3) {
+            $paciente = Patient::where('user_id', $user->id)
+                               ->orWhere('email', $user->email)
+                               ->first();
+
+            $citas = $paciente 
+                ? Cita::with(['paciente', 'servicio'])
+                    ->where('paciente_id', $paciente->id)
+                    ->orderByRaw("CASE WHEN estado = '" . Cita::ESTADO_EN_ESPERA . "' THEN 0 ELSE 1 END ASC, fecha ASC, hora ASC")
+                    ->get()
+                : collect(); 
+        } else {
+            // Administrador y Asistente ven todas las citas del sistema
+            $citas = Cita::with(['paciente', 'servicio'])
+                ->orderByRaw("CASE WHEN estado = '" . Cita::ESTADO_EN_ESPERA . "' THEN 0 ELSE 1 END ASC, fecha ASC, hora ASC")
+                ->get();
+        }
+
         return view('citas.index', compact('citas'));
     }
 
@@ -111,7 +130,7 @@ class CitaController extends Controller
             return back()->withInput()->with('error', 'Lo sentimos, este horario acaba de ser ocupado.');
         }
 
-// 4. Crear la cita
+        // 4. Crear la cita
         Cita::create([
             'paciente_id' => $paciente_id,
             'servicio_id' => $validated['servicio_id'],

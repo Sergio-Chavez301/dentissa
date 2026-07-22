@@ -6,23 +6,50 @@ use App\Models\CasoClinico;
 use App\Models\Patient;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class CasoClinicoController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-        $casos = CasoClinico::with('paciente')->get();
+        $user = Auth::user();
+
+        // Si el usuario es un paciente (role_id == 3), filtramos solo sus casos clínicos
+        if ($user && $user->role_id == 3) {
+            $paciente = Patient::where('user_id', $user->id)
+                               ->orWhere('email', $user->email)
+                               ->first();
+
+            $casos = $paciente 
+                ? CasoClinico::with('paciente')
+                    ->where('paciente_id', $paciente->id)
+                    ->get()
+                : collect(); // Si no tiene ficha asociada, retorna colección vacía
+        } else {
+            // Administrador y Asistente ven todos los casos clínicos del sistema
+            $casos = CasoClinico::with('paciente')->get();
+        }
+
         return view('casos.index', compact('casos'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         $pacientes = Patient::all();
         return view('casos.create', compact('pacientes'));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         // 1. Validamos de forma condicional si viene un paciente nuevo o uno existente
