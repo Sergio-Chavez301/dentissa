@@ -60,12 +60,20 @@ class CitaStateTest extends TestCase
             'estado' => Cita::ESTADO_EN_ESPERA,
         ]);
 
-        $this->put(route('citas.update', $cita->id), ['estado' => Cita::ESTADO_REALIZADA])
+        $this->put(route('citas.update', $cita->id), [
+            'fecha' => $cita->fecha,
+            'hora' => $cita->hora,
+            'estado' => Cita::ESTADO_REALIZADA,
+        ])
             ->assertRedirect(route('citas.index'));
 
         $this->assertSame(Cita::ESTADO_REALIZADA, $cita->fresh()->estado);
 
-        $this->put(route('citas.update', $cita->id), ['estado' => Cita::ESTADO_CANCELADA])
+        $this->put(route('citas.update', $cita->id), [
+            'fecha' => $cita->fecha,
+            'hora' => $cita->hora,
+            'estado' => Cita::ESTADO_CANCELADA,
+        ])
             ->assertRedirect(route('citas.index'));
 
         $this->assertSame(Cita::ESTADO_CANCELADA, $cita->fresh()->estado);

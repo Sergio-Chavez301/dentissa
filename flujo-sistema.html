@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flujo del Sistema Dentissa</title>
+  <style>
+    :root {
+      --dentissa: #d75078;
+      --dentissa-2: #f7d6df;
+      --navy: #1e1e24;
+      --muted: #6b7280;
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --line: #e9e9ee;
+      --success: #1e9e65;
+      --warning: #d97706;
+      --danger: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--navy);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 20px 60px;
+    }
+
+    h1, h2, h3 { margin-top: 0; }
+    h1 {
+      font-size: clamp(2rem, 3vw, 3rem);
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.02rem;
+      margin-bottom: 28px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #fff, #fff3f6 55%, #fff);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 26px 24px;
+      box-shadow: 0 10px 25px rgba(30, 30, 36, 0.05);
+      margin-bottom: 26px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+      margin: 20px 0 30px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 20px rgba(30, 30, 36, 0.04);
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 7px 11px;
+      border-radius: 999px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: var(--dentissa-2);
+      color: var(--dentissa);
+    }
+
+    .tag-green { background: rgba(30, 158, 101, 0.12); color: var(--success); }
+    .tag-warn { background: rgba(217, 119, 6, 0.12); color: var(--warning); }
+    .tag-red { background: rgba(185, 28, 28, 0.12); color: var(--danger); }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li { margin-bottom: 8px; }
+
+    .flow {
+      margin-top: 30px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .num {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: var(--dentissa);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #fafafa;
+      color: var(--navy);
+      font-size: 0.82rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .box-alert {
+      border-left: 4px solid var(--dentissa);
+      background: #fff9fb;
+      padding: 16px 18px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 700px) {
+      .container { padding: 20px 14px 40px; }
+      .card, .flow { padding: 18px; }
+      .step { grid-template-columns: 36px 1fr; }
+      .num { width: 36px; height: 36px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div class="badge">Dentissa</div>
+      <h1>Flujo del sistema y reglas de negocio</h1>
+      <p class="subtitle">
+        Este documento resume cómo funciona la clínica: roles, pacientes, solicitudes, citas, casos clínicos, usuarios del sistema y la relación entre cada uno.
+      </p>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="badge tag-green">Roles</div>
+        <ul>
+          <li><strong>Administrador</strong>: gestiona usuarios, pacientes, citas, casos, servicios, solicitudes y reportes.</li>
+          <li><strong>Asistente</strong>: revisa y gestiona citas, pacientes, casos y agenda.</li>
+          <li><strong>Paciente</strong>: accede al portal personal para ver sus citas y casos.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="badge tag-warn">Regla principal</div>
+        <ul>
+          <li>Un paciente puede tener un usuario del sistema.</li>
+          <li>Un usuario del sistema puede tener un rol.</li>
+          <li>Una cita siempre pertenece a un paciente.</li>
+          <li>Un caso clínico siempre pertenece a un paciente.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="badge tag-red">Datos clave</div>
+        <ul>
+          <li>El usuario del paciente se crea con <strong>role_id = 3</strong>.</li>
+          <li>La contraseña inicial suele ser temporal y luego se cambia.</li>
+          <li>El horario debe estar disponible para agendar una cita.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="flow">
+      <h2>Flujo principal del sistema</h2>
+
+      <div class="step-list">
+        <div class="step">
+          <div class="num">1</div>
+          <div>
+            <strong>Solicitante entra al sitio público</strong><br>
+            Completa el formulario de cita desde la web pública. Eso crea una <strong>solicitud</strong>, no una cita directa.
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">2</div>
+          <div>
+            <strong>Admin o asistente revisa la solicitud</strong><br>
+            Se valida si el horario sigue disponible. Después puede confirmar o rechazar la solicitud.
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">3</div>
+          <div>
+            <strong>Si confirma, se crea al paciente</strong><br>
+            Se genera su usuario del sistema, contraseña temporal y relación con el paciente.
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">4</div>
+          <div>
+            <strong>Se crea la cita</strong><br>
+            La cita queda asociada al paciente y al servicio elegido.
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">5</div>
+          <div>
+            <strong>Se abre el caso clínico</strong><br>
+            El paciente ya tiene ficha, y el administrador puede crear un caso clínico con tratamiento base y progreso.
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">6</div>
+          <div>
+            <strong>El paciente entra al portal</strong><br>
+            Inicia sesión con su usuario y puede ver sus citas, caso clínico y perfil.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 28px;">
+      <h2>Cómo funciona cada módulo</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Módulo</th>
+              <th>Qué hace</th>
+              <th>Regla importante</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Registro de pacientes</td>
+              <td>Crea la ficha del paciente y su cuenta de acceso.</td>
+              <td>Si no existe un usuario, se crea uno nuevo con rol paciente.</td>
+            </tr>
+            <tr>
+              <td>Solicitud de cita pública</td>
+              <td>Recibe una intención de cita del visitante.</td>
+              <td>No crea la cita final hasta que la confirme el administrador.</td>
+            </tr>
+            <tr>
+              <td>Registro de citas</td>
+              <td>Agrega la cita con servicio, fecha y hora.</td>
+              <td>La hora debe estar libre y el formato debe ser válido.</td>
+            </tr>
+            <tr>
+              <td>Pacientes</td>
+              <td>Gestiona los datos del paciente, historial y acceso.</td>
+              <td>Todo paciente puede estar asociado a un usuario.</td>
+            </tr>
+            <tr>
+              <td>Casos clínicos</td>
+              <td>Registra el tratamiento base y el avance del paciente.</td>
+              <td>Debe estar asociado a un paciente existente o recién creado.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="box-alert">
+      <strong>Regla clave cuando no existe paciente:</strong> no se bloquea el sistema. El administrador puede crear al paciente al mismo tiempo que crea la cita o el caso clínico.
+    </div>
+
+    <div class="card" style="margin-top: 28px;">
+      <h2>Cuando registras una cita pero no hay pacientes</h2>
+      <ul>
+        <li>Se activa la opción <strong>“Registrar nuevo paciente para esta cita”</strong>.</li>
+        <li>Se llena nombre, apellidos, correo, teléfono y fecha de nacimiento.</li>
+        <li>El sistema genera automáticamente:</li>
+        <ul>
+          <li>usuario con rol paciente</li>
+          <li>paciente registrado</li>
+          <li>cita asociada a ese paciente</li>
+        </ul>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-top: 28px;">
+      <h2>Cómo se registra el paciente y el usuario al mismo tiempo</h2>
+      <ol>
+        <li>El admin llena los datos del paciente.</li>
+        <li>El backend genera un <strong>username</strong> automático.</li>
+        <li>Se genera una contraseña temporal aleatoria.</li>
+        <li>Se crea el registro en la tabla <strong>usuarios</strong> con role_id = 3.</li>
+        <li>Se crea el registro en la tabla <strong>pacientes</strong> con user_id vinculado.</li>
+        <li>La sesión muestra las credenciales para que el paciente pueda entrar al sistema.</li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-top: 28px;">
+      <h2>Relación de entidades</h2>
+      <ul>
+        <li><strong>Usuario</strong> → tiene rol</li>
+        <li><strong>Paciente</strong> → tiene usuario y muchas citas</li>
+        <li><strong>Cita</strong> → pertenece a un paciente y un servicio</li>
+        <li><strong>Caso Clínico</strong> → pertenece a un paciente</li>
+        <li><strong>Solicitud</strong> → es una petición pública antes de confirmar cita</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin-top: 28px;">
+      <h2>Credenciales temporales del paciente</h2>
+      <p>
+        Cuando se crea un paciente nuevo desde cualquier flujo del sistema, también se crea su acceso al portal con un usuario y una contraseña temporal.
+      </p>
+      <ul>
+        <li>Se genera un <strong>username</strong> automático con base en el nombre y apellidos.</li>
+        <li>Se genera una <strong>contraseña temporal aleatoria</strong> de varios caracteres.</li>
+        <li>La contraseña se guarda <strong>hash en la base de datos</strong>, no en texto plano.</li>
+        <li>El administrador o asistente ve estas credenciales en la ficha del paciente y puede enviarlas por WhatsApp.</li>
+        <li>El paciente entra a <strong>/login</strong> con su usuario y esa contraseña temporal.</li>
+      </ul>
+
+      <div class="box-alert">
+        <strong>Importante:</strong> la contraseña temporal sirve solo para que el paciente entre por primera vez. Después debe cambiarla por una real.
+      </div>
+
+      <div class="step-list">
+        <div class="step">
+          <div class="num">A</div>
+          <div>
+            <strong>Creación del acceso</strong><br>
+            El sistema crea el usuario con rol paciente y lo vincula al paciente mediante <strong>user_id</strong>.
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">B</div>
+          <div>
+            <strong>Primer ingreso</strong><br>
+            El paciente entra a la vista de login con su nombre de usuario y contraseña temporal.
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="num">C</div>
+          <div>
+            <strong>Cambio de contraseña</strong><br>
+            El paciente puede cambiarla desde la opción de perfil o usando el flujo de recuperación de contraseña por email.
+          </div>
+        </div>
+      </div>
+
+      <p style="margin-top: 16px;">
+        En el código, esto ocurre con los controladores de pacientes y autenticación: <strong>PatientController</strong> genera la contraseña temporal y <strong>AuthController</strong> valida el login y redirige según el rol.
+      </p>
+    </div>
+
+    <div class="card" style="margin-top: 28px;">
+      <h2>Reglas de negocio resumidas</h2>
+      <ul>
+        <li>El paciente debe ser registrado antes de generar historial médico o citas.</li>
+        <li>La cita ya no puede estar en horario ocupado.</li>
+        <li>La solicitud pública no reemplaza la cita final.</li>
+        <li>Un caso clínico siempre debe tener un paciente asociado.</li>
+        <li>Si no existe el usuario del paciente, se crea automáticamente.</li>
+        <li>El perfil del paciente es la cartera médica del sistema.</li>
+        <li>La contraseña temporal es solo de acceso inicial; después debe cambiarse para quedar la contraseña definitiva.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

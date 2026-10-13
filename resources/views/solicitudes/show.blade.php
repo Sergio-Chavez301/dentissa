@@ -1,18 +1,27 @@
 <x-plantilla>
     <x-slot:title>Gestionar Solicitud | Dentissa</x-slot:title>
 
+    @php
+        $telefonoWhatsApp = preg_replace('/\D+/', '', $solicitud->telefono);
+        $mensajeWhatsApp = 'Hola ' . $solicitud->nombre . ', recibimos tu solicitud para el ' . \Carbon\Carbon::parse($solicitud->fecha_hora_propuesta)->format('d/m/Y \a \l\a\s H:i') . '. Estamos revisando disponibilidad y te confirmaremos pronto.';
+        $urlWhatsApp = 'https://wa.me/' . $telefonoWhatsApp . '?text=' . urlencode($mensajeWhatsApp);
+    @endphp
+
     <div class="pb-2 mb-4 border-bottom">
         <a href="{{ route('solicitudes.index') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
             <i class="bi bi-arrow-left me-1"></i> Volver al listado
         </a>
         <h1 class="h2 fw-bold" style="color: #1e1e24;">Gestionar Solicitud</h1>
         <p class="text-muted">Revisa los datos y decide si confirmar o rechazar esta cita.</p>
+        <a href="{{ $urlWhatsApp }}" target="_blank" rel="noopener" class="btn btn-sm btn-success">
+            <i class="bi bi-whatsapp me-1"></i> Contactar prospecto
+        </a>
     </div>
 
     <!-- Gestión de Alertas / Errores de Validación -->
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
-            <i class="bi bi-exclamation-triangle-fill me-2"></i> Por favor selecciona un servicio válido para confirmar la cita.
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ $errors->first() }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif

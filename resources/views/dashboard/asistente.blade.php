@@ -132,6 +132,9 @@
                     <a href="{{ route('casos.create')}}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
                         <i class="bi bi-clipboard-plus me-2"></i>Nuevo Caso Clínico
                     </a>
+                    <a href="{{ route('reportes.index') }}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
+                        <i class="bi bi-bar-chart me-2"></i>Ver Reportes
+                    </a>
                 </div>
             </div>
 

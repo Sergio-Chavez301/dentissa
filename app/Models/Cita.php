@@ -21,13 +21,25 @@ class Cita extends Model
     public function paciente() { return $this->belongsTo(Patient::class, 'paciente_id'); }
     public function servicio() { return $this->belongsTo(Servicio::class, 'servicio_id'); }
 
+    public static function getBloquesAtencion(): array
+    {
+        return ['09:00:00', '10:00:00', '11:00:00', '12:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00'];
+    }
+
     /**
      * Lógica profesional para obtener horarios disponibles
      */
-    public static function getHorariosDisponibles($fecha)
+    public static function getHorariosDisponibles($fecha, ?int $solicitudAConfirmar = null)
     {
-        // Define los horarios que tu clínica trabaja
-        $bloques = ['09:00:00', '10:00:00', '11:00:00', '12:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00'];
+        $fecha = Carbon::parse($fecha);
+        if ($fecha->lt(Carbon::today())) {
+            return [];
+        }
+
+        $fecha = $fecha->format('Y-m-d');
+
+        $bloques = self::getBloquesAtencion();
+        $bloques = array_values(array_filter($bloques, fn ($hora) => !Carbon::parse($fecha . ' ' . $hora)->isPast()));
         
         // Obtiene las horas ya ocupadas para la fecha, excluyendo las canceladas
         $ocupadas = self::where('fecha', $fecha)
@@ -35,7 +47,17 @@ class Cita extends Model
                          ->pluck('hora')
                          ->toArray();
 
-        // Retorna solo los bloques que NO están en $ocupadas
-        return array_diff($bloques, $ocupadas);
+        $solicitudesPendientes = SolicitudCita::whereDate('fecha_hora_propuesta', $fecha)
+            ->where('estado', SolicitudCita::ESTADO_ESPERANDO_CONFIRMACION)
+            ->when($solicitudAConfirmar, fn ($query) => $query->where('id', '!=', $solicitudAConfirmar))
+            ->pluck('fecha_hora_propuesta')
+            ->map(fn ($fechaHora) => Carbon::parse($fechaHora)->format('H:i:s'))
+            ->all();
+
+        $bloqueados = HorarioBloqueado::whereDate('fecha', $fecha)
+            ->pluck('hora')
+            ->toArray();
+
+        return array_values(array_diff($bloques, [...$ocupadas, ...$solicitudesPendientes, ...$bloqueados]));
     }
 }

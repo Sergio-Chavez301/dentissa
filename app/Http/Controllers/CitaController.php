@@ -47,6 +47,8 @@ class CitaController extends Controller
      */
     public function create()
     {
+        $this->ensureStaffAccess();
+
         $pacientes = Patient::all();
         $servicios = Servicio::all();
         return view('citas.create', compact('pacientes', 'servicios'));
@@ -59,6 +61,11 @@ class CitaController extends Controller
     {
         $fecha = $request->query('fecha');
         if (!$fecha) return response()->json(['horarios' => []]);
+
+        $request->validate([
+            'fecha' => 'date_format:Y-m-d|after_or_equal:today',
+        ]);
+
         $horarios = Cita::getHorariosDisponibles($fecha);
         return response()->json(['horarios' => array_values($horarios)]);
     }
@@ -68,6 +75,20 @@ class CitaController extends Controller
      */
     public function store(Request $request)
     {
+        $this->ensureStaffAccess();
+
+        $validated = $request->validate([
+            'servicio_id' => 'required|exists:servicios,id',
+            'fecha' => 'required|date_format:Y-m-d|after_or_equal:today',
+            'hora' => 'required|date_format:H:i:s',
+        ]);
+
+        if (!in_array($validated['hora'], Cita::getHorariosDisponibles($validated['fecha']), true)) {
+            return back()->withInput()->withErrors([
+                'hora' => 'Lo sentimos, este horario ya no está disponible.',
+            ]);
+        }
+
         // 1. Lógica para manejar paciente nuevo o existente detectando si se llenó el nombre
         if ($request->filled('nombre') || $request->has('nuevo_paciente')) {
             $datosPaciente = $request->validate([
@@ -117,20 +138,7 @@ class CitaController extends Controller
             session()->forget(['temp_password', 'temp_telefono', 'temp_nombre', 'temp_username']);
         }
 
-        // 2. Validación de cita
-        $validated = $request->validate([
-            'servicio_id' => 'required|exists:servicios,id',
-            'fecha'       => 'required|date',
-            'hora'        => 'required',
-        ]);
-
-        // 3. Validación de disponibilidad en tiempo real
-        $horariosDisponibles = Cita::getHorariosDisponibles($validated['fecha']);
-        if (!in_array($validated['hora'], $horariosDisponibles)) {
-            return back()->withInput()->with('error', 'Lo sentimos, este horario acaba de ser ocupado.');
-        }
-
-        // 4. Crear la cita
+        // 2. Crear la cita
         Cita::create([
             'paciente_id' => $paciente_id,
             'servicio_id' => $validated['servicio_id'],
@@ -156,12 +164,16 @@ class CitaController extends Controller
 
     public function show(string $id)
     {
+        $this->ensureStaffAccess();
+
         $cita = Cita::with(['paciente', 'servicio'])->findOrFail($id);
         return view('citas.show', compact('cita'));
     }
 
     public function edit(string $id)
     {
+        $this->ensureStaffAccess();
+
         $cita = Cita::findOrFail($id);
         $pacientes = Patient::all();
         $servicios = Servicio::all();
@@ -170,6 +182,8 @@ class CitaController extends Controller
 
     public function update(Request $request, string $id)
     {
+        $this->ensureStaffAccess();
+
         $cita = Cita::findOrFail($id);
         
         $request->validate([
@@ -194,5 +208,10 @@ class CitaController extends Controller
         ]);
 
         return redirect()->route('citas.index')->with('success', 'Cita actualizada correctamente.');
+    }
+
+    private function ensureStaffAccess(): void
+    {
+        abort_unless((int) Auth::user()->role_id !== 3, 403);
     }
 }

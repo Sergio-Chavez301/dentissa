@@ -6,8 +6,37 @@
         <p class="text-muted">Aquí puedes consultar el estado de tus citas dentales y tu historial clínico.</p>
     </div>
 
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-white h-100">
+                <div class="text-muted small text-uppercase fw-bold">Citas</div>
+                <div class="fs-3 fw-bold text-dark mt-2">{{ $patient->citas->count() }}</div>
+                <div class="text-muted small">Total registradas</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-white h-100">
+                <div class="text-muted small text-uppercase fw-bold">Casos</div>
+                <div class="fs-3 fw-bold text-dark mt-2">{{ $patient->casosClinicos->count() }}</div>
+                <div class="text-muted small">En tu expediente</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-white h-100">
+                <div class="text-muted small text-uppercase fw-bold">Ofertas</div>
+                <div class="fs-3 fw-bold text-dark mt-2">3</div>
+                <div class="text-muted small">Activas para ti</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 shadow-sm border-0 bg-white h-100">
+                <div class="text-muted small text-uppercase fw-bold">Opción</div>
+                <a href="{{ route('ofertas') }}" class="btn btn-sm btn-dentissa mt-2 text-white">Ver promociones</a>
+            </div>
+        </div>
+    </div>
+
     <div class="row g-4">
-        <!-- Tarjeta de Información Personal -->
         <div class="col-md-4">
             <div class="card p-4 shadow-sm border-0 bg-white">
                 <h5 class="fw-bold text-dark mb-3"><i class="bi bi-person-badge text-dentissa me-2"></i> Mis Datos</h5>
@@ -22,10 +51,12 @@
             </div>
         </div>
 
-        <!-- Tarjeta de Próximas Citas -->
         <div class="col-md-8">
             <div class="card p-4 shadow-sm border-0 bg-white mb-4">
-                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-calendar-check text-dentissa me-2"></i> Mis Citas</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-calendar-check text-dentissa me-2"></i> Mis Citas</h5>
+                    <a href="{{ route('citas.create') }}" class="btn btn-sm btn-outline-secondary">Solicitar cita</a>
+                </div>
                 @if($patient->citas && $patient->citas->count() > 0)
                     <div class="table-responsive">
                         <table class="table align-middle">
@@ -58,15 +89,17 @@
                 @endif
             </div>
 
-            <!-- Tarjeta de Historial / Casos Clínicos -->
             <div class="card p-4 shadow-sm border-0 bg-white">
-                <h5 class="fw-bold text-dark mb-3"><i class="bi bi-file-medical text-dentissa me-2"></i> Mis Casos Clínicos y Tratamientos</h5>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-dark mb-0"><i class="bi bi-file-medical text-dentissa me-2"></i> Mis Casos Clínicos y Tratamientos</h5>
+                    <a href="{{ route('casos.index') }}" class="btn btn-sm btn-outline-secondary">Ver expediente</a>
+                </div>
                 @if($patient->casosClinicos && $patient->casosClinicos->count() > 0)
                     <ul class="list-group list-group-flush">
                         @foreach($patient->casosClinicos as $caso)
                             <li class="list-group-item px-0">
-                                <span class="fw-semibold text-dark">{{ $caso->titulo ?? 'Tratamiento Dental' }}</span>
-                                <p class="text-muted small mb-0">{{ $caso->descripcion ?? 'Sin descripción adicional.' }}</p>
+                                <span class="fw-semibold text-dark">{{ $caso->tratamiento_base ?? 'Tratamiento Dental' }}</span>
+                                <p class="text-muted small mb-0">{{ $caso->estado == 'activo' ? 'En tratamiento activo' : 'Finalizado' }} · {{ $caso->progreso ?? 0 }}% de avance</p>
                             </li>
                         @endforeach
                     </ul>

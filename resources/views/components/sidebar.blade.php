@@ -50,6 +50,12 @@
                     </a>
                 </li>
 
+                <li class="mb-2">
+                    <a href="{{ route('ofertas.public') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->is('ofertas') ? 'active-dentissa' : 'link-hover' }}">
+                        <i class="bi bi-tag me-2 fs-5"></i> <span>Ofertas</span>
+                    </a>
+                </li>
+
             @else
                 <!-- ================= MENÚ DE ADMINISTRADOR Y ASISTENTE ================= -->
                 
@@ -97,6 +103,12 @@
                             @endif
                         </a>
                     </li>
+
+                    <li class="mb-2">
+                        <a href="{{ route('horarios-bloqueados.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('horarios-bloqueados*') ? 'active-dentissa' : 'link-hover' }}">
+                            <i class="bi bi-calendar2-minus me-2 fs-5"></i> <span>Horarios</span>
+                        </a>
+                    </li>
                     
                     <li class="mb-2">
                         <a href="{{ route('servicios.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('servicios*') ? 'active-dentissa' : 'link-hover' }}">
@@ -106,30 +118,16 @@
 
                     <!-- Contenido Web -->
                     <li class="mb-2">
-                        <a class="nav-link text-dark d-flex align-items-center justify-content-between py-2 px-3 link-hover" data-bs-toggle="collapse" href="#menuSitioWeb" role="button" aria-expanded="false">
-                            <div class="d-flex align-items-center"><i class="bi bi-browser-edge me-2 fs-5"></i> <span>Contenido Web</span></div>
-                            <i class="bi bi-chevron-down small text-muted"></i>
+                        <a href="{{ route('admin.ofertas.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('admin.ofertas*') ? 'active-dentissa' : 'link-hover' }}">
+                            <i class="bi bi-browser-edge me-2 fs-5"></i> <span>Contenido Web</span>
                         </a>
-                        <div class="collapse ps-3" id="menuSitioWeb">
-                            <ul class="list-unstyled fw-normal pb-1 small">
-                                <li><a href="#" class="nav-link text-dark py-1 px-3 my-1 link-hover rounded">Promociones</a></li>
-                                <li><a href="#" class="nav-link text-dark py-1 px-3 my-1 link-hover rounded">Galería</a></li>
-                            </ul>
-                        </div>
                     </li>
 
                     <!-- Reportes -->
                     <li class="mb-2">
-                        <a class="nav-link text-dark d-flex align-items-center justify-content-between py-2 px-3 link-hover" data-bs-toggle="collapse" href="#menuReportes" role="button" aria-expanded="false">
-                            <div class="d-flex align-items-center"><i class="bi bi-file-earmark-bar-graph me-2 fs-5"></i> <span>Reportes</span></div>
-                            <i class="bi bi-chevron-down small text-muted"></i>
+                        <a href="{{ route('reportes.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('reportes.*') ? 'active-dentissa' : 'link-hover' }}">
+                            <i class="bi bi-file-earmark-bar-graph me-2 fs-5"></i> <span>Reportes</span>
                         </a>
-                        <div class="collapse ps-3" id="menuReportes">
-                            <ul class="list-unstyled fw-normal pb-1 small">
-                                <li><a href="#" class="nav-link text-dark py-1 px-3 my-1 link-hover rounded">Reporte de Citas</a></li>
-                                <li><a href="#" class="nav-link text-dark py-1 px-3 my-1 link-hover rounded">Ventas</a></li>
-                            </ul>
-                        </div>
                     </li>
                 @endif
             @endif
@@ -138,12 +136,12 @@
         <hr style="background-color: #e0e0e0; opacity: 0.8; margin-top: 15px; margin-bottom: 10px;">
 
         <div class="dropdown pb-4">
-            <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle py-2 px-1 text-truncate" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+            <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle py-2 px-1 text-truncate" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person-circle fs-4 me-2" style="color: #d75078;"></i>
                 <strong class="text-truncate">{{ Auth::user()->nombre }}</strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-light text-small shadow" aria-labelledby="dropdownUser">
-                <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                <li><a class="dropdown-item" href="{{ route('profile.show') }}">Mi Perfil</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">@csrf</form>

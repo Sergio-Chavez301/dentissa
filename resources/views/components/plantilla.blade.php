@@ -10,10 +10,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     
     <style>
+        html, body {
+            overflow-x: hidden;
+        }
+
         body {
             background-color: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
         }
+
+        .row {
+            --bs-gutter-x: 0;
+        }
+
         @media (min-width: 768px) {
             .sidebar {
                 position: fixed;
@@ -23,10 +33,23 @@
                 z-index: 100;
                 width: 240px;
             }
+
             .main-content {
                 margin-left: 240px;
+                width: calc(100% - 240px);
+                max-width: none;
+                min-width: 0;
             }
         }
+
+        @media (max-width: 767.98px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
         /* Paleta de colores institucional */
         .bg-dentissa {
             background-color: #d75078 !important;

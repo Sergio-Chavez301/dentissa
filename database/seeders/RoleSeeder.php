@@ -9,10 +9,17 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('roles')->insert([
-            ['id' => 1, 'name' => 'Administrador', 'description' => 'Acceso total al sistema', 'created_at' => '2026-07-17 02:02:27', 'updated_at' => '2026-07-17 02:02:27'],
-            ['id' => 2, 'name' => 'Asistente', 'description' => 'Asistencia en tareas clínicas', 'created_at' => '2026-07-17 02:02:27', 'updated_at' => '2026-07-17 02:02:27'],
-            ['id' => 3, 'name' => 'Paciente', 'description' => 'Acceso para pacientes', 'created_at' => '2026-07-17 02:02:27', 'updated_at' => '2026-07-17 02:02:27'],
-        ]);
+        $roles = [
+            1 => ['name' => 'Administrador', 'description' => 'Acceso total al sistema'],
+            2 => ['name' => 'Asistente', 'description' => 'Asistencia en tareas clínicas'],
+            3 => ['name' => 'Paciente', 'description' => 'Acceso para pacientes'],
+        ];
+
+        foreach ($roles as $id => $role) {
+            DB::table('roles')->updateOrInsert(
+                ['id' => $id],
+                [...$role, 'updated_at' => now(), 'created_at' => now()]
+            );
+        }
     }
 }

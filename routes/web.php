@@ -9,14 +9,23 @@ use App\Http\Controllers\CitaController;
 use App\Http\Controllers\SolicitudController;
 use App\Http\Controllers\CasoClinicoController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\HorarioBloqueadoController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\OfertaController;
 
 // --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
-    return view('home');
+    return view('home', [
+        'ofertas' => \App\Models\Oferta::where('activo', true)
+            ->orderBy('orden')
+            ->orderBy('id')
+            ->get(),
+    ]);
 })->name('home');
 Route::get('/acerca-de', function(){
     return view('acerca-de');
 })->name('acerca-de');
+Route::get('/ofertas', [OfertaController::class, 'publicIndex'])->name('ofertas.public');
 // Ruta pública para que el prospecto envíe su solicitud de cita
 Route::post('/solicitud-cita', [SolicitudController::class, 'storePublic'])->name('solicitud.storePublic');
 
@@ -47,6 +56,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     // Dashboards divididos por rol
     Route::get('/dashboard/admin', [AdminController::class, 'index'])->name('dashboard.admin');
     Route::get('/dashboard/asistente', [AdminController::class, 'asistente'])->name('dashboard.asistente');
+    Route::get('/reportes', [ReportController::class, 'index'])->name('reportes.index');
     
     // Panel del paciente vinculado al PatientController
     Route::get('/dashboard/paciente', [PatientController::class, 'dashboard'])->name('dashboard.paciente');
@@ -69,6 +79,14 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::resource('solicitudes', SolicitudController::class);
     Route::resource('casos', CasoClinicoController::class);
     Route::resource('servicios', ServicioController::class);
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('ofertas', OfertaController::class);
+    });
+
+    Route::get('/horarios-bloqueados', [HorarioBloqueadoController::class, 'index'])->name('horarios-bloqueados.index');
+    Route::post('/horarios-bloqueados', [HorarioBloqueadoController::class, 'store'])->name('horarios-bloqueados.store');
+    Route::delete('/horarios-bloqueados/{horarioBloqueado}', [HorarioBloqueadoController::class, 'destroy'])->name('horarios-bloqueados.destroy');
 
     // Cerrar Sesión
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
