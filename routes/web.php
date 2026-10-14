@@ -78,6 +78,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::resource('citas', CitaController::class);
     Route::resource('solicitudes', SolicitudController::class);
     Route::resource('casos', CasoClinicoController::class);
+    Route::get('/casos/{caso}/citas/create', [CitaController::class, 'createForCase'])->name('casos.citas.create');
+    Route::post('/casos/{caso}/citas', [CitaController::class, 'storeForCase'])->name('casos.citas.store');
     Route::resource('servicios', ServicioController::class);
 
     Route::prefix('admin')->name('admin.')->group(function () {

@@ -151,13 +151,13 @@ class CasoClinicoController extends Controller
 
     public function show(string $id)
     {
-        $caso = CasoClinico::with('paciente')->findOrFail($id);
+        $caso = CasoClinico::with(['paciente', 'citas.servicio'])->findOrFail($id);
         return view('casos.show', compact('caso'));
     }
 
     public function edit(string $id)
     {
-        $caso = CasoClinico::findOrFail($id);
+        $caso = CasoClinico::with(['paciente', 'citas.servicio'])->findOrFail($id);
         $patients = Patient::all();
         return view('casos.edit', compact('caso', 'patients'));
     }

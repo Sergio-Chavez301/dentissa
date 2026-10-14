@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Patient;
 use App\Models\Cita;
+use App\Models\CasoClinico;
 use App\Models\Servicio;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str; 
@@ -45,13 +47,27 @@ class CitaController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $this->ensureStaffAccess();
 
         $pacientes = Patient::all();
         $servicios = Servicio::all();
-        return view('citas.create', compact('pacientes', 'servicios'));
+        $casos = CasoClinico::with('paciente')->get();
+        $pacienteSeleccionado = $request->query('paciente_id');
+        $casoSeleccionado = $request->query('caso_clinico_id');
+
+        return view('citas.create', compact('pacientes', 'servicios', 'casos', 'pacienteSeleccionado', 'casoSeleccionado'));
+    }
+
+    public function createForCase(CasoClinico $caso)
+    {
+        $this->ensureStaffAccess();
+
+        $caso->load('paciente');
+        $servicios = Servicio::all();
+
+        return view('citas.create', compact('caso', 'servicios'));
     }
 
     /**
@@ -81,6 +97,12 @@ class CitaController extends Controller
             'servicio_id' => 'required|exists:servicios,id',
             'fecha' => 'required|date_format:Y-m-d|after_or_equal:today',
             'hora' => 'required|date_format:H:i:s',
+            'caso_clinico_id' => [
+                'nullable',
+                Rule::exists('casos_clinicos', 'id')
+                    ->where('paciente_id', $request->input('paciente_id')),
+                Rule::prohibitedIf($request->has('nuevo_paciente') || $request->filled('nombre')),
+            ],
         ]);
 
         if (!in_array($validated['hora'], Cita::getHorariosDisponibles($validated['fecha']), true)) {
@@ -139,8 +161,9 @@ class CitaController extends Controller
         }
 
         // 2. Crear la cita
-        Cita::create([
+        $cita = Cita::create([
             'paciente_id' => $paciente_id,
+            'caso_clinico_id' => $validated['caso_clinico_id'] ?? null,
             'servicio_id' => $validated['servicio_id'],
             'fecha'       => $validated['fecha'],
             'hora'        => $validated['hora'],
@@ -159,7 +182,41 @@ class CitaController extends Controller
                              ]);
         }
 
+        if ($cita->caso_clinico_id) {
+            return redirect()->route('casos.edit', $cita->caso_clinico_id)
+                ->with('success', 'Cita registrada en el tratamiento.');
+        }
+
         return redirect()->route('citas.index')->with('success', 'Cita agendada exitosamente.');
+    }
+
+    public function storeForCase(Request $request, CasoClinico $caso)
+    {
+        $this->ensureStaffAccess();
+
+        $validated = $request->validate([
+            'servicio_id' => 'required|exists:servicios,id',
+            'fecha' => 'required|date_format:Y-m-d|after_or_equal:today',
+            'hora' => 'required|date_format:H:i:s',
+        ]);
+
+        if (!in_array($validated['hora'], Cita::getHorariosDisponibles($validated['fecha']), true)) {
+            return back()->withInput()->withErrors([
+                'hora' => 'Lo sentimos, este horario ya no está disponible.',
+            ]);
+        }
+
+        Cita::create([
+            'paciente_id' => $caso->paciente_id,
+            'caso_clinico_id' => $caso->id,
+            'servicio_id' => $validated['servicio_id'],
+            'fecha' => $validated['fecha'],
+            'hora' => $validated['hora'],
+            'estado' => Cita::ESTADO_EN_ESPERA,
+        ]);
+
+        return redirect()->route('casos.edit', $caso)
+            ->with('success', 'Cita registrada en este tratamiento.');
     }
 
     public function show(string $id)
@@ -177,7 +234,8 @@ class CitaController extends Controller
         $cita = Cita::findOrFail($id);
         $pacientes = Patient::all();
         $servicios = Servicio::all();
-        return view('citas.edit', compact('cita', 'pacientes', 'servicios'));
+        $casos = CasoClinico::where('paciente_id', $cita->paciente_id)->get();
+        return view('citas.edit', compact('cita', 'pacientes', 'servicios', 'casos'));
     }
 
     public function update(Request $request, string $id)
@@ -189,7 +247,12 @@ class CitaController extends Controller
         $request->validate([
             'fecha'  => 'required|date',
             'hora'   => 'required',
-            'estado' => 'required',
+            'estado' => 'required|in:en_espera,realizada,cancelada,no_presento',
+            'caso_clinico_id' => [
+                'nullable',
+                Rule::exists('casos_clinicos', 'id')
+                    ->where('paciente_id', $cita->paciente_id),
+            ],
         ]);
 
         // Verificamos disponibilidad SOLO si la fecha o la hora han cambiado
@@ -202,6 +265,7 @@ class CitaController extends Controller
         }
 
         $cita->update([
+            'caso_clinico_id' => $request->input('caso_clinico_id') ?: null,
             'fecha'  => $request->fecha,
             'hora'   => $request->hora,
             'estado' => $request->estado,

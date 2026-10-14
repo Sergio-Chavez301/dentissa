@@ -64,4 +64,56 @@
             </a>
         </div>
     </div>
+
+    <section class="mt-4" style="max-width: 800px;">
+        <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+            <div>
+                <h2 class="h4 fw-bold mb-1" style="color: #1e1e24;">Citas del tratamiento</h2>
+                <p class="text-muted mb-0">Seguimiento de las visitas asociadas a este caso.</p>
+            </div>
+            @if(auth()->user()->role_id != 3)
+                <a href="{{ route('citas.create', ['paciente_id' => $caso->paciente_id, 'caso_clinico_id' => $caso->id]) }}" class="btn text-white bg-dentissa flex-shrink-0">
+                    <i class="bi bi-plus-lg me-1"></i> Agendar cita
+                </a>
+            @endif
+        </div>
+
+        <div class="card shadow-sm border-0 bg-white">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr class="text-muted small">
+                            <th>Fecha</th>
+                            <th>Servicio</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($caso->citas as $cita)
+                            @php
+                                $estadoCita = [
+                                    'en_espera' => 'En espera',
+                                    'realizada' => 'Realizada',
+                                    'cancelada' => 'Cancelada',
+                                    'no_presento' => 'No se presentó',
+                                ][$cita->estado] ?? ucfirst($cita->estado);
+                            @endphp
+                            <tr>
+                                <td class="text-nowrap">
+                                    {{ \Illuminate\Support\Carbon::parse($cita->fecha)->format('d/m/Y') }}
+                                    <span class="text-muted ms-1">{{ substr($cita->hora, 0, 5) }}</span>
+                                </td>
+                                <td>{{ $cita->servicio->nombre ?? 'Servicio eliminado' }}</td>
+                                <td><span class="badge bg-light text-dark border">{{ $estadoCita }}</span></td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">Todavía no hay citas asociadas a este tratamiento.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 </x-plantilla>

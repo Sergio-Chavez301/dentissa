@@ -1,8 +1,8 @@
 <x-plantilla>
-    <x-slot:title>Nueva Cita | Dentissa</x-slot:title>
+    <x-slot:title>{{ isset($caso) ? 'Nueva Cita del Tratamiento | Dentissa' : 'Nueva Cita | Dentissa' }}</x-slot:title>
 
     <div class="pb-2 mb-4 border-bottom">
-        <h1 class="h2 fw-bold" style="color: #1e1e24;">Agendar Nueva Cita</h1>
+        <h1 class="h2 fw-bold" style="color: #1e1e24;">{{ isset($caso) ? 'Agendar cita para '.$caso->tratamiento_base : 'Agendar Nueva Cita' }}</h1>
     </div>
 
     @if ($errors->any())
@@ -16,9 +16,16 @@
     @endif
 
     <div class="card p-4 shadow-sm border-0 bg-white" style="max-width: 700px;">
-        <form action="{{ route('citas.store') }}" method="POST">
+        <form action="{{ isset($caso) ? route('casos.citas.store', $caso) : route('citas.store') }}" method="POST">
             @csrf
 
+            @if(isset($caso))
+                <div class="mb-4 p-3 bg-light rounded border">
+                    <div class="text-muted small text-uppercase fw-bold mb-1">Paciente</div>
+                    <div class="fw-semibold">{{ $caso->paciente->nombre }} {{ $caso->paciente->apellidos }}</div>
+                    <div class="text-muted small mt-2">La cita quedará registrada únicamente en el caso “{{ $caso->tratamiento_base }}”.</div>
+                </div>
+            @else
             <div class="mb-3">
                 <div class="form-check form-switch mb-2">
                     <input class="form-check-input" type="checkbox" name="nuevo_paciente" id="checkNuevo" onchange="togglePaciente(this)">
@@ -30,9 +37,22 @@
                     <select name="paciente_id" id="paciente_id" class="form-select">
                         <option value="">Seleccione un paciente...</option>
                         @foreach($pacientes as $paciente)
-                            <option value="{{ $paciente->id }}">{{ $paciente->nombre }} {{ $paciente->apellidos }}</option>
+                            <option value="{{ $paciente->id }}" {{ (string) old('paciente_id', $pacienteSeleccionado) === (string) $paciente->id ? 'selected' : '' }}>{{ $paciente->nombre }} {{ $paciente->apellidos }}</option>
                         @endforeach
                     </select>
+                </div>
+
+                <div id="casoClinicoField" class="mt-3">
+                    <label for="caso_clinico_id" class="form-label fw-semibold">Caso clínico (opcional)</label>
+                    <select name="caso_clinico_id" id="caso_clinico_id" class="form-select">
+                        <option value="">Sin asociar a un caso</option>
+                        @foreach($casos as $caso)
+                            <option value="{{ $caso->id }}" data-paciente="{{ $caso->paciente_id }}" {{ (string) old('caso_clinico_id', $casoSeleccionado) === (string) $caso->id ? 'selected' : '' }}>
+                                {{ $caso->tratamiento_base }} · {{ $caso->paciente->nombre }} {{ $caso->paciente->apellidos }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('caso_clinico_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                 </div>
 
                 <div id="formNuevoPaciente" class="p-3 bg-light rounded border mt-2" style="display: none;">
@@ -49,6 +69,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -74,7 +95,7 @@
             </div>
 
             <div class="mt-4 d-flex justify-content-end gap-2">
-                <a href="{{ route('citas.index') }}" class="btn btn-light border">Cancelar</a>
+                <a href="{{ isset($caso) ? route('casos.edit', $caso) : route('citas.index') }}" class="btn btn-light border">Cancelar</a>
                 <button type="submit" class="btn text-white bg-dentissa px-4">Agendar</button>
             </div>
         </form>
@@ -85,6 +106,8 @@
             const selectorDiv = document.getElementById('selectorPaciente');
             const formNuevo = document.getElementById('formNuevoPaciente');
             const selectPaciente = document.getElementById('paciente_id');
+            const casoField = document.getElementById('casoClinicoField');
+            const selectCaso = document.getElementById('caso_clinico_id');
             
             const inputNombre = formNuevo.querySelector('input[name="nombre"]');
             const inputApellidos = formNuevo.querySelector('input[name="apellidos"]');
@@ -94,6 +117,8 @@
                 selectorDiv.style.display = 'none';
                 selectPaciente.disabled = true;
                 selectPaciente.value = ""; 
+                casoField.style.display = 'none';
+                selectCaso.value = "";
                 
                 formNuevo.style.display = 'block';
                 
@@ -107,6 +132,8 @@
             } else {
                 selectorDiv.style.display = 'block';
                 selectPaciente.disabled = false;
+                casoField.style.display = 'block';
+                filtrarCasos();
                 
                 formNuevo.style.display = 'none';
                 
@@ -118,6 +145,25 @@
                 inputApellidos.removeAttribute('required');
                 inputEmail.removeAttribute('required');
             }
+        }
+
+        function filtrarCasos() {
+            const pacienteId = document.getElementById('paciente_id').value;
+            const selectCaso = document.getElementById('caso_clinico_id');
+
+            Array.from(selectCaso.options).forEach(option => {
+                option.hidden = option.value !== '' && (!pacienteId || option.dataset.paciente !== pacienteId);
+            });
+
+            if (selectCaso.selectedOptions[0]?.hidden) {
+                selectCaso.value = '';
+            }
+        }
+
+        const selectPaciente = document.getElementById('paciente_id');
+        if (selectPaciente) {
+            selectPaciente.addEventListener('change', filtrarCasos);
+            filtrarCasos();
         }
 
         function cargarHorarios() {

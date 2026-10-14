@@ -31,6 +31,13 @@ class CasoClinico extends Model
         return $this->belongsTo(Patient::class, 'paciente_id');
     }
 
+    public function citas()
+    {
+        return $this->hasMany(Cita::class, 'caso_clinico_id')
+            ->orderBy('fecha')
+            ->orderBy('hora');
+    }
+
     /**
      * Scope para filtrar casos activos (útil para el dashboard).
      */

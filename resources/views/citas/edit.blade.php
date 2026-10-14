@@ -27,6 +27,17 @@
                     <input type="text" class="form-control bg-light" value="{{ $cita->servicio->nombre }}" disabled>
                 </div>
 
+                <div class="col-md-12">
+                    <label for="caso_clinico_id" class="form-label fw-semibold text-dark">Caso clínico (opcional)</label>
+                    <select class="form-select" id="caso_clinico_id" name="caso_clinico_id">
+                        <option value="">Sin asociar a un caso</option>
+                        @foreach($casos as $caso)
+                            <option value="{{ $caso->id }}" {{ (string) old('caso_clinico_id', $cita->caso_clinico_id) === (string) $caso->id ? 'selected' : '' }}>{{ $caso->tratamiento_base }}</option>
+                        @endforeach
+                    </select>
+                    @error('caso_clinico_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                </div>
+
                 <!-- Fecha con onchange para cargar horarios -->
                 <div class="col-md-6">
                     <label for="fecha" class="form-label fw-semibold text-dark">Fecha</label>

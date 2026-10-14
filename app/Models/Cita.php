@@ -16,9 +16,10 @@ class Cita extends Model
     const ESTADO_CANCELADA  = 'cancelada';
     const ESTADO_NO_PRESENTO = 'no_presento';
 
-    protected $fillable = ['paciente_id', 'servicio_id', 'fecha', 'hora', 'estado'];
+    protected $fillable = ['paciente_id', 'caso_clinico_id', 'servicio_id', 'fecha', 'hora', 'estado'];
 
     public function paciente() { return $this->belongsTo(Patient::class, 'paciente_id'); }
+    public function casoClinico() { return $this->belongsTo(CasoClinico::class, 'caso_clinico_id'); }
     public function servicio() { return $this->belongsTo(Servicio::class, 'servicio_id'); }
 
     public static function getBloquesAtencion(): array
