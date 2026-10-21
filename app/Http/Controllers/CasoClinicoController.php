@@ -12,14 +12,10 @@ use Illuminate\Support\Str;
 
 class CasoClinicoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $user = Auth::user();
 
-        // Si el usuario es un paciente (role_id == 3), filtramos solo sus casos clínicos
         if ($user && $user->role_id == 3) {
             $paciente = Patient::where('user_id', $user->id)
                                ->orWhere('email', $user->email)
@@ -29,30 +25,22 @@ class CasoClinicoController extends Controller
                 ? CasoClinico::with('paciente')
                     ->where('paciente_id', $paciente->id)
                     ->get()
-                : collect(); // Si no tiene ficha asociada, retorna colección vacía
+                : collect();
         } else {
-            // Administrador y Asistente ven todos los casos clínicos del sistema
             $casos = CasoClinico::with('paciente')->get();
         }
 
         return view('casos.index', compact('casos'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $pacientes = Patient::all();
         return view('casos.create', compact('pacientes'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        // 1. Validamos de forma condicional si viene un paciente nuevo o uno existente
         $rules = [
             'tratamiento_base' => 'required|string|max:255',
             'progreso'         => 'required|integer|min:0|max:100',
@@ -77,7 +65,6 @@ class CasoClinicoController extends Controller
         $passwordTemporal = null;
         $usernameCreado = null;
 
-        // 2. Si se marcó la opción de nuevo paciente, lo creamos incluyendo su correo
         if ($request->has('nuevo_paciente')) {
             $patient = Patient::create([
                 'nombre'           => $validated['nombre'],
@@ -96,7 +83,6 @@ class CasoClinicoController extends Controller
             $patient = Patient::findOrFail($pacienteId);
         }
 
-        // 3. Creamos el caso clínico asociado al paciente
         $caso = CasoClinico::create([
             'paciente_id'      => $pacienteId,
             'tratamiento_base' => $validated['tratamiento_base'],
@@ -104,7 +90,6 @@ class CasoClinicoController extends Controller
             'estado'           => $request->input('estado', 'activo'),
         ]);
 
-        // 4. Gestión automática de cuenta web para el paciente (si no la tiene)
         if (!$patient->user_id) {
             $usernameBase = Str::slug($patient->nombre . '.' . $patient->apellidos, '');
             $username = $usernameBase . rand(100, 999);
@@ -114,7 +99,6 @@ class CasoClinicoController extends Controller
 
             $passwordTemporal = Str::random(8);
 
-            // Se asigna su correo real (o el comodín si se dejó totalmente en blanco)
             $usuario = User::create([
                 'nombre'    => $patient->nombre,
                 'apellidos' => $patient->apellidos,
@@ -133,7 +117,6 @@ class CasoClinicoController extends Controller
             }
         }
 
-        // 5. Redirección con éxito
         $redirect = redirect()->route('casos.index')
                               ->with('success', 'Caso clínico registrado exitosamente.');
 

@@ -16,7 +16,6 @@
         }
     </style>
 
-    <!-- Encabezado responsivo -->
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center pb-3 mb-4 border-bottom gap-3">
         <div>
             <h1 class="h4 h3-lg fw-bold text-break mb-1" style="color: #1e1e24;">Bienvenido de nuevo, {{ Auth::user()->nombre ?? 'Usuario' }}</h1>
@@ -29,7 +28,6 @@
         </div>
     </div>
 
-    <!-- Componente de datos rápidos -->
     <x-datos-rapidos 
         :citas="$citasHoyCount" 
         :pacientes="$pacientesCount" 
@@ -37,11 +35,8 @@
         :servicios="$serviciosCount" 
     />
 
-    <!-- Contenido Principal -->
     <div class="row g-4">
-        <!-- Columna Izquierda (Tablas) -->
         <div class="col-12 col-lg-8">
-            <!-- Próximas Citas -->
             <div class="card p-3 p-md-4 shadow-sm border-0 bg-white mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 fs-6 fs-md-5" style="color: #1e1e24;">
@@ -82,7 +77,6 @@
                 </div>
             </div>
 
-            <!-- Casos Clínicos Activos -->
             <div class="card p-3 p-md-4 shadow-sm border-0 bg-white">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 fs-6 fs-md-5" style="color: #1e1e24;">
@@ -123,9 +117,7 @@
             </div>
         </div>
 
-        <!-- Columna Derecha (Acciones y Pacientes Recientes) -->
         <div class="col-12 col-lg-4">
-            <!-- Acciones Rápidas -->
             <div class="card p-3 p-md-4 shadow-sm border-0 bg-white mb-4">
                 <h5 class="fw-bold mb-3 fs-6 fs-md-5" style="color: #1e1e24;">Acciones Rápidas</h5>
                 <div class="d-grid gap-2">
@@ -141,7 +133,6 @@
                 </div>
             </div>
 
-            <!-- Últimos Pacientes -->
             <div class="card p-3 p-md-4 shadow-sm border-0 bg-white">
                 <h5 class="fw-bold mb-3 fs-6 fs-md-5" style="color: #1e1e24;">Últimos Pacientes</h5>
                 <ul class="list-group list-group-flush">

@@ -15,7 +15,6 @@
             @method('PUT')
 
             <div class="row g-3">
-                <!-- Nombre -->
                 <div class="col-md-6">
                     <label for="nombre" class="form-label fw-semibold text-dark">Nombre(s)</label>
                     <input type="text" class="form-control @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre', $usuario->nombre) }}" required>
@@ -24,7 +23,6 @@
                     @enderror
                 </div>
 
-                <!-- Apellidos -->
                 <div class="col-md-6">
                     <label for="apellidos" class="form-label fw-semibold text-dark">Apellidos</label>
                     <input type="text" class="form-control @error('apellidos') is-invalid @enderror" id="apellidos" name="apellidos" value="{{ old('apellidos', $usuario->apellidos) }}" required>
@@ -33,7 +31,6 @@
                     @enderror
                 </div>
 
-                <!-- Nombre de Usuario -->
                 <div class="col-md-6">
                     <label for="username" class="form-label fw-semibold text-dark">Nombre de Usuario (Para iniciar sesión)</label>
                     <div class="input-group">
@@ -45,7 +42,6 @@
                     @enderror
                 </div>
 
-                <!-- Correo Electrónico -->
                 <div class="col-md-6">
                     <label for="email" class="form-label fw-semibold text-dark">Correo Electrónico</label>
                     <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $usuario->email) }}" required>
@@ -54,7 +50,6 @@
                     @enderror
                 </div>
 
-                <!-- Rol / Puesto (Dinámico desde la BD) -->
 <div class="col-md-12">
     <label for="role_id" class="form-label fw-semibold text-dark">Puesto / Rol en la clínica</label>
     <select class="form-select @error('role_id') is-invalid @enderror" id="role_id" name="role_id" required>
@@ -70,7 +65,6 @@
     @enderror
 </div>
 
-                <!-- Interruptor de Estado de Cuenta -->
                 <div class="col-12 mt-4">
                     <label class="form-label fw-semibold text-dark">Estado de Acceso</label>
                     <div class="card bg-light border-0 p-3">
@@ -89,14 +83,12 @@
                     </div>
                 </div>
 
-                <!-- Aviso sobre contraseña -->
                 <div class="col-12 mt-4">
                     <div class="alert alert-warning border-0 shadow-sm py-2 px-3 mb-1" style="font-size: 0.9rem;">
                         <i class="bi bi-info-circle-fill me-2"></i> Deja los siguientes campos vacíos si <strong>no</strong> deseas cambiar la contraseña actual del usuario.
                     </div>
                 </div>
 
-                <!-- Contraseña -->
                 <div class="col-md-6">
                     <label for="password" class="form-label fw-semibold text-dark">Nueva Contraseña</label>
                     <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Opcional">
@@ -105,14 +97,12 @@
                     @enderror
                 </div>
 
-                <!-- Confirmar Contraseña -->
                 <div class="col-md-6">
                     <label for="password_confirmation" class="form-label fw-semibold text-dark">Confirmar Nueva Contraseña</label>
                     <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Opcional">
                 </div>
             </div>
 
-            <!-- Botones de Acción -->
             <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
                 <a href="{{ route('users.index') }}" class="btn btn-light border py-2 px-4 fw-semibold text-muted">
                     Cancelar

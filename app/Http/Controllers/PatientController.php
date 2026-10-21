@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Patient;
 use App\Models\Cita;
+use App\Models\Oferta;
+use App\Models\OfficeSetting;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,14 +14,16 @@ use Illuminate\Support\Str;
 
 class PatientController extends Controller
 {
-    /**
-     * Muestra el panel exclusivo para el paciente autenticado.
-     */
     public function dashboard()
     {
         $user = Auth::user();
 
-        $patient = Patient::with(['citas.servicio', 'casosClinicos'])
+        $patient = Patient::with([
+            'user',
+            'citas.servicio',
+            'citas.casoClinico',
+            'casosClinicos.citas.servicio',
+        ])
             ->where('user_id', $user->id)
             ->first();
 
@@ -27,23 +31,34 @@ class PatientController extends Controller
             return view('patients.sin-perfil');
         }
 
-        // Apunta directamente a resources/views/dashboard/paciente.blade.php
-        return view('dashboard.paciente', compact('patient'));
+        $ofertas = Oferta::where('activo', true)
+            ->orderBy('orden')
+            ->orderBy('id')
+            ->take(3)
+            ->get();
+
+        return view('dashboard.paciente', compact('patient', 'ofertas'));
     }
 
     public function index()
     {
+        $this->ensureStaffAccess();
+
         $patients = Patient::all();
         return view('patients.index', compact('patients'));
     }
 
     public function create()
     {
+        $this->ensureStaffAccess();
+
         return view('patients.create');
     }
 
 public function store(Request $request)
     {
+        $this->ensureStaffAccess();
+
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
@@ -57,34 +72,28 @@ public function store(Request $request)
             'email.unique' => 'Este correo electrónico ya está registrado en el sistema de usuarios.'
         ]);
 
-        // 1. Generar un username único basado en su nombre y un número aleatorio
         $usernameBase = Str::slug($validated['nombre'] . '.' . $validated['apellidos'], '');
         $username = $usernameBase . rand(100, 999);
         while (User::where('username', $username)->exists()) {
             $username = $usernameBase . rand(100, 999);
         }
 
-        // 2. Generar una contraseña temporal aleatoria de 8 caracteres
         $passwordTemporal = Str::random(8);
 
-        // 3. Crear la cuenta de usuario vinculada
         $usuario = User::create([
             'nombre'    => $validated['nombre'],
             'apellidos' => $validated['apellidos'],
             'username'  => $username,
             'email'     => $validated['email'] ?? 'paciente_' . time() . '@dentissa.com',
             'password'  => Hash::make($passwordTemporal),
-            'role_id'   => 3, // Rol Paciente
+            'role_id'   => 3,
             'activo'    => 1,
         ]);
 
-        // 4. Asignar el user_id generado al array de validación del paciente
         $validated['user_id'] = $usuario->id;
 
-        // 5. Crear el paciente
         $patient = Patient::create($validated);
 
-        // 6.Guardar los datos en la sesión para que aparezca la alerta de WhatsApp al crearlo
         session([
             'temp_password' => $passwordTemporal,
             'temp_telefono' => $patient->telefono,
@@ -97,18 +106,30 @@ public function store(Request $request)
 
     public function show(string $id)
     {
-        $patient = Patient::with(['citas', 'casosClinicos'])->findOrFail($id);
-        return view('patients.show', compact('patient'));
+        $query = Patient::with(['citas', 'casosClinicos']);
+
+        if ((int) Auth::user()->role_id === 3) {
+            $query->where('user_id', Auth::id());
+        }
+
+        $patient = $query->findOrFail($id);
+        $officeSettings = OfficeSetting::current();
+
+        return view('patients.show', compact('patient', 'officeSettings'));
     }
 
     public function edit(string $id)
     {
+        $this->ensureStaffAccess();
+
         $patient = Patient::findOrFail($id);
         return view('patients.edit', compact('patient'));
     }
 
     public function update(Request $request, string $id)
     {
+        $this->ensureStaffAccess();
+
         $patient = Patient::findOrFail($id);
         
         $validated = $request->validate([
@@ -129,35 +150,31 @@ public function store(Request $request)
 
     public function destroy(string $id)
     {
+        $this->ensureStaffAccess();
+
         $patient = Patient::findOrFail($id);
 
-        // 1. Si el paciente tiene una cuenta de usuario asociada, la eliminamos
         if ($patient->user_id) {
             User::where('id', $patient->user_id)->delete();
         }
 
-        // 2. Eliminamos todos los casos clínicos asociados para evitar registros huérfanos
         if (method_exists($patient, 'casosClinicos')) {
             $patient->casosClinicos()->delete();
         }
 
-        // 3. Eliminamos todas las citas asociadas para evitar registros huérfanos
         Cita::where('paciente_id', $patient->id)->delete();
 
-        // 4. Eliminamos al paciente
         $patient->delete();
 
         return redirect()->route('patients.index')->with('success', 'Paciente, su cuenta de usuario, citas y casos clínicos fueron eliminados correctamente.');
     }
 
-    /**
-     * Genera o regenera la contraseña temporal y prepara los datos para enviar por WhatsApp.
-     */
     public function enviarCredencialesWhatsApp(string $id)
     {
+        abort_unless((int) Auth::user()->role_id === 1, 403);
+
         $patient = Patient::findOrFail($id);
 
-        // Si el paciente no tiene un usuario web asignado, se lo creamos
         if (!$patient->user_id) {
             $passwordTemporal = Str::random(8);
             $usuario = User::create([
@@ -166,13 +183,12 @@ public function store(Request $request)
                 'username'  => Str::slug($patient->nombre . '.' . $patient->apellidos . '-' . rand(100, 999), ''),
                 'email'     => $patient->email ?? 'paciente_' . $patient->id . '@dentissa.com',
                 'password'  => Hash::make($passwordTemporal),
-                'role_id'   => 3, // Rol Paciente
+                'role_id'   => 3,
                 'activo'    => 1,
             ]);
 
             $patient->update(['user_id' => $usuario->id]);
         } else {
-            // Si ya tiene usuario, le generamos una nueva contraseña temporal y se la actualizamos
             $usuario = User::findOrFail($patient->user_id);
             $passwordTemporal = Str::random(8);
             $usuario->update([
@@ -180,14 +196,52 @@ public function store(Request $request)
             ]);
         }
 
-        // Guardamos en sesión los datos temporales para activar la alerta verde de WhatsApp en la vista
-        session([
-            'temp_password' => $passwordTemporal,
-            'temp_telefono' => $patient->telefono,
-            'temp_nombre'   => $patient->nombre,            
-            'temp_username' => $usuario->username,
+        session()->flash('temp_password', $passwordTemporal);
+        session()->flash('temp_telefono', $patient->telefono);
+        session()->flash('temp_nombre', $patient->nombre);
+        session()->flash('temp_username', $usuario->username);
+
+        return redirect()->route('patients.show', $patient->id)->with('success', 'Contraseña temporal generada. Puedes enviarla por WhatsApp.');
+    }
+
+    public function updateCredentials(Request $request, string $id)
+    {
+        abort_unless((int) Auth::user()->role_id === 1, 403);
+
+        $patient = Patient::with('user')->findOrFail($id);
+        abort_unless($patient->user, 422, 'El paciente aún no tiene una cuenta de acceso.');
+
+        $validated = $request->validate([
+            'username' => 'required|string|max:50|unique:usuarios,username,' . $patient->user->id,
+            'password' => 'nullable|string|min:8|confirmed',
+        ], [
+            'username.unique' => 'Este nombre de usuario ya está en uso.',
+            'password.confirmed' => 'Las contraseñas escritas no coinciden.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
         ]);
 
-        return redirect()->route('patients.show', $patient->id)->with('success', 'Credenciales generadas correctamente.');
+        $patient->user->username = $validated['username'];
+
+        if (!empty($validated['password'])) {
+            $patient->user->password = Hash::make($validated['password']);
+        }
+
+        $patient->user->save();
+
+        session()->forget(['temp_password', 'temp_telefono', 'temp_nombre', 'temp_username']);
+        session()->flash('temp_telefono', $patient->telefono);
+        session()->flash('temp_nombre', $patient->nombre);
+        session()->flash('temp_username', $patient->user->username);
+
+        if (!empty($validated['password'])) {
+            session()->flash('temp_password', $validated['password']);
+        }
+
+        return redirect()->route('patients.show', $patient->id)->with('success', 'Credenciales del paciente actualizadas.');
+    }
+
+    private function ensureStaffAccess(): void
+    {
+        abort_unless((int) Auth::user()->role_id !== 3, 403);
     }
 }

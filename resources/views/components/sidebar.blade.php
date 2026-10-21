@@ -1,7 +1,6 @@
-<nav class="col-md-3 col-lg-2 d-md-block bg-white border-end sidebar collapse" id="sidebarMenu" style="height: 100vh; position: sticky; top: 0; z-index: 1000;">
-    <div class="position-sticky pt-3 d-flex flex-column h-100 px-3" style="overflow-y: auto; max-height: 100vh; scrollbar-width: thin; -ms-overflow-style: none;">
+<nav class="col-md-3 col-lg-2 d-md-block bg-white border-end sidebar collapse" id="sidebarMenu" style="scrollbar-width: thin;">
+    <div class="pt-3 d-flex flex-column min-vh-100 px-3">
         
-        <!-- Botón para cerrar en móviles -->
         <div class="d-flex d-md-none justify-content-end mb-2">
             <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Cerrar menú">
                 <i class="bi bi-x-lg"></i>
@@ -17,33 +16,29 @@
         <hr style="background-color: #e0e0e0; opacity: 0.8; margin-top: 0;">
 
         <ul class="nav nav-pills flex-column mb-auto">
+            @auth
             
             @if(Auth::user()->role_id == 3)
-                <!-- ================= MENÚ EXCLUSIVO PARA PACIENTES (role_id == 3) ================= -->
                 
-                <!-- Inicio Paciente -->
                 <li class="nav-item mb-2">
                     <a href="{{ route('dashboard.paciente') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('dashboard.paciente') ? 'active-dentissa' : 'link-hover' }}">
                         <i class="bi bi-house-door me-2 fs-5"></i> <span>Inicio</span>
                     </a>
                 </li>
                 
-                <!-- Pacientes (Muestra su propio perfil/expediente) -->
                 <li class="mb-2">
-                    @php($pacienteLogueado = App\Models\Patient::where('email', Auth::user()->email)->first())
+                    @php($pacienteLogueado = App\Models\Patient::where('user_id', Auth::id())->first())
                     <a href="{{ $pacienteLogueado ? route('patients.show', $pacienteLogueado->id) : '#' }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('patients*') ? 'active-dentissa' : 'link-hover' }}">
                         <i class="bi bi-person-badge me-2 fs-5"></i> <span>Pacientes</span>
                     </a>
                 </li>
                 
-                <!-- Citas (Sus citas) -->
                 <li class="mb-2">
                     <a href="{{ route('citas.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('citas*') ? 'active-dentissa' : 'link-hover' }}">
                         <i class="bi bi-calendar-event me-2 fs-5"></i> <span>Citas</span>
                     </a>
                 </li>
 
-                <!-- Casos Clínicos (Sus casos) -->
                 <li class="mb-2">
                     <a href="{{ route('casos.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('casos*') ? 'active-dentissa' : 'link-hover' }}">
                         <i class="bi bi-file-earmark-medical me-2 fs-5"></i> <span>Casos Clínicos</span>
@@ -57,16 +52,13 @@
                 </li>
 
             @else
-                <!-- ================= MENÚ DE ADMINISTRADOR Y ASISTENTE ================= -->
                 
-                <!-- Inicio -->
                 <li class="nav-item mb-2">
                     <a href="{{ Auth::user()->role_id == 1 ? route('dashboard.admin') : route('dashboard.asistente') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('dashboard.*') ? 'active-dentissa' : 'link-hover' }}">
                         <i class="bi bi-house-door me-2 fs-5"></i> <span>Inicio</span>
                     </a>
                 </li>
                 
-                <!-- Módulos Operativos -->
                 <li class="mb-2">
                     <a href="{{ route('patients.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('patients*') ? 'active-dentissa' : 'link-hover' }}">
                         <i class="bi bi-person-badge me-2 fs-5"></i> <span>Pacientes</span>
@@ -85,7 +77,6 @@
                     </a>
                 </li>
 
-                <!-- Módulos Exclusivos de Admin (role_id == 1) -->
                 @if(Auth::user()->role_id == 1)
                     <li class="mb-2">
                         <a href="{{ route('users.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('users*') ? 'active-dentissa' : 'link-hover' }}">
@@ -116,14 +107,18 @@
                         </a>
                     </li>
 
-                    <!-- Contenido Web -->
                     <li class="mb-2">
                         <a href="{{ route('admin.ofertas.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('admin.ofertas*') ? 'active-dentissa' : 'link-hover' }}">
                             <i class="bi bi-browser-edge me-2 fs-5"></i> <span>Contenido Web</span>
                         </a>
                     </li>
 
-                    <!-- Reportes -->
+                    <li class="mb-2">
+                        <a href="{{ route('admin.office-settings.edit') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('admin.office-settings.*') ? 'active-dentissa' : 'link-hover' }}">
+                            <i class="bi bi-geo-alt me-2 fs-5"></i> <span>Datos del consultorio</span>
+                        </a>
+                    </li>
+
                     <li class="mb-2">
                         <a href="{{ route('reportes.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('reportes.*') ? 'active-dentissa' : 'link-hover' }}">
                             <i class="bi bi-file-earmark-bar-graph me-2 fs-5"></i> <span>Reportes</span>
@@ -131,10 +126,28 @@
                     </li>
                 @endif
             @endif
+            @else
+                <li class="nav-item mb-2">
+                    <a href="{{ route('home') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('home') ? 'active-dentissa' : 'link-hover' }}">
+                        <i class="bi bi-house-door me-2 fs-5"></i><span>Inicio</span>
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="{{ route('ofertas.public') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('ofertas.public') ? 'active-dentissa' : 'link-hover' }}">
+                        <i class="bi bi-tag me-2 fs-5"></i><span>Ofertas</span>
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="{{ route('login') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 link-hover">
+                        <i class="bi bi-box-arrow-in-right me-2 fs-5"></i><span>Iniciar sesión</span>
+                    </a>
+                </li>
+            @endauth
         </ul>
 
         <hr style="background-color: #e0e0e0; opacity: 0.8; margin-top: 15px; margin-bottom: 10px;">
 
+        @auth
         <div class="dropdown pb-4">
             <a href="{{ route('profile.show') }}" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle py-2 px-1 text-truncate" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="bi bi-person-circle fs-4 me-2" style="color: #d75078;"></i>
@@ -151,5 +164,8 @@
                 </li>
             </ul>
         </div>
+        @else
+            <a href="{{ route('login') }}" class="btn btn-dentissa text-white mb-3">Acceso pacientes</a>
+        @endauth
     </div>
 </nav>

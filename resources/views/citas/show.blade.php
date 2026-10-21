@@ -13,7 +13,6 @@
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</li>
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Hora:</strong> {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</li>
             
-            <!-- Estado con lógica profesional -->
             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                 <strong>Estado:</strong>
                 @switch($cita->estado)

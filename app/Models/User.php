@@ -9,7 +9,6 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    // Nombre exacto de tu tabla de usuarios
     protected $table = 'usuarios';
 
     protected $fillable = [
@@ -27,7 +26,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    // Relación con el Rol
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');

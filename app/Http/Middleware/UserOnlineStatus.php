@@ -13,7 +13,6 @@ class UserOnlineStatus
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check()) {
-            // El usuario estará "en línea" por 5 minutos después de su última actividad
             $expiresAt = now()->addMinutes(5);
             Cache::put('user-is-online-' . Auth::user()->id, true, $expiresAt);
         }

@@ -1,7 +1,6 @@
 <x-plantilla>
     <x-slot:title>Registrar Caso | Dentissa</x-slot:title>
 
-    <!-- Encabezado igual al de registro de pacientes -->
     <div class="pb-2 mb-4 border-bottom">
         <a href="{{ route('casos.index') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
             <i class="bi bi-arrow-left me-1"></i> Volver al listado
@@ -10,13 +9,11 @@
         <p class="text-muted">Asigna un tratamiento base y progreso al paciente.</p>
     </div>
 
-    <!-- Tarjeta con estilos consistentes -->
     <div class="card p-4 shadow-sm border-0 bg-white" style="max-width: 800px;">
         <form action="{{ route('casos.store') }}" method="POST">
             @csrf
 
             <div class="row g-3">
-                <!-- Información del Caso -->
                 <div class="col-md-8">
                     <label for="tratamiento_base" class="form-label fw-semibold text-dark">Tratamiento Base</label>
                     <input type="text" class="form-control" id="tratamiento_base" name="tratamiento_base" required>
@@ -26,7 +23,6 @@
                     <input type="number" class="form-control" id="progreso" name="progreso" value="0" min="0" max="100" required>
                 </div>
 
-                <!-- Selector de Paciente -->
                 <div class="col-md-12 mt-3">
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" name="nuevo_paciente" id="checkNuevo" onchange="toggleForm(this)">
@@ -44,7 +40,6 @@
                     </div>
                 </div>
 
-              <!-- Formulario Completo de Nuevo Paciente -->
 <div id="formCompletoPaciente" class="col-md-12 p-3 bg-light rounded border mt-2" style="display: none;">
     <h6 class="fw-bold mb-3 text-dark">Datos del Nuevo Paciente</h6>
     <div class="row g-3">
@@ -60,7 +55,6 @@
 </div>
             </div>
 
-            <!-- Botones de Acción iguales al registro de paciente -->
             <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
                 <a href="{{ route('casos.index') }}" class="btn btn-light border py-2 px-4 fw-semibold text-muted">
                     Cancelar

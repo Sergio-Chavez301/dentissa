@@ -21,7 +21,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = Role::all(); // Obtenemos los roles de la base de datos
+        $roles = Role::all();
         return view('users.create', compact('roles'));
     }
 
@@ -32,7 +32,7 @@ class UserController extends Controller
             'apellidos' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:usuarios,username',
             'email' => 'required|string|email|max:255|unique:usuarios,email',
-            'role_id' => 'required|exists:roles,id', // Valida dinámicamente que el rol exista en la BD
+            'role_id' => 'required|exists:roles,id',
             'password' => 'required|string|min:8|confirmed',
         ], [
             'username.unique' => 'Este nombre de usuario ya está en uso.',
@@ -64,7 +64,7 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $usuario = User::findOrFail($id);
-        $roles = Role::all(); // Obtenemos los roles de la base de datos para la edición
+        $roles = Role::all();
         return view('users.edit', compact('usuario', 'roles'));
     }
 
@@ -77,7 +77,7 @@ class UserController extends Controller
             'apellidos' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:usuarios,username,' . $usuario->id,
             'email' => 'required|string|email|max:255|unique:usuarios,email,' . $usuario->id,
-            'role_id' => 'required|exists:roles,id', // Valida dinámicamente contra la tabla roles
+            'role_id' => 'required|exists:roles,id',
             'password' => 'nullable|string|min:8|confirmed', 
         ], [
             'username.unique' => 'Este nombre de usuario ya está en uso.',
@@ -153,21 +153,16 @@ class UserController extends Controller
                 ->with('error', 'No puedes eliminar tu propio usuario mientras tienes la sesión activa.');
         }
 
-        // Si este usuario tiene un perfil de paciente asociado, eliminamos en cascada sus dependencias
         $patient = Patient::where('user_id', $usuario->id)->first();
 
         if ($patient) {
-            // 1. Eliminar sus casos clínicos
             $patient->casosClinicos()->delete();
 
-            // 2. Eliminar sus citas
             Cita::where('paciente_id', $patient->id)->delete();
 
-            // 3. Eliminar el registro del paciente
             $patient->delete();
         }
 
-        // Finalmente eliminamos al usuario
         $usuario->delete();
 
         return redirect()->route('users.index')

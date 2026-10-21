@@ -13,7 +13,6 @@
         </div>
     </div>
 
-    <!-- Gestión de Alertas -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
@@ -47,12 +46,10 @@
                             <td class="fw-medium text-dark">${{ number_format($servicio->precio, 2) }}</td>
                             <td class="text-end">
                                 <div class="d-flex justify-content-end gap-1">
-                                    <!-- Botón Editar -->
                                     <a href="{{ route('servicios.edit', $servicio->id) }}" class="btn btn-sm btn-light border" title="Editar">
                                         <i class="bi bi-pencil-fill text-muted"></i>
                                     </a>
 
-                                    <!-- Botón Eliminar -->
                                     <form action="{{ route('servicios.destroy', $servicio->id) }}" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de eliminar este servicio?')">
                                         @csrf
                                         @method('DELETE')

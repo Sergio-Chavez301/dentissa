@@ -6,7 +6,6 @@
         <p class="text-muted">Gestión de peticiones recibidas desde el portal de pacientes.</p>
     </div>
 
-    <!-- Gestión de Alertas -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}

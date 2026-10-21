@@ -8,6 +8,7 @@ use App\Models\Patient;
 use App\Models\Servicio;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\OfficeSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -147,7 +148,7 @@ class SolicitudController extends Controller
                     'servicio_id' => $request->servicio_id,
                     'fecha' => $fechaHora->format('Y-m-d'),
                     'hora' => $fechaHora->format('H:i:s'),
-                    'estado' => Cita::ESTADO_EN_ESPERA,
+                    'estado' => Cita::ESTADO_CONFIRMADA,
                 ]);
 
                 $solicitud->update(['estado' => SolicitudCita::ESTADO_CONFIRMADA]);
@@ -161,7 +162,6 @@ class SolicitudController extends Controller
 
             ['solicitud' => $solicitud, 'paciente' => $paciente, 'usuario' => $usuario, 'cita' => $cita, 'passwordTemporal' => $passwordTemporal] = $resultado;
             
-            // 5. Guardamos en sesión para activar el botón de WhatsApp en la vista
             session([
                 'temp_password' => $passwordTemporal,
                 'temp_telefono' => $paciente->telefono,
@@ -169,7 +169,21 @@ class SolicitudController extends Controller
                 'temp_username' => $usuario->username,
             ]);
 
-            $mensaje = 'Hola ' . $paciente->nombre . ', tu cita en Dentissa quedó confirmada para el ' . Carbon::parse($cita->fecha)->format('d/m/Y') . ' a las ' . Carbon::parse($cita->hora)->format('H:i') . '. Tu acceso al portal: usuario ' . $usuario->username . ', contraseña temporal ' . $passwordTemporal . '. Ingresa en ' . url('/login') . ' y cambia tu contraseña después de iniciar sesión.';
+            $officeSettings = OfficeSetting::current();
+            $mensajeLineas = [
+                'Hola ' . $paciente->nombre . ', tu cita en Dentissa quedó confirmada para el ' . Carbon::parse($cita->fecha)->format('d/m/Y') . ' a las ' . Carbon::parse($cita->hora)->format('H:i') . '.',
+            ];
+            if ($officeSettings->clinic_address) {
+                $mensajeLineas[] = 'Dirección del consultorio: ' . $officeSettings->clinic_address;
+            }
+            if ($officeSettings->map_link) {
+                $mensajeLineas[] = 'Mapa: ' . $officeSettings->map_link;
+            }
+            if ($officeSettings->whatsapp_phone) {
+                $mensajeLineas[] = 'WhatsApp del consultorio: ' . $officeSettings->whatsapp_phone;
+            }
+            $mensajeLineas[] = 'Tu acceso al portal: usuario ' . $usuario->username . ', contraseña temporal ' . $passwordTemporal . '. Ingresa en ' . url('/login') . ' y cambia tu contraseña después de iniciar sesión.';
+            $mensaje = implode("\n", $mensajeLineas);
             return redirect()->route('citas.index')->with([
                 'success' => 'Cita agendada y cuenta creada para ' . $solicitud->nombre . '.',
                 'whatsapp_url' => $this->whatsappUrl($paciente->telefono, $mensaje),

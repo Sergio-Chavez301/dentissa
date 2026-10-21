@@ -45,15 +45,12 @@
                             </td>
                             <td class="text-end">
                                 <div class="btn-group" role="group">
-                                    <!-- Ver -->
                                     <a href="{{ route('patients.show', $patient->id) }}" class="btn btn-sm btn-light border" title="Ver Detalles">
                                         <i class="bi bi-eye-fill text-muted"></i>
                                     </a>
-                                    <!-- Editar -->
                                     <a href="{{ route('patients.edit', $patient->id) }}" class="btn btn-sm btn-light border" title="Editar">
                                         <i class="bi bi-pencil-fill text-muted"></i>
                                     </a>
-                                    <!-- Eliminar -->
                                     <form action="{{ route('patients.destroy', $patient->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar a este paciente?');">
                                         @csrf
                                         @method('DELETE')

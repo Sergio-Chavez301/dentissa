@@ -20,7 +20,7 @@
 <body class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
     <div class="max-w-md w-full bg-white rounded-2xl shadow-sm border p-8">
         <h1 class="text-2xl font-bold mb-2">Recuperar contraseña</h1>
-        <p class="text-sm text-gray-600 mb-6">Ingresa tu correo y te enviaremos un enlace para restablecerla.</p>
+        <p class="text-sm text-gray-600 mb-6">Ingresa tu correo. Si corresponde a una cuenta activa, recibirás un enlace para restablecerla.</p>
 
         @if (session('status'))
             <div class="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">

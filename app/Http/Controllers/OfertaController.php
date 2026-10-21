@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Oferta;
+use App\Models\OfficeSetting;
 use Illuminate\Http\Request;
 
 class OfertaController extends Controller
@@ -84,6 +85,8 @@ class OfertaController extends Controller
             ->orderBy('id')
             ->get();
 
-        return view('web.ofertas', compact('ofertas'));
+        $officeSettings = OfficeSetting::current();
+
+        return view('web.ofertas', compact('ofertas', 'officeSettings'));
     }
 }

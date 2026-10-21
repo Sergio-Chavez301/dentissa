@@ -38,13 +38,11 @@
                     @error('caso_clinico_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                 </div>
 
-                <!-- Fecha con onchange para cargar horarios -->
                 <div class="col-md-6">
                     <label for="fecha" class="form-label fw-semibold text-dark">Fecha</label>
                     <input type="date" class="form-control" id="fecha" name="fecha" value="{{ old('fecha', $cita->fecha) }}" onchange="cargarHorarios()" required>
                 </div>
 
-                <!-- Hora como select para cargar dinámicamente -->
                 <div class="col-md-6">
                     <label for="hora" class="form-label fw-semibold text-dark">Hora</label>
                     <select id="hora" name="hora" class="form-select" required>
@@ -56,6 +54,7 @@
                     <label for="estado" class="form-label fw-semibold text-dark">Estado de la Cita</label>
                     <select class="form-select" id="estado" name="estado" required>
                         <option value="{{ \App\Models\Cita::ESTADO_EN_ESPERA }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_EN_ESPERA ? 'selected' : '' }}>En Espera</option>
+                        <option value="{{ \App\Models\Cita::ESTADO_CONFIRMADA }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_CONFIRMADA ? 'selected' : '' }}>Confirmada</option>
                         <option value="{{ \App\Models\Cita::ESTADO_REALIZADA }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_REALIZADA ? 'selected' : '' }}>Realizada</option>
                         <option value="{{ \App\Models\Cita::ESTADO_NO_PRESENTO }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_NO_PRESENTO ? 'selected' : '' }}>No se presentó</option>
                         <option value="{{ \App\Models\Cita::ESTADO_CANCELADA }}" {{ old('estado', $cita->estado) == \App\Models\Cita::ESTADO_CANCELADA ? 'selected' : '' }}>Cancelada</option>

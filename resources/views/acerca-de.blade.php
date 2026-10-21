@@ -34,7 +34,6 @@
     </style>
 </head>
 <body>  
-    <!-- Navegación -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
         <div class="container">
             <a class="navbar-brand fw-bold text-rosa" href="{{ route('home') }}">Dentissa | Proyecto</a>
@@ -50,14 +49,12 @@
         </div>
     </nav>
 
-    <!-- Encabezado de la Sección -->
     <header class="py-5 text-center container">
         <div class="row py-lg-4">
             <div class="col-lg-6 col-md-8 mx-auto">
                 <h1 class="fw-bold text-rosa display-5">Equipo de Desarrollo</h1>
                 <p class="text-muted mt-2">Conoce a los integrantes detrás del sistema de gestión odontológica Dentissa.</p>
                 
-                <!-- Botón de Descarga de Documentación -->
                 <div class="mt-4">
                     <a href="#" download class="btn btn-outline-secondary px-4 py-2 shadow-sm d-inline-flex align-items-center gap-2">
                         <i class="bi bi-file-earmark-pdf-fill text-danger fs-5"></i> Descargar Documentación del Proyecto
@@ -67,11 +64,9 @@
         </div>
     </header>
 
-    <!-- Listado de los Integrantes del Proyecto -->
     <main class="container pb-5">
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 justify-content-center">
             
-            <!-- Zuri Sarahi -->
             <div class="col">
                 <div class="card team-card h-100 p-4 shadow-sm bg-white text-center">
                     <div class="card-body p-0">
@@ -82,7 +77,6 @@
                 </div>
             </div>
 
-            <!-- Alexander -->
             <div class="col">
                 <div class="card team-card h-100 p-4 shadow-sm bg-white text-center">
                     <div class="card-body p-0">
@@ -93,7 +87,6 @@
                 </div>
             </div>
 
-            <!-- Sergio Gabriel -->
             <div class="col">
                 <div class="card team-card h-100 p-4 shadow-sm bg-white text-center">
                     <div class="card-body p-0">
@@ -104,7 +97,6 @@
                 </div>
             </div>
 
-            <!-- Sarai Girón -->
             <div class="col">
                 <div class="card team-card h-100 p-4 shadow-sm bg-white text-center">
                     <div class="card-body p-0">
@@ -115,7 +107,6 @@
                 </div>
             </div>
 
-            <!-- Yovanny Nuñez -->
             <div class="col">
                 <div class="card team-card h-100 p-4 shadow-sm bg-white text-center">
                     <div class="card-body p-0">
@@ -129,7 +120,6 @@
         </div>
     </main>
 
-    <!-- Pie de página -->
     <footer class="py-4 text-center border-top bg-white">
         <div class="container">
             <p class="text-muted mb-0">&copy; {{ date('Y') }} Dentissa - Sistema de Gestión Odontológica</p>

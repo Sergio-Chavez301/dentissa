@@ -15,21 +15,18 @@
             @method('PUT')
 
             <div class="row g-3">
-                <!-- Nombre -->
                 <div class="col-md-6">
                     <label for="nombre" class="form-label fw-semibold text-dark">Nombre(s)</label>
                     <input type="text" class="form-control @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre', $patient->nombre) }}" required>
                     @error('nombre') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
-                <!-- Apellidos -->
                 <div class="col-md-6">
                     <label for="apellidos" class="form-label fw-semibold text-dark">Apellidos</label>
                     <input type="text" class="form-control @error('apellidos') is-invalid @enderror" id="apellidos" name="apellidos" value="{{ old('apellidos', $patient->apellidos) }}" required>
                     @error('apellidos') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
-                <!-- Teléfono -->
                 <div class="col-md-6">
                     <label for="telefono" class="form-label fw-semibold text-dark">Teléfono</label>
                     <input type="text" class="form-control @error('telefono') is-invalid @enderror" id="telefono" name="telefono" value="{{ old('telefono', $patient->telefono) }}" required>
@@ -42,7 +39,6 @@
                     @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 
-                <!-- Fecha Nacimiento -->
                 <div class="col-md-3">
                     <label for="fecha_nacimiento" class="form-label fw-semibold text-dark">Fecha Nacimiento</label>
                     <input type="date" class="form-control @error('fecha_nacimiento') is-invalid @enderror" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ old('fecha_nacimiento', $patient->fecha_nacimiento) }}" required>
@@ -51,7 +47,6 @@
 
 
 
-                <!-- Áreas de texto -->
                 <div class="col-md-12">
                     <label for="alergias" class="form-label fw-semibold text-dark">Alergias</label>
                     <textarea class="form-control" id="alergias" name="alergias" rows="2">{{ old('alergias', $patient->alergias) }}</textarea>

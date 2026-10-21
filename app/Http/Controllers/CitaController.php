@@ -15,14 +15,10 @@ use Illuminate\Support\Str;
 
 class CitaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $user = Auth::user();
 
-        // Si el usuario es un paciente (role_id == 3), filtramos solo sus citas usando paciente_id
         if ($user && $user->role_id == 3) {
             $paciente = Patient::where('user_id', $user->id)
                                ->orWhere('email', $user->email)
@@ -35,7 +31,6 @@ class CitaController extends Controller
                     ->get()
                 : collect(); 
         } else {
-            // Administrador y Asistente ven todas las citas del sistema
             $citas = Cita::with(['paciente', 'servicio'])
                 ->orderByRaw("CASE WHEN estado = '" . Cita::ESTADO_EN_ESPERA . "' THEN 0 ELSE 1 END ASC, fecha ASC, hora ASC")
                 ->get();
@@ -44,9 +39,6 @@ class CitaController extends Controller
         return view('citas.index', compact('citas'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(Request $request)
     {
         $this->ensureStaffAccess();
@@ -70,9 +62,6 @@ class CitaController extends Controller
         return view('citas.create', compact('caso', 'servicios'));
     }
 
-    /**
-     * Endpoint para consultar disponibilidad
-     */
     public function verificarDisponibilidad(Request $request)
     {
         $fecha = $request->query('fecha');
@@ -86,9 +75,6 @@ class CitaController extends Controller
         return response()->json(['horarios' => array_values($horarios)]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $this->ensureStaffAccess();
@@ -111,7 +97,6 @@ class CitaController extends Controller
             ]);
         }
 
-        // 1. Lógica para manejar paciente nuevo o existente detectando si se llenó el nombre
         if ($request->filled('nombre') || $request->has('nuevo_paciente')) {
             $datosPaciente = $request->validate([
                 'nombre'           => 'required|string|max:255',
@@ -126,7 +111,6 @@ class CitaController extends Controller
                 'email.unique' => 'Este correo electrónico ya está registrado en el sistema.',
             ]);
 
-            // A. Creamos su cuenta de acceso web
             $passwordTemporal = Str::random(8); 
             $usuario = User::create([
                 'nombre'    => $datosPaciente['nombre'],
@@ -134,17 +118,15 @@ class CitaController extends Controller
                 'username'  => Str::slug($datosPaciente['nombre'] . '.' . $datosPaciente['apellidos'] . '-' . rand(100, 999), ''),
                 'email'     => $datosPaciente['email'],
                 'password'  => Hash::make($passwordTemporal),
-                'role_id'   => 3, // ID del rol Paciente
+                'role_id'   => 3,
                 'activo'    => 1,
             ]);
 
-            // B. Vinculamos el registro del paciente con el ID del usuario creado
             $datosPaciente['user_id'] = $usuario->id; 
             
             $paciente = Patient::create($datosPaciente);
             $paciente_id = $paciente->id;
 
-            // C. Guardamos temporalmente en sesión para mostrar las credenciales en la vista del paciente
             session([
                 'temp_password' => $passwordTemporal,
                 'temp_telefono' => $datosPaciente['telefono'],
@@ -156,11 +138,9 @@ class CitaController extends Controller
             $request->validate(['paciente_id' => 'required|exists:pacientes,id']);
             $paciente_id = $request->paciente_id;
 
-            // Limpiamos la sesión si se agendó cita a un paciente existente
             session()->forget(['temp_password', 'temp_telefono', 'temp_nombre', 'temp_username']);
         }
 
-        // 2. Crear la cita
         $cita = Cita::create([
             'paciente_id' => $paciente_id,
             'caso_clinico_id' => $validated['caso_clinico_id'] ?? null,
@@ -170,7 +150,6 @@ class CitaController extends Controller
             'estado'      => Cita::ESTADO_EN_ESPERA
         ]);
 
-        // 💡 Si fue paciente nuevo, redirigimos a su vista de detalles (show) pasando las credenciales por sesión flash
         if ($request->filled('nombre') || $request->has('nuevo_paciente')) {
             return redirect()->route('patients.show', $paciente_id)
                              ->with([
@@ -247,7 +226,7 @@ class CitaController extends Controller
         $request->validate([
             'fecha'  => 'required|date',
             'hora'   => 'required',
-            'estado' => 'required|in:en_espera,realizada,cancelada,no_presento',
+            'estado' => 'required|in:en_espera,confirmada,realizada,cancelada,no_presento',
             'caso_clinico_id' => [
                 'nullable',
                 Rule::exists('casos_clinicos', 'id')
@@ -272,6 +251,32 @@ class CitaController extends Controller
         ]);
 
         return redirect()->route('citas.index')->with('success', 'Cita actualizada correctamente.');
+    }
+
+    public function updateStatus(Request $request, Cita $cita)
+    {
+        $this->ensureStaffAccess();
+
+        $allowedTransitions = match ($cita->estado) {
+            Cita::ESTADO_EN_ESPERA => [Cita::ESTADO_CONFIRMADA, Cita::ESTADO_CANCELADA],
+            Cita::ESTADO_CONFIRMADA => [Cita::ESTADO_REALIZADA, Cita::ESTADO_NO_PRESENTO],
+            default => [],
+        };
+
+        $validated = $request->validate([
+            'estado' => ['required', Rule::in($allowedTransitions)],
+        ]);
+
+        $cita->update(['estado' => $validated['estado']]);
+
+        $messages = [
+            Cita::ESTADO_CONFIRMADA => 'La cita fue confirmada.',
+            Cita::ESTADO_CANCELADA => 'La cita fue rechazada y cancelada.',
+            Cita::ESTADO_REALIZADA => 'La cita fue marcada como realizada.',
+            Cita::ESTADO_NO_PRESENTO => 'La cita fue marcada como inasistencia.',
+        ];
+
+        return redirect()->route('citas.index')->with('success', $messages[$validated['estado']]);
     }
 
     private function ensureStaffAccess(): void

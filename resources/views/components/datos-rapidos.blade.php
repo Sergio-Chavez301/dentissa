@@ -1,6 +1,5 @@
 @props(['citas', 'pacientes', 'casos', 'servicios'])
 <div class="row g-3 mb-4">
-    <!-- Tarjeta 1: Citas del Día -->
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #d75078 !important;">
             <div class="card-body d-flex align-items-center">
@@ -15,7 +14,6 @@
         </div>
     </div>
 
-    <!-- Tarjeta 2: Pacientes Totales -->
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #f2b0a6 !important;">
             <div class="card-body d-flex align-items-center">
@@ -30,7 +28,6 @@
         </div>
     </div>
 
-    <!-- Tarjeta 3: Casos Activos -->
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #1e1e24 !important;">
             <div class="card-body d-flex align-items-center">
@@ -45,7 +42,6 @@
         </div>
     </div>
 
-    <!-- Tarjeta 4: Servicios Ofrecidos -->
     <div class="col-12 col-sm-6 col-xl-3">
         <div class="card h-100 border-0 shadow-sm" style="border-left: 4px solid #d75078 !important;">
             <div class="card-body d-flex align-items-center">

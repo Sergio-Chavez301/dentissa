@@ -34,6 +34,7 @@ class ReportController extends Controller
 
         $citasPorEstado = [
             'en_espera' => Cita::where('estado', 'en_espera')->count(),
+            'confirmada' => Cita::where('estado', 'confirmada')->count(),
             'realizada' => Cita::where('estado', 'realizada')->count(),
             'cancelada' => Cita::where('estado', 'cancelada')->count(),
             'no_presento' => Cita::where('estado', 'no_presento')->count(),

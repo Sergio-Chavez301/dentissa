@@ -14,7 +14,6 @@
             @csrf
 
             <div class="row g-3">
-                <!-- Nombre -->
                 <div class="col-md-6">
                     <label for="nombre" class="form-label fw-semibold text-dark">Nombre(s)</label>
                     <input type="text" class="form-control @error('nombre') is-invalid @enderror" id="nombre" name="nombre" value="{{ old('nombre') }}" required>
@@ -23,7 +22,6 @@
                     @enderror
                 </div>
 
-                <!-- Apellidos -->
                 <div class="col-md-6">
                     <label for="apellidos" class="form-label fw-semibold text-dark">Apellidos</label>
                     <input type="text" class="form-control @error('apellidos') is-invalid @enderror" id="apellidos" name="apellidos" value="{{ old('apellidos') }}" required>
@@ -32,7 +30,6 @@
                     @enderror
                 </div>
 
-                <!-- Teléfono y Edad -->
                 <div class="col-md-6">
                     <label for="telefono" class="form-label fw-semibold text-dark">Teléfono</label>
                     <input type="text" class="form-control @error('telefono') is-invalid @enderror" id="telefono" name="telefono" value="{{ old('telefono') }}" required>
@@ -55,7 +52,6 @@
                 </div>
 
 
-                <!-- Antecedentes -->
                 <div class="col-md-12">
                     <label for="alergias" class="form-label fw-semibold text-dark">Alergias</label>
                     <textarea class="form-control" id="alergias" name="alergias" rows="2">{{ old('alergias') }}</textarea>
@@ -72,7 +68,6 @@
                 </div>
             </div>
 
-            <!-- Botones de Acción -->
             <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
                 <a href="{{ route('patients.index') }}" class="btn btn-light border py-2 px-4 fw-semibold text-muted">
                     Cancelar

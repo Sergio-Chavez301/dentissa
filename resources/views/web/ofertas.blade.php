@@ -1,63 +1,92 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ofertas | Dentissa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
-    <style>
-        html, body { overflow-x: hidden; }
-        body { background: #f7f8f5; font-family: 'Segoe UI', sans-serif; color: #183a37; }
-        .bg-dentissa { background-color: #d75078 !important; }
-        .text-dentissa { color: #d75078 !important; }
-        .card-offer { border: 0; border-radius: 18px; box-shadow: 0 12px 30px rgba(24,58,55,.08); }
-        .tag { display: inline-block; padding: .45rem .8rem; background: rgba(215,80,120,.12); color: #b82c59; font-weight: 700; border-radius: 999px; font-size: .75rem; }
-    </style>
-</head>
-<body>
-    <div class="container py-5">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-            <div>
-                <p class="text-uppercase text-dentissa mb-1 fw-bold small">Dentissa</p>
-                <h1 class="fw-bold mb-0">Ofertas y promociones</h1>
-            </div>
-            <a href="{{ route('home') }}" class="btn btn-outline-secondary">Volver al inicio</a>
-        </div>
+<x-plantilla>
+    <x-slot:title>Ofertas | Dentissa</x-slot:title>
 
-        @if($ofertas->isNotEmpty())
-            <div class="row g-4">
-                @foreach($ofertas as $oferta)
-                    <div class="col-md-4">
-                        <div class="card card-offer h-100 p-4">
-                            <span class="tag mb-3">{{ $oferta->tag ?? 'Promoción' }}</span>
-                            <h3 class="fw-bold mb-2">{{ $oferta->titulo }}</h3>
+    @php
+        $dashboardRoute = Auth::check() ? match ((int) Auth::user()->role_id) {
+            1 => route('dashboard.admin'),
+            2 => route('dashboard.asistente'),
+            3 => route('dashboard.paciente'),
+            default => route('home'),
+        } : route('home');
+        $whatsappMessage = urlencode('Hola, quisiera información sobre las ofertas de ' . $officeSettings->clinic_name . '.');
+        $whatsappUrl = $officeSettings->whatsapp_digits
+            ? 'https://wa.me/' . $officeSettings->whatsapp_digits . '?text=' . $whatsappMessage
+            : null;
+    @endphp
+
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 pb-3 mb-4 border-bottom">
+        <div>
+            <a href="{{ $dashboardRoute }}" class="text-muted text-decoration-none small d-inline-flex align-items-center gap-2 mb-2">
+                <i class="bi bi-arrow-left" aria-hidden="true"></i>{{ Auth::check() && (int) Auth::user()->role_id === 3 ? 'Volver a mi panel' : 'Volver al inicio' }}
+            </a>
+            <span class="d-block text-uppercase text-dentissa mb-1 fw-bold small">{{ $officeSettings->clinic_name }}</span>
+            <h1 class="h2 fw-bold mb-0">Ofertas y promociones</h1>
+        </div>
+        @if($whatsappUrl)
+            <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-success">
+                <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Consultar por WhatsApp
+            </a>
+        @endif
+    </div>
+
+    @if($ofertas->isNotEmpty())
+        <div class="row g-3">
+            @foreach($ofertas as $oferta)
+                <div class="col-md-6 col-xl-4">
+                    <article class="card border-0 shadow-sm h-100">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <span class="badge rounded-pill text-bg-light text-dentissa align-self-start mb-3">{{ $oferta->tag ?? 'Promoción' }}</span>
+                            <h2 class="h5 fw-bold mb-2">{{ $oferta->titulo }}</h2>
                             @if($oferta->precio)
-                                <div class="display-6 fw-bold text-dentissa mb-3">${{ number_format((float) $oferta->precio, 0) }}</div>
+                                <div class="h3 fw-bold text-dentissa mb-3">${{ number_format((float) $oferta->precio, 0) }}</div>
                             @else
-                                <div class="display-6 fw-bold text-dentissa mb-3">Consulta</div>
+                                <div class="h3 fw-bold text-dentissa mb-3">Consulta</div>
                             @endif
                             <p class="text-muted mb-4">{{ $oferta->descripcion }}</p>
-                            <a href="{{ route('home') }}#contacto" class="btn bg-dentissa text-white w-100">Solicitar información</a>
+                            @if($whatsappUrl)
+                                <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success mt-auto">
+                                    Consultar esta oferta
+                                </a>
+                            @else
+                                <a href="{{ route('home') }}#contacto" class="btn btn-outline-secondary mt-auto">Solicitar información</a>
+                            @endif
                         </div>
-                    </div>
-                @endforeach
-            </div>
-        @else
-            <div class="alert alert-light border shadow-sm text-center py-4">
-                <h3 class="fw-bold mb-2">No hay ofertas activas</h3>
-                <p class="mb-0 text-muted">La administradora puede agregar promociones desde el panel de contenido web.</p>
-            </div>
-        @endif
-
-        <div class="mt-5 p-4 bg-white rounded-4 shadow-sm">
-            <h3 class="fw-bold mb-3">¿Qué incluye?</h3>
-            <div class="row gy-3">
-                <div class="col-md-4"><i class="bi bi-check-circle-fill text-dentissa me-2"></i> Valoración inicial profesional</div>
-                <div class="col-md-4"><i class="bi bi-check-circle-fill text-dentissa me-2"></i> Plan de tratamiento claro</div>
-                <div class="col-md-4"><i class="bi bi-check-circle-fill text-dentissa me-2"></i> Acompañamiento durante cada etapa</div>
+                    </article>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-tag text-dentissa fs-2" aria-hidden="true"></i>
+                <h2 class="h5 fw-bold mt-3">No hay ofertas activas</h2>
+                <p class="text-muted mb-0">Pronto publicaremos nuevas promociones.</p>
             </div>
         </div>
-    </div>
-</body>
-</html>
+    @endif
+
+    <section class="card border-0 shadow-sm mt-4" aria-labelledby="office-location-title">
+        <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div>
+                <span class="text-muted small text-uppercase fw-bold">Visítanos</span>
+                <h2 id="office-location-title" class="h5 fw-bold mt-1 mb-1">{{ $officeSettings->clinic_name }}</h2>
+                <p class="text-muted mb-0">{{ $officeSettings->clinic_address ?: 'Ubicación próximamente disponible.' }}</p>
+            </div>
+            @if($officeSettings->map_link)
+                <a href="{{ $officeSettings->map_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary">
+                    <i class="bi bi-geo-alt me-2" aria-hidden="true"></i>Cómo llegar
+                </a>
+            @endif
+        </div>
+        @if($officeSettings->map_embed_link)
+            <iframe
+                src="{{ $officeSettings->map_embed_link }}"
+                title="Mapa de ubicación de {{ $officeSettings->clinic_name }}"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen
+                style="display: block; width: 100%; height: 360px; border: 0; border-radius: 0 0 6px 6px;">
+            </iframe>
+        @endif
+    </section>
+</x-plantilla>

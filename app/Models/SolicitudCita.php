@@ -9,7 +9,6 @@ class SolicitudCita extends Model
 {
     use HasFactory;
 
-    // Constantes para estados
     const ESTADO_ESPERANDO_CONFIRMACION = 'esperando_confirmacion';
     const ESTADO_CANCELADA               = 'cancelada';
     const ESTADO_CONFIRMADA              = 'confirmada';

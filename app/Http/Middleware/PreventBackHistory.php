@@ -8,9 +8,6 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PreventBackHistory
 {
-    /**
-     * Handle an incoming request.
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);

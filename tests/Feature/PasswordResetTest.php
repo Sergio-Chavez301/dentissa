@@ -38,9 +38,21 @@ class PasswordResetTest extends TestCase
         $response = $this->post('/forgot-password', ['email' => $user->email]);
 
         $response->assertRedirect();
+        $response->assertSessionHas('status', 'Si el correo corresponde a una cuenta activa, recibirás un enlace para restablecer la contraseña.');
         Notification::assertSentTo($user, ResetPassword::class, function (ResetPassword $notification) use ($user) {
             return $notification->toMail($user) instanceof \Illuminate\Notifications\Messages\MailMessage;
         });
+    }
+
+    public function test_unknown_email_receives_the_same_confirmation_without_notification(): void
+    {
+        Notification::fake();
+
+        $response = $this->post('/forgot-password', ['email' => 'not-registered@example.com']);
+
+        $response->assertRedirect();
+        $response->assertSessionHas('status', 'Si el correo corresponde a una cuenta activa, recibirás un enlace para restablecer la contraseña.');
+        Notification::assertNothingSent();
     }
 
     public function test_password_can_be_reset_with_valid_token(): void

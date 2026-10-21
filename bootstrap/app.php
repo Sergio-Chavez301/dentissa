@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\PreventBackHistory;
+use App\Http\Middleware\EnsureAdministrator;
 use App\Http\Middleware\UserOnlineStatus;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Alias para middlewares que invocas manualmente en rutas
         $middleware->alias([
             'prevent-back-history' => PreventBackHistory::class,
+            'admin' => EnsureAdministrator::class,
         ]);
 
         // Middleware que se ejecuta automáticamente en todas las rutas web

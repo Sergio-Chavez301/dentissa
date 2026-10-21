@@ -11,13 +11,11 @@
 
     <div class="card p-4 shadow-sm border-0 bg-white" style="max-width: 800px;">
         <div class="row g-4">
-            <!-- Información del Paciente -->
             <div class="col-md-6">
                 <label class="text-muted small text-uppercase fw-bold">Paciente</label>
                 <div class="text-dark fw-semibold fs-5">{{ $caso->paciente->nombre }} {{ $caso->paciente->apellidos }}</div>
             </div>
 
-            <!-- Estado -->
             <div class="col-md-6">
                 <label class="text-muted small text-uppercase fw-bold">Estado del Caso</label>
                 <div>
@@ -33,7 +31,6 @@
                 </div>
             </div>
 
-            <!-- Tratamiento -->
             <div class="col-12">
                 <label class="text-muted small text-uppercase fw-bold">Tratamiento Base</label>
                 <div class="p-3 bg-light rounded border text-dark">
@@ -41,7 +38,6 @@
                 </div>
             </div>
 
-            <!-- Progreso -->
             <div class="col-12">
                 <label class="text-muted small text-uppercase fw-bold d-flex justify-content-between">
                     Progreso del Tratamiento <span>{{ $caso->progreso }}%</span>
@@ -54,7 +50,6 @@
             </div>
         </div>
 
-        <!-- Botones de Acción -->
         <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
             <a href="{{ route('casos.index') }}" class="btn btn-light border py-2 px-4 fw-semibold text-muted">
                 Volver

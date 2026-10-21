@@ -69,6 +69,10 @@
                                     <td><span class="badge bg-warning-subtle text-warning">{{ $citasPorEstado['en_espera'] }}</span></td>
                                 </tr>
                                 <tr>
+                                    <td>Confirmadas</td>
+                                    <td><span class="badge bg-primary-subtle text-primary">{{ $citasPorEstado['confirmada'] }}</span></td>
+                                </tr>
+                                <tr>
                                     <td>Realizadas</td>
                                     <td><span class="badge bg-success-subtle text-success">{{ $citasPorEstado['realizada'] }}</span></td>
                                 </tr>

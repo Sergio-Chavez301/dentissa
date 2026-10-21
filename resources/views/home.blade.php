@@ -39,7 +39,7 @@
         .nav-links { display: flex; align-items: center; gap: 30px; font-size: 14px; font-weight: 600; }
         .nav-links a { text-decoration: none; }
         .nav-links a:not(.button):hover { color: var(--rose); }
-        .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 20px; border: 1px solid transparent; border-radius: 3px; color: var(--white); background: var(--rose); font-weight: 700; text-decoration: none; cursor: pointer; transition: background .2s ease, transform .2s ease; }
+        .button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 20px; border: 1px solid transparent; border-radius: 6px; color: var(--white); background: var(--rose); font-weight: 700; text-decoration: none; cursor: pointer; transition: background .2s ease, transform .2s ease; }
         .button:hover { color: var(--white); background: var(--rose-dark); transform: translateY(-2px); }
         .button-outline { color: var(--ink); background: transparent; border-color: var(--ink); }
         .button-outline:hover { color: var(--white); background: var(--ink); }
@@ -54,11 +54,22 @@
         .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
         .hero-note { display: flex; align-items: center; gap: 12px; margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 13px; }
         .note-mark { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; color: var(--ink); background: var(--lime); font-weight: 700; }
-        .hero-visual { position: relative; min-height: 410px; }
-        .hero-photo { position: absolute; inset: 0 20px 28px 0; width: calc(100% - 20px); height: calc(100% - 28px); object-fit: cover; object-position: center 30%; border-radius: 3px; }
+        .hero-visual { position: relative; min-height: 410px; isolation: isolate; }
+        .hero-photo { position: absolute; inset: 0 20px 28px 0; width: calc(100% - 20px); height: calc(100% - 28px); object-fit: cover; object-position: center 30%; border: 1px solid #ffffff8c; border-radius: 8px; box-shadow: 0 18px 42px #183a371c; transition: transform .35s ease, box-shadow .35s ease; }
+        .hero-visual:hover .hero-photo { transform: scale(1.012); box-shadow: 0 22px 48px #183a3726; }
+        .photo-expand { position: absolute; top: 14px; right: 34px; z-index: 1; min-height: 38px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid #ffffffb8; border-radius: 6px; color: var(--ink); background: #ffffffed; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .2s ease; }
+        .photo-expand:hover { background: var(--white); }
+        .photo-expand:focus-visible, .close-button:focus-visible { outline: 3px solid var(--rose); outline-offset: 3px; }
         .visual-caption { position: absolute; right: 0; bottom: 0; width: min(260px, 76%); padding: 18px 20px; color: var(--ink); background: var(--lime); }
         .visual-caption span { display: block; margin-bottom: 5px; color: #4f5d25; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .visual-caption strong { font: 22px/1.15 var(--serif); }
+        .location-band { border-block: 1px solid var(--line); background: #eef3ef; }
+        .location-inner { display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+        .location-copy h2 { margin: 12px 0 8px; font: 34px/1.1 var(--serif); }
+        .location-copy p { max-width: 620px; margin: 0; color: var(--ink-soft); line-height: 1.65; }
+        .location-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+        .location-actions .button-outline { border-color: var(--ink); }
+        .location-map { display: block; width: min(1180px, calc(100% - 48px)); height: 360px; margin: 32px auto 0; border: 1px solid var(--line); border-radius: 8px; background: #e8eeea; }
         .section { padding: 88px 0; }
         .section-heading { max-width: 660px; margin-bottom: 42px; }
         .section-heading h2 { margin: 14px 0; font: 46px/1.08 var(--serif); }
@@ -89,11 +100,16 @@
         .notice { margin: 18px auto 0; padding: 14px 18px; border: 1px solid #afcfc0; color: var(--ink); background: #e4f2e9; }
         .notice-error { border-color: #efb7c8; background: #fff0f4; }
         dialog { width: min(720px, calc(100% - 28px)); max-height: min(90vh, 820px); padding: 0; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: var(--paper); box-shadow: 0 24px 80px #102b2933; }
+        .image-viewer { width: min(1000px, calc(100% - 28px)); overflow: visible; }
+        .image-viewer-content { position: relative; padding: 14px; }
+        .image-viewer-content img { display: block; width: 100%; max-height: 78vh; object-fit: contain; background: #f0e7e4; }
+        .image-viewer-caption { margin: 12px 44px 2px 2px; color: var(--ink-soft); font-size: 13px; }
+        .image-viewer .close-button { position: absolute; top: 22px; right: 22px; z-index: 1; border-color: #ffffffb8; background: #ffffffed; }
         dialog::backdrop { background: #102b298c; backdrop-filter: blur(3px); }
         .dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 28px 18px; border-bottom: 1px solid var(--line); }
         .dialog-head h2 { margin: 0 0 6px; font: 32px/1.1 var(--serif); }
         .dialog-head p { margin: 0; color: var(--ink-soft); font-size: 13px; }
-        .close-button { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 3px; color: var(--ink); background: transparent; font-size: 22px; cursor: pointer; }
+        .close-button { width: 38px; height: 38px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: transparent; font-size: 22px; cursor: pointer; }
         .request-form { padding: 22px 28px 28px; }
         .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
         .field { min-width: 0; }
@@ -122,6 +138,7 @@
             h1 { max-width: 570px; font-size: 50px; }
             .hero-visual { min-height: 340px; }
             .hero-photo { inset: 0 16px 22px 0; width: calc(100% - 16px); height: calc(100% - 22px); }
+            .photo-expand { right: 28px; }
             .section { padding: 68px 0; }
             .section-heading h2 { font-size: 40px; }
         }
@@ -137,8 +154,9 @@
             .hero-actions .button { width: 100%; }
             .hero-actions .button-outline { display: none; }
             .hero-note { margin-top: 12px; padding-top: 10px; font-size: 11px; }
-            .hero-visual { min-height: 160px; }
+            .hero-visual { min-height: 0; aspect-ratio: 1; }
             .hero-photo { object-position: center 34%; }
+            .photo-expand { top: 8px; right: 22px; min-height: 34px; padding-inline: 9px; font-size: 11px; }
             .visual-caption { width: 190px; padding: 11px 13px; }
             .visual-caption strong { font-size: 17px; }
             .section-heading h2 { font-size: 35px; }
@@ -150,6 +168,10 @@
             .closing { grid-template-columns: 1fr; gap: 22px; padding: 44px 0; }
             .closing h2 { font-size: 34px; }
             .closing .button { width: 100%; }
+            .location-inner { align-items: flex-start; flex-direction: column; }
+            .location-actions { width: 100%; }
+            .location-actions .button { flex: 1 1 100%; }
+            .location-map { width: calc(100% - 32px); height: 280px; margin-top: 24px; }
             .footer-inner { align-items: flex-start; flex-direction: column; }
             .dialog-head { padding: 20px 18px 16px; }
             .dialog-head h2 { font-size: 28px; }
@@ -165,6 +187,12 @@
     </style>
 </head>
 <body>
+    @php
+        $whatsappMessage = urlencode('Hola, quisiera información sobre una cita en ' . $officeSettings->clinic_name . '.');
+        $officeWhatsappUrl = $officeSettings->whatsapp_digits
+            ? 'https://wa.me/' . $officeSettings->whatsapp_digits . '?text=' . $whatsappMessage
+            : null;
+    @endphp
     <div class="topline">
         <div class="wrap topline-inner">
             <p>Atención cercana para cuidar tu sonrisa</p>
@@ -210,6 +238,9 @@
                 </div>
                 <div class="hero-visual">
                     <img class="hero-photo" src="{{ asset('img/fondo2.png') }}" alt="Identidad de Melissa López N., odontología integral">
+                    <button class="photo-expand" type="button" data-open-image aria-label="Ampliar imagen de identidad">
+                        <span aria-hidden="true">↗</span> Ampliar imagen
+                    </button>
                     <div class="visual-caption"><span>Atención personal</span><strong>Salud y bienestar, en cada visita.</strong></div>
                 </div>
             </div>
@@ -342,6 +373,38 @@
             </div>
             <button class="button" type="button" data-open-request>Solicitar cita <span aria-hidden="true">↗</span></button>
         </section>
+
+        <section class="section location-band" id="ubicacion">
+            <div class="wrap location-inner">
+                <div class="location-copy">
+                    <span class="eyebrow">Ubicación</span>
+                    <h2>{{ $officeSettings->clinic_name }}</h2>
+                    <p>{{ $officeSettings->clinic_address ?: 'La dirección del consultorio estará disponible próximamente.' }}</p>
+                </div>
+                <div class="location-actions">
+                    @if($officeSettings->map_link)
+                        <a class="button button-outline" href="{{ $officeSettings->map_link }}" target="_blank" rel="noopener noreferrer">
+                            <span aria-hidden="true">⌖</span> Cómo llegar
+                        </a>
+                    @endif
+                    @if($officeWhatsappUrl)
+                        <a class="button" href="{{ $officeWhatsappUrl }}" target="_blank" rel="noopener noreferrer">
+                            <span aria-hidden="true">↗</span> WhatsApp del consultorio
+                        </a>
+                    @endif
+                </div>
+            </div>
+            @if($officeSettings->map_embed_link)
+                <iframe
+                    class="location-map"
+                    src="{{ $officeSettings->map_embed_link }}"
+                    title="Mapa de ubicación de {{ $officeSettings->clinic_name }}"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen>
+                </iframe>
+            @endif
+        </section>
     </main>
 
     <footer>
@@ -413,8 +476,17 @@
         </form>
     </dialog>
 
+    <dialog class="image-viewer" id="imageViewer" aria-label="Imagen ampliada">
+        <div class="image-viewer-content">
+            <button class="close-button" type="button" data-close-image aria-label="Cerrar imagen ampliada">×</button>
+            <img src="{{ asset('img/fondo2.png') }}" alt="Identidad de Melissa López N., odontología integral">
+            <p class="image-viewer-caption">Melissa López N. · Odontología Integral</p>
+        </div>
+    </dialog>
+
     <script>
         const dialog = document.getElementById('modalSolicitud');
+        const imageViewer = document.getElementById('imageViewer');
         const dateInput = document.getElementById('fecha_propuesta');
         const timeSelect = document.getElementById('hora_propuesta');
         const previousTime = @json(old('hora_propuesta'));
@@ -425,8 +497,13 @@
         document.querySelectorAll('[data-close-request]').forEach((button) => {
             button.addEventListener('click', () => dialog.close());
         });
+        document.querySelector('[data-open-image]').addEventListener('click', () => imageViewer.showModal());
+        document.querySelector('[data-close-image]').addEventListener('click', () => imageViewer.close());
         dialog.addEventListener('click', (event) => {
             if (event.target === dialog) dialog.close();
+        });
+        imageViewer.addEventListener('click', (event) => {
+            if (event.target === imageViewer) imageViewer.close();
         });
 
         async function cargarHorariosPublicos() {

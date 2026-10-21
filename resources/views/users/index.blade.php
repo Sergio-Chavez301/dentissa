@@ -7,14 +7,12 @@
             <p class="text-muted">Administra las cuentas de acceso de los odontólogos y el personal administrativo.</p>
         </div>
         <div>
-            <!-- Botón para ir al formulario de creación -->
             <a href="{{ route('users.create') }}" class="btn text-white border-0 py-2 px-3 fw-semibold bg-dentissa shadow-sm">
                 <i class="bi bi-person-plus-fill me-2"></i> Registrar Personal
             </a>
         </div>
     </div>
 
-    <!-- Alertas de Éxito -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
@@ -22,7 +20,6 @@
         </div>
     @endif
 
-    <!-- Tabla de Usuarios -->
     <div class="card p-4 shadow-sm border-0 bg-white">
         <div class="table-responsive">
             <table class="table align-middle table-hover">
@@ -46,7 +43,6 @@
                             <td>{{ $usuario->nombre }} {{ $usuario->apellidos }}</td>
                             <td>{{ $usuario->email ?? 'Sin correo registrado' }}</td>
                             <td>
-                                <!-- Rol dinámico desde la Base de Datos -->
                                 @if($usuario->role)
                                     @php
                                         $badgeClass = match($usuario->role_id) {
@@ -66,15 +62,12 @@
                             </td>
                             <td class="text-end">
                                 <div class="btn-group" role="group">
-                                    <!-- Ver Perfil -->
                                     <a href="{{ route('users.show', $usuario->id) }}" class="btn btn-sm btn-light border" title="Ver Detalles">
                                         <i class="bi bi-eye-fill text-muted"></i>
                                     </a>
-                                    <!-- Editar -->
                                     <a href="{{ route('users.edit', $usuario->id) }}" class="btn btn-sm btn-light border" title="Editar">
                                         <i class="bi bi-pencil-fill text-muted"></i>
                                     </a>
-                                    <!-- Eliminar (No permitir que el admin se borre a sí mismo) -->
                                     @if(Auth::id() !== $usuario->id)
                                         <form action="{{ route('users.destroy', $usuario->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de eliminar a este usuario?');">
                                             @csrf

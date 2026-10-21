@@ -10,8 +10,8 @@ class Cita extends Model
 {
     use HasFactory;
 
-    // Constantes para estados
     const ESTADO_EN_ESPERA = 'en_espera';
+    const ESTADO_CONFIRMADA = 'confirmada';
     const ESTADO_REALIZADA  = 'realizada';
     const ESTADO_CANCELADA  = 'cancelada';
     const ESTADO_NO_PRESENTO = 'no_presento';
@@ -27,9 +27,6 @@ class Cita extends Model
         return ['09:00:00', '10:00:00', '11:00:00', '12:00:00', '14:00:00', '15:00:00', '16:00:00', '17:00:00'];
     }
 
-    /**
-     * Lógica profesional para obtener horarios disponibles
-     */
     public static function getHorariosDisponibles($fecha, ?int $solicitudAConfirmar = null)
     {
         $fecha = Carbon::parse($fecha);

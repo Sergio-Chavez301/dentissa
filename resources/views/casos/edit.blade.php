@@ -19,7 +19,6 @@
             @method('PUT')
 
             <div class="row g-4">
-                <!-- Datos fijos para contexto -->
                 <div class="col-md-6">
                     <label class="text-muted small text-uppercase fw-bold">Paciente</label>
                     <div class="p-2 bg-light rounded border text-dark fw-semibold">
@@ -34,7 +33,6 @@
                     </div>
                 </div>
 
-                <!-- Campos de edición -->
                 <div class="col-md-6">
                     <label for="progreso" class="form-label fw-semibold text-dark">Progreso Actual (%)</label>
                     <input type="number" class="form-control @error('progreso') is-invalid @enderror" id="progreso" name="progreso" value="{{ old('progreso', $caso->progreso) }}" min="0" max="100" required>
@@ -55,7 +53,6 @@
                 </div>
             </div>
 
-            <!-- Botones de Acción -->
             <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
                 <a href="{{ route('casos.index') }}" class="btn btn-light border py-2 px-4 fw-semibold text-muted">
                     Cancelar

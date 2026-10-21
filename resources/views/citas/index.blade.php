@@ -17,7 +17,6 @@
         @endif
     </div>
 
-    <!-- ALERTA DE CREDENCIALES Y WHATSAPP (PACIENTE NUEVO) -->
     @if(session('temp_password') && session('temp_telefono'))
         <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4 border-0 d-flex justify-content-between align-items-center" role="alert">
             <div class="pe-4">
@@ -35,7 +34,6 @@
         @endphp
     @endif
 
-    <!-- Alertas de Éxito Generales -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
             <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
@@ -79,6 +77,9 @@
                                     @case(\App\Models\Cita::ESTADO_EN_ESPERA)
                                         <span class="badge rounded-pill bg-warning-subtle text-warning px-2.5 py-1">En Espera</span>
                                         @break
+                                    @case(\App\Models\Cita::ESTADO_CONFIRMADA)
+                                        <span class="badge rounded-pill bg-primary-subtle text-primary px-2.5 py-1">Confirmada</span>
+                                        @break
                                     @case(\App\Models\Cita::ESTADO_REALIZADA)
                                         <span class="badge rounded-pill bg-success-subtle text-success px-2.5 py-1">Realizada</span>
                                         @break
@@ -97,39 +98,44 @@
                            @if(auth()->check() && auth()->user()->role_id != 3)
                                <td class="text-end">
                                 <div class="d-flex justify-content-end gap-1">
-                                    <!-- Botón Ver -->
                                     <a href="{{ route('citas.show', $cita->id) }}" class="btn btn-sm btn-light border" title="Ver Detalles">
                                         <i class="bi bi-eye-fill text-muted"></i>
                                     </a>
                                     
-                                    <!-- Botón Editar -->
                                     <a href="{{ route('citas.edit', $cita->id) }}" class="btn btn-sm btn-light border" title="Editar">
                                         <i class="bi bi-pencil-fill text-muted"></i>
                                     </a>
 
-                                    <!-- Acciones rápidas (Solo si está en espera) -->
                                     @if($cita->estado === \App\Models\Cita::ESTADO_EN_ESPERA)
-                                        <!-- Formulario Realizada -->
-                                        <form action="{{ route('citas.update', $cita->id) }}" method="POST" class="m-0">
-                                            @csrf 
-                                            @method('PUT')
-                                            <input type="hidden" name="fecha" value="{{ $cita->fecha }}">
-                                            <input type="hidden" name="hora" value="{{ $cita->hora }}">
-                                            <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_REALIZADA }}">
-                                            <button type="submit" class="btn btn-sm btn-light border" title="Marcar Realizada">
+                                        <form action="{{ route('citas.status', $cita) }}" method="POST" class="m-0">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_CONFIRMADA }}">
+                                            <button type="submit" class="btn btn-sm btn-light border" title="Confirmar cita" aria-label="Confirmar cita">
                                                 <i class="bi bi-check-lg text-success"></i>
                                             </button>
                                         </form>
 
-                                        <!-- Formulario Cancelar -->
-                                        <form action="{{ route('citas.update', $cita->id) }}" method="POST" class="m-0">
-                                            @csrf 
-                                            @method('PUT')
-                                            <input type="hidden" name="fecha" value="{{ $cita->fecha }}">
-                                            <input type="hidden" name="hora" value="{{ $cita->hora }}">
+                                        <form action="{{ route('citas.status', $cita) }}" method="POST" class="m-0" onsubmit="return confirm('¿Rechazar y cancelar esta cita?');">
+                                            @csrf
                                             <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_CANCELADA }}">
-                                            <button type="submit" class="btn btn-sm btn-light border" title="Cancelar">
+                                            <button type="submit" class="btn btn-sm btn-light border" title="Rechazar cita" aria-label="Rechazar cita">
                                                 <i class="bi bi-x-lg text-danger"></i>
+                                            </button>
+                                        </form>
+                                    @elseif($cita->estado === \App\Models\Cita::ESTADO_CONFIRMADA)
+                                        <form action="{{ route('citas.status', $cita) }}" method="POST" class="m-0">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_REALIZADA }}">
+                                            <button type="submit" class="btn btn-sm btn-light border" title="Marcar como realizada" aria-label="Marcar como realizada">
+                                                <i class="bi bi-check2-circle text-success"></i>
+                                            </button>
+                                        </form>
+
+                                        <form action="{{ route('citas.status', $cita) }}" method="POST" class="m-0" onsubmit="return confirm('¿Marcar que el paciente no se presentó a esta cita?');">
+                                            @csrf
+                                            <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_NO_PRESENTO }}">
+                                            <button type="submit" class="btn btn-sm btn-light border" title="Marcar inasistencia" aria-label="Marcar inasistencia">
+                                                <i class="bi bi-person-x text-danger"></i>
                                             </button>
                                         </form>
                                     @endif

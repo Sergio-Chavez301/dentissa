@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentación Dentissa</title>
+<style>
+:root{color-scheme:light;--ink:#182d2a;--muted:#5d6b68;--paper:#f3f6f4;--white:#fff;--line:#d9e2dd;--pink:#c83f69;--green:#187d60;--amber:#9b6500;--red:#a1323a;--serif:Georgia,'Times New Roman',serif;--sans:'Segoe UI',Arial,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 var(--sans)}a{color:inherit}.shell{width:min(1160px,calc(100% - 40px));margin:auto;padding:54px 0 72px}.eyebrow{color:var(--pink);font-size:12px;font-weight:700;text-transform:uppercase}.hero{padding:0 0 28px;border-bottom:1px solid var(--line)}h1,h2,h3,p{margin-top:0}h1{max-width:760px;margin:10px 0 14px;font:clamp(40px,6vw,68px)/1.02 var(--serif);letter-spacing:0}.lead{max-width:740px;color:var(--muted);font-size:17px}.nav{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0 32px}.nav a{padding:9px 13px;border:1px solid var(--line);border-radius:5px;text-decoration:none;background:var(--white);font-size:13px;font-weight:650}.nav a:hover{border-color:var(--pink);color:var(--pink)}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.tile{min-height:200px;padding:22px;border:1px solid var(--line);border-radius:6px;background:var(--white);text-decoration:none;display:flex;flex-direction:column;transition:transform .18s,border-color .18s}.tile:hover{transform:translateY(-2px);border-color:#d78ca3}.tile .number{color:var(--pink);font-size:12px;font-weight:700}.tile h2{margin:18px 0 8px;font:26px/1.1 var(--serif)}.tile p{color:var(--muted);margin:0}.tile span:last-child{margin-top:auto;padding-top:20px;color:var(--green);font-size:13px;font-weight:700}.notice{margin-top:22px;padding:14px 16px;border-left:3px solid var(--amber);background:#fff8e8;color:#51462f}footer{margin-top:36px;padding-top:15px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}@media(max-width:760px){.shell{width:calc(100% - 28px);padding-top:32px}.grid{grid-template-columns:1fr}.tile{min-height:160px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header class="hero"><span class="eyebrow">Dentissa · Información del sistema</span><h1>Documentación técnica y operativa</h1><p class="lead">Referencia de datos, procesos, permisos y despliegue del sistema de gestión odontológica. El contenido se basa en migraciones, modelos, rutas y controladores actuales del repositorio.</p></header>
+<nav class="nav" aria-label="Documentos"><a href="index.html" aria-current="page">Inicio</a><a href="diagrama-base-datos.html">Base de datos</a><a href="flujo-sistema.html">Flujos</a><a href="documentacion-sistema.html">Sistema y despliegue</a></nav>
+<section class="grid" aria-label="Documentos disponibles">
+<a class="tile" href="diagrama-base-datos.html"><span class="number">01 · DATOS</span><h2>Diagrama de base de datos</h2><p>Entidades, columnas, relaciones y claves foráneas. Selecciona tablas para ver detalles.</p><span>Abrir diagrama →</span></a>
+<a class="tile" href="flujo-sistema.html"><span class="number">02 · OPERACIÓN</span><h2>Flujos del sistema</h2><p>Solicitud pública, agenda, ciclo de cita, atención clínica y acceso por rol.</p><span>Explorar flujos →</span></a>
+<a class="tile" href="documentacion-sistema.html"><span class="number">03 · REFERENCIA</span><h2>Documentación del sistema</h2><p>Arquitectura, permisos, rutas, reglas, configuración, despliegue y observaciones técnicas.</p><span>Consultar referencia →</span></a>
+</section>
+<p class="notice"><strong>Alcance:</strong> los diagramas reflejan el esquema definido en las migraciones del repositorio. Antes de una actualización importante, compara la base de datos real del hosting con ese esquema.</p>
+<footer>Documentación local del proyecto Dentissa · Mantener sincronizada con rutas, controladores y migraciones.</footer>
+</main>
+</body>
+</html>

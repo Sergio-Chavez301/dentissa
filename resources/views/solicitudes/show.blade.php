@@ -18,7 +18,6 @@
         </a>
     </div>
 
-    <!-- Gestión de Alertas / Errores de Validación -->
     @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
             <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ $errors->first() }}
@@ -27,7 +26,6 @@
     @endif
 
     <div class="card p-4 shadow-sm border-0 bg-white" style="max-width: 600px;">
-        <!-- Información Directa -->
         <div class="mb-4">
             <h5 class="fw-bold mb-3">Detalles de la Petición</h5>
             <div class="p-3 bg-light rounded">
@@ -39,12 +37,10 @@
             </div>
         </div>
 
-        <!-- Formulario de Gestión -->
         <form action="{{ route('solicitudes.update', $solicitud->id) }}" method="POST">
             @csrf
             @method('PUT')
             
-            <!-- Selector de Servicio (Obligatorio para confirmar y crear la cita oficial) -->
             <div class="mb-3">
                 <label for="servicio_id" class="form-label fw-semibold text-dark">Asignar Servicio Clínico <span class="text-danger">*</span></label>
                 <select name="servicio_id" id="servicio_id" class="form-select @error('servicio_id') is-invalid @enderror" required>
@@ -59,7 +55,6 @@
                 <div class="form-text">Este servicio se asociará a la cita oficial que se creará automáticamente.</div>
             </div>
 
-            <!-- Acciones -->
             <div class="d-flex gap-2 pt-2">
                 <button type="submit" name="confirmar" value="1" class="btn text-white bg-dentissa py-2 px-4 fw-bold shadow-sm">
                     <i class="bi bi-check-lg me-1"></i> Confirmar Cita y Crear Paciente

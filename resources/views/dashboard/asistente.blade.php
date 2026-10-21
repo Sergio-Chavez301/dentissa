@@ -57,7 +57,6 @@
                             @forelse($citasHoy as $cita)
                                 <tr>
                                     <td class="fw-semibold text-dark">{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</td>
-                                    <!-- CORREGIDO: $cita->paciente en lugar de $cita->user -->
                                     <td>{{ $cita->paciente->nombre ?? 'N/A' }} {{ $cita->paciente->apellidos ?? '' }}</td>
                                     <td>{{ $cita->servicio->nombre ?? 'Tratamiento General' }}</td>
                                     <td>
@@ -98,7 +97,6 @@
                             @forelse($casosActivos as $caso)
                                 <tr>
                                     <td class="text-muted">#{{ $caso->id }}</td>
-                                    <!-- CORREGIDO: $caso->paciente en lugar de $caso->user -->
                                     <td class="fw-semibold">{{ $caso->paciente->nombre ?? 'Desconocido' }} {{ $caso->paciente->apellidos ?? '' }}</td>
                                     <td>{{ $caso->tratamiento_base ?? 'No especificado' }}</td>
                                     <td>
