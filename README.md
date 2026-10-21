@@ -1,99 +1,96 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
+  <img src="public/img/logo.png" alt="Dentissa · Odontología integral" width="150">
+  <h1>Dentissa</h1>
+  <p><strong>Sistema de gestión para una atención odontológica organizada y cercana.</strong></p>
+  <p>
+    <img src="https://img.shields.io/badge/Laravel-12-FF2D20?logo=laravel&logoColor=white" alt="Laravel 12">
+    <img src="https://img.shields.io/badge/PHP-8.2%2B-777BB4?logo=php&logoColor=white" alt="PHP 8.2 o superior">
+    <img src="https://img.shields.io/badge/Interfaz-Blade%20%2B%20Bootstrap-7952B3?logo=bootstrap&logoColor=white" alt="Blade y Bootstrap">
+  </p>
+</div>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Dentissa centraliza la operación de una clínica dental en una aplicación web: organiza pacientes y expedientes, administra la agenda y acompaña el seguimiento de tratamientos desde una solicitud de cita hasta la atención.
 
-## About Laravel
+> Proyecto Laravel con acceso por roles. El uso en producción requiere configurar el hosting, la base de datos, el correo transaccional y las medidas de seguridad descritas abajo. No uses información clínica real en una instalación de demostración.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Qué incluye
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Portal público:** información de la clínica, tratamientos, ofertas, ubicación y solicitud de cita.
+- **Agenda:** consulta de disponibilidad, bloqueos de horario y estados de cita: en espera, confirmada, realizada, cancelada y no se presentó.
+- **Pacientes:** datos personales y clínicos, usuario de acceso y expediente vinculado.
+- **Tratamientos:** casos clínicos con progreso y citas relacionadas.
+- **Paneles por rol:** administrador, asistente y paciente, con vistas acordes a sus tareas.
+- **Administración:** servicios, usuarios, solicitudes, ofertas, reportes y datos de contacto/ubicación del consultorio.
+- **Mensajes de WhatsApp:** enlaces preparados para confirmar citas, compartir credenciales temporales y contactar al consultorio.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Roles
 
-## Learning Laravel
+| Rol | Uso principal |
+| --- | --- |
+| Administrador | Configura el sistema, gestiona cuentas y contenido, procesa solicitudes y administra la clínica. |
+| Asistente | Apoya la agenda y la gestión operativa de pacientes y tratamientos. |
+| Paciente | Consulta su perfil, citas, tratamientos, progreso y ofertas. |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Tecnologías
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Laravel 12 y PHP 8.2 o superior.
+- MySQL/MariaDB para los datos de la clínica.
+- Blade, Bootstrap 5 y Bootstrap Icons para las vistas.
+- Vite, npm y Tailwind CSS para compilar recursos frontend.
+- PHPUnit para pruebas automatizadas.
 
-## Laravel Sponsors
+## Documentación
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+La documentación interactiva está en [`documentacion/informacion/`](documentacion/informacion/index.html):
 
-### Premium Partners
+- [Índice de documentación](documentacion/informacion/index.html)
+- [Diagrama interactivo de la base de datos](documentacion/informacion/diagrama-base-datos.html)
+- [Flujos del sistema](documentacion/informacion/flujo-sistema.html)
+- [Referencia técnica, permisos y despliegue](documentacion/informacion/documentacion-sistema.html)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Instalación local
 
-## Contributing
+Requisitos: PHP 8.2+, Composer, Node.js/npm y MySQL o MariaDB.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-## Recuperación de contraseña por correo
-
-El restablecimiento usa el Password Broker de Laravel: los enlaces son de un solo uso, caducan según `config/auth.php` y las solicitudes están limitadas a tres por minuto. La respuesta no confirma si una dirección tiene una cuenta.
-
-En desarrollo el transporte `log` es útil para comprobar el flujo, pero no entrega correos. En producción configura un proveedor de correo transaccional (por ejemplo, Resend, Postmark o Brevo) mediante SMTP en el entorno del servidor; no guardes sus credenciales en el repositorio:
-
-```env
-APP_ENV=production
-APP_URL=https://tu-dominio.example
-MAIL_MAILER=smtp
-MAIL_SCHEME=smtp
-MAIL_HOST=servidor-smtp-del-proveedor
-MAIL_PORT=587
-MAIL_USERNAME=usuario-smtp-del-proveedor
-MAIL_PASSWORD=secreto-smtp-del-proveedor
-MAIL_FROM_ADDRESS=cuentas@tu-dominio.example
-MAIL_FROM_NAME="Dentissa"
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
 ```
 
-Usa los valores SMTP y el modo de cifrado que indique el proveedor. Verifica el dominio remitente y configura SPF, DKIM y DMARC antes de producción. Después de cambiar variables de entorno, ejecuta `php artisan config:clear` (o reconstruye la caché de configuración del despliegue) y solicita un restablecimiento de prueba. En producción, el envío se desactiva si el mailer continúa en `log`, para evitar que los enlaces y tokens terminen escritos en los logs.
+Primero crea una base de datos vacía en MySQL/MariaDB y configura sus datos de conexión en `.env`. Después ejecuta:
+
+```bash
+php artisan migrate
+npm ci
+npm run build
+php artisan serve
+```
+
+Abre `http://127.0.0.1:8000`. `php artisan migrate --seed` crea datos y cuentas de demostración: úsalo solo en una base local desechable después de revisar los seeders. Nunca ejecutes seeders de demostración en producción. No publiques `.env`, claves de aplicación, contraseñas ni credenciales de prueba.
+
+## Seguridad y datos
+
+Esta aplicación puede contener información personal y clínica. Para producción, utiliza un hosting privado y mantenido, HTTPS, contraseñas robustas, base de datos con acceso restringido, permisos mínimos y copias de seguridad protegidas. No despliegues una demo gratuita con datos reales de pacientes.
+
+La recuperación de contraseña usa el Password Broker de Laravel, enlaces temporales de un solo uso y límite de solicitudes. `MAIL_MAILER=log` no entrega correos; en producción configura un proveedor SMTP transaccional y verifica el dominio remitente. Las credenciales del proveedor deben configurarse como secretos del hosting, nunca en GitHub.
 
 ## Despliegue en hosting
 
-GitHub almacena y distribuye el código, pero no ejecuta por sí solo esta aplicación Laravel. Conecta el repositorio a un hosting que soporte PHP 8.2 o superior, Composer, MySQL/MariaDB, Node.js para compilar Vite (o compila los assets antes de desplegar) y HTTPS. GitHub Pages no puede ejecutar Laravel/PHP.
+GitHub guarda el código, pero no ejecuta Laravel. Usa un hosting que soporte PHP 8.2+, Composer, MySQL/MariaDB, HTTPS y extensiones como `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, `xml`, `ctype` y `json`. GitHub Pages no puede ejecutar PHP.
 
-Antes de publicar:
+1. Configura el document root del dominio en `public/`, no en la raíz del repositorio.
+2. Instala dependencias de producción con `composer install --no-dev --optimize-autoloader`.
+3. Compila los recursos con `npm ci && npm run build` durante el despliegue, o compila `public/build` antes de subir el release.
+4. Define las variables privadas del servidor tomando `.env.example` como referencia: `APP_ENV=production`, `APP_DEBUG=false`, URL HTTPS, una `APP_KEY` nueva y credenciales MySQL propias del hosting. Mantén `.env` fuera de Git.
+5. Ejecuta `php artisan migrate --force` y concede escritura a `storage/` y `bootstrap/cache/`.
+6. Configura SMTP transaccional antes de habilitar recuperación por correo y verifica SPF, DKIM y DMARC con el proveedor.
+7. Al completar el despliegue, ejecuta `php artisan config:cache` y `php artisan view:cache`. No uses `php artisan migrate:fresh` en producción: elimina tablas y datos.
 
-1. Configura el document root del dominio en la carpeta `public`, nunca en la raíz del repositorio.
-2. Ejecuta `composer install --no-dev --optimize-autoloader` y `npm ci && npm run build` durante el despliegue. Si el hosting no tiene Node.js, compila `public/build` antes de subir el release.
-3. Crea una base MySQL/MariaDB y define las variables del servidor tomando `.env.example` como referencia. Usa `APP_ENV=production`, `APP_DEBUG=false`, la URL HTTPS real, credenciales de base de datos propias del hosting y un `APP_KEY` nuevo generado en el servidor. No subas `.env` a GitHub.
-4. Ejecuta `php artisan migrate --force` y `php artisan storage:link`. Asegura permisos de escritura para `storage` y `bootstrap/cache`.
-5. Configura un SMTP transaccional real antes de activar recuperación de contraseñas. Cambia `MAIL_MAILER=log` por los datos SMTP del proveedor y verifica el dominio remitente.
-6. Al terminar, ejecuta `php artisan config:cache` y `php artisan view:cache`. No uses `php artisan migrate:fresh` en producción: elimina las tablas y sus datos.
+La configuración incluida usa sesiones y caché en archivos y cola síncrona porque el repositorio no crea tablas de sesiones, caché ni trabajos. Conserva estos drivers en el hosting salvo que añadas y migres esas tablas o configures el servicio correspondiente.
 
-En este proyecto no existen migraciones para tablas de sesión, caché o cola; por eso `.env.example` usa sesiones y caché en archivos y cola síncrona. La configuración real del servidor debe conservar esos drivers, o instalar las tablas/servicios correspondientes antes de cambiar a drivers de base de datos o Redis. La aplicación necesita extensiones PHP como `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, `xml`, `ctype` y `json`.
+## Recuperación de contraseña por correo
 
-## Documentación interactiva
+El formulario responde de forma genérica para no revelar si un correo tiene una cuenta. El endpoint está limitado a tres solicitudes por minuto. En producción la recuperación se desactiva si el mailer continúa configurado como `log`, para impedir que tokens de restablecimiento acaben en los logs.
 
-Abre [documentacion/informacion/index.html](documentacion/informacion/index.html) para navegar el [diagrama de base de datos](documentacion/informacion/diagrama-base-datos.html), los [flujos del sistema](documentacion/informacion/flujo-sistema.html) y la [referencia técnica](documentacion/informacion/documentacion-sistema.html). Son documentos HTML autónomos que se pueden abrir localmente; no dependen de librerías externas.
+Configura SMTP usando el host, puerto, usuario, contraseña de aplicación y dirección remitente proporcionados por tu proveedor. Los secretos se cargan desde el panel del hosting; no los escribas en este README ni en archivos versionados. Después de actualizar variables, limpia o reconstruye la caché de configuración y prueba el envío con una cuenta controlada.
