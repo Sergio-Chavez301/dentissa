@@ -8,7 +8,7 @@
         </div>
 
         <a href="#" class="d-flex flex-column align-items-center mb-4 text-decoration-none py-2 text-center">
-            <img src="{{ asset('img/logo.png') }}" alt="Logo Melissa López" class="img-fluid mb-2" style="max-height: 75px;">
+            <img src="{{ asset('img/logo.png') }}" alt="Logo Melissa López" class="img-fluid mb-2" style="width: 180px; height: 75px; object-fit: contain; object-position: center;">
             <span class="fs-5 fw-bold mb-0 text-break" style="letter-spacing: 0.5px; color: #1e1e24;">Melissa López N.</span>
             <small class="text-uppercase fw-semibold" style="color: #d75078; font-size: 0.65rem; letter-spacing: 1.5px;">Odontología Integral</small>
         </a>

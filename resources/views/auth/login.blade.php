@@ -24,7 +24,7 @@
             </a>
 
             <div class="text-center flex flex-col items-center">
-                <img src="{{ asset('img/logo.png') }}" alt="Logo Melissa López" class="mb-2" style="max-height: 75px;">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo Melissa López" class="mb-2" style="width: 180px; height: 75px; object-fit: contain; object-position: center;">
                 <h2 class="text-2xl font-bold tracking-tight text-[#1e1e24] mb-0">
                     Melissa López N.
                 </h2>

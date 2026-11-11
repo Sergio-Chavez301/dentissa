@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="public/img/logo.png" alt="Dentissa · Odontología integral" width="150">
+  <img src="public/img/logo.png" alt="Dentissa · Odontología integral" width="150" style="height: 50px; object-fit: contain; object-position: center;">
   <h1>Dentissa</h1>
   <p><strong>Sistema de gestión para una atención odontológica organizada y cercana.</strong></p>
   <p>
@@ -22,6 +22,7 @@ Dentissa centraliza la operación de una clínica dental en una aplicación web:
 - **Paneles por rol:** administrador, asistente y paciente, con vistas acordes a sus tareas.
 - **Administración:** servicios, usuarios, solicitudes, ofertas, reportes y datos de contacto/ubicación del consultorio.
 - **Mensajes de WhatsApp:** enlaces preparados para confirmar citas, compartir credenciales temporales y contactar al consultorio.
+- **Asistente guiado:** responde por botones o preguntas escritas sobre servicios, ofertas vigentes, horario y ubicación, y orienta a solicitudes de cita o WhatsApp.
 
 ## Roles
 
@@ -72,6 +73,8 @@ Abre `http://127.0.0.1:8000`. `php artisan migrate --seed` crea datos y cuentas 
 ## Seguridad y datos
 
 Esta aplicación puede contener información personal y clínica. Para producción, utiliza un hosting privado y mantenido, HTTPS, contraseñas robustas, base de datos con acceso restringido, permisos mínimos y copias de seguridad protegidas. No despliegues una demo gratuita con datos reales de pacientes.
+
+El asistente de la página pública combina opciones guiadas con clasificación básica de preguntas; usa únicamente datos públicos del consultorio, no almacena mensajes y no usa proveedores de IA externos. No es una herramienta de diagnóstico ni recomienda medicamentos o tratamientos. WhatsApp solo se abre si el usuario selecciona esa opción. Evita compartir datos personales o información clínica identificable. Las solicitudes al endpoint están limitadas por frecuencia.
 
 La recuperación de contraseña usa el Password Broker de Laravel, enlaces temporales de un solo uso y límite de solicitudes. `MAIL_MAILER=log` no entrega correos; en producción configura un proveedor SMTP transaccional y verifica el dominio remitente. Las credenciales del proveedor deben configurarse como secretos del hosting, nunca en GitHub.
 

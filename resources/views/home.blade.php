@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="Odontología integral con atención cercana. Solicita una cita con Melissa López N.">
     <title>Melissa López N. | Odontología Integral</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,7 +36,7 @@
         .nav { position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line); background: #f7f8f5f5; backdrop-filter: blur(12px); }
         .nav-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
         .brand { display: inline-flex; align-items: center; }
-        .brand img { display: block; width: auto; max-width: 178px; height: 60px; object-fit: contain; }
+        .brand img { display: block; width: 178px; max-width: 100%; height: 60px; object-fit: contain; object-position: center; }
         .nav-links { display: flex; align-items: center; gap: 30px; font-size: 14px; font-weight: 600; }
         .nav-links a { text-decoration: none; }
         .nav-links a:not(.button):hover { color: var(--rose); }
@@ -121,6 +122,30 @@
         .field-error { display: block; margin-top: 5px; color: #a01d45; font-size: 12px; }
         .form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
         .form-actions .button-outline { min-height: 46px; }
+        .chat-launcher { position: fixed; right: 24px; bottom: 24px; z-index: 20; min-height: 54px; padding: 0 20px; border: 0; border-radius: 999px; color: var(--white); background: var(--rose); box-shadow: 0 8px 26px #102b2933; font-weight: 700; cursor: pointer; }
+        .chat-launcher:hover { background: var(--rose-dark); }
+        .chat-panel { position: fixed; right: 24px; bottom: 90px; z-index: 20; width: min(380px, calc(100vw - 32px)); max-height: min(570px, calc(100vh - 120px)); display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 10px; background: var(--white); box-shadow: 0 18px 55px #102b2933; overflow: hidden; }
+        .chat-panel[hidden] { display: none; }
+        .chat-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; color: var(--white); background: var(--ink); }
+        .chat-header h2 { margin: 0; font: 22px/1.1 var(--serif); }
+        .chat-header p { margin: 4px 0 0; color: #c6d7d1; font-size: 12px; }
+        .chat-close { width: 34px; height: 34px; border: 1px solid #ffffff70; border-radius: 50%; color: var(--white); background: transparent; font-size: 20px; cursor: pointer; }
+        .chat-content { min-height: 0; overflow-y: auto; padding: 16px; }
+        .chat-message { margin: 0 0 14px; padding: 12px 14px; border-radius: 10px 10px 10px 2px; color: var(--ink); background: #eef3ef; font-size: 14px; line-height: 1.55; white-space: pre-line; }
+        .chat-options { display: grid; gap: 8px; }
+        .chat-option { width: 100%; padding: 10px 12px; border: 1px solid #c8d8d1; border-radius: 6px; color: var(--ink); background: var(--white); text-align: left; font-size: 13px; font-weight: 650; cursor: pointer; }
+        .chat-option:hover { border-color: var(--rose); color: var(--rose-dark); }
+        .chat-option:disabled { opacity: .6; cursor: wait; }
+        .chat-status { min-height: 18px; margin: 10px 0 0; color: var(--ink-soft); font-size: 12px; }
+        .chat-user-message { width: fit-content; max-width: 90%; margin: 0 0 12px auto; padding: 10px 13px; border-radius: 10px 10px 2px 10px; color: var(--white); background: var(--rose); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+        .chat-form { display: flex; gap: 8px; margin-top: 14px; }
+        .chat-input { flex: 1; min-width: 0; padding: 10px 11px; border: 1px solid #bfcfc8; border-radius: 5px; color: var(--ink); background: var(--white); font-size: 13px; }
+        .chat-send { padding: 0 14px; border: 0; border-radius: 5px; color: var(--white); background: var(--rose); font-size: 13px; font-weight: 700; cursor: pointer; }
+        .chat-send:hover { background: var(--rose-dark); }
+        .chat-send:disabled { opacity: .6; cursor: wait; }
+        .chat-privacy { margin: 8px 0 0; color: var(--ink-soft); font-size: 11px; line-height: 1.4; }
+        .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+        .chat-launcher:focus-visible, .chat-close:focus-visible, .chat-option:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
         @keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
         .hero-copy > * { animation: rise-in .6s both; }
         .hero-copy > :nth-child(2) { animation-delay: .08s; }
@@ -129,7 +154,7 @@
         @media (max-width: 800px) {
             .wrap { width: min(100% - 36px, 620px); }
             .nav-inner { min-height: 68px; }
-            .brand img { max-width: 148px; height: 50px; }
+            .brand img { width: 148px; height: 50px; }
             .nav-links { gap: 16px; }
             .nav-links > a:not(.button) { display: none; }
             .nav-links .button { min-height: 42px; padding-inline: 14px; font-size: 13px; }
@@ -180,6 +205,8 @@
             .field-wide { grid-column: auto; }
             .form-actions { flex-direction: column-reverse; }
             .form-actions .button { width: 100%; }
+            .chat-launcher { right: 16px; bottom: 16px; min-height: 50px; }
+            .chat-panel { right: 16px; bottom: 78px; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -414,6 +441,39 @@
         </div>
     </footer>
 
+    <section class="chat-panel" id="chatPanel" role="dialog" aria-labelledby="chatTitle" aria-modal="false" hidden>
+        <header class="chat-header">
+            <div>
+                <h2 id="chatTitle">Asistente Dentissa</h2>
+                <p>Información general del consultorio</p>
+            </div>
+            <button class="chat-close" id="chatClose" type="button" aria-label="Cerrar chat">×</button>
+        </header>
+        <div class="chat-content" id="chatContent" aria-live="polite">
+            <p class="chat-user-message" id="chatUserMessage" hidden></p>
+            <p class="chat-message" id="chatMessage">¡Hola! Puedo orientarte con información general del consultorio. Puedes elegir una opción o escribir una pregunta.</p>
+            <div class="chat-options" id="chatOptions">
+                <button class="chat-option" type="button" data-intent="services">Ver servicios</button>
+                <button class="chat-option" type="button" data-intent="offers">Ver ofertas</button>
+                <button class="chat-option" type="button" data-intent="hours">Horario de atención</button>
+                <button class="chat-option" type="button" data-intent="location">Ubicación</button>
+                <button class="chat-option" type="button" data-intent="appointment">Solicitar una cita</button>
+                <button class="chat-option" type="button" data-intent="contact">Contactar al consultorio</button>
+                <button class="chat-option" type="button" data-intent="urgent">Tengo una urgencia</button>
+            </div>
+            <p class="chat-status" id="chatStatus" role="status"></p>
+            <form class="chat-form" id="chatForm">
+                <label class="visually-hidden" for="chatInput">Escribe una pregunta</label>
+                <input class="chat-input" id="chatInput" name="message" maxlength="500" placeholder="Escribe tu pregunta…" autocomplete="off" required>
+                <button class="chat-send" id="chatSend" type="submit">Enviar</button>
+            </form>
+            <p class="chat-privacy">No incluyas datos personales ni información clínica identificable.</p>
+        </div>
+    </section>
+    <button class="chat-launcher" id="chatLauncher" type="button" aria-controls="chatPanel" aria-expanded="false">
+        <span aria-hidden="true">✦</span> ¿Necesitas ayuda?
+    </button>
+
     <dialog id="modalSolicitud" aria-labelledby="modalSolicitudTitulo">
         <div class="dialog-head">
             <div>
@@ -490,6 +550,17 @@
         const dateInput = document.getElementById('fecha_propuesta');
         const timeSelect = document.getElementById('hora_propuesta');
         const previousTime = @json(old('hora_propuesta'));
+        const chatPanel = document.getElementById('chatPanel');
+        const chatLauncher = document.getElementById('chatLauncher');
+        const chatClose = document.getElementById('chatClose');
+        const chatForm = document.getElementById('chatForm');
+        const chatInput = document.getElementById('chatInput');
+        const chatSend = document.getElementById('chatSend');
+        const chatUserMessage = document.getElementById('chatUserMessage');
+        const chatMessage = document.getElementById('chatMessage');
+        const chatOptions = document.getElementById('chatOptions');
+        const chatStatus = document.getElementById('chatStatus');
+        const chatCsrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
         document.querySelectorAll('[data-open-request]').forEach((button) => {
             button.addEventListener('click', () => dialog.showModal());
@@ -505,6 +576,100 @@
         imageViewer.addEventListener('click', (event) => {
             if (event.target === imageViewer) imageViewer.close();
         });
+        chatLauncher.addEventListener('click', () => {
+            const isOpen = !chatPanel.hidden;
+            chatPanel.hidden = isOpen;
+            chatLauncher.setAttribute('aria-expanded', String(!isOpen));
+            if (!isOpen) chatOptions.querySelector('button')?.focus();
+        });
+        chatClose.addEventListener('click', () => {
+            chatPanel.hidden = true;
+            chatLauncher.setAttribute('aria-expanded', 'false');
+            chatLauncher.focus();
+        });
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !chatPanel.hidden) {
+                chatPanel.hidden = true;
+                chatLauncher.setAttribute('aria-expanded', 'false');
+                chatLauncher.focus();
+            }
+        });
+        chatOptions.addEventListener('click', (event) => {
+            const button = event.target.closest('.chat-option');
+            if (!button || button.disabled) return;
+
+            if (button.dataset.intent) {
+                sendChatIntent(button.dataset.intent);
+            } else if (button.dataset.action === 'request') {
+                dialog.showModal();
+            } else if (button.dataset.action === 'link' && button.dataset.url) {
+                window.open(button.dataset.url, '_blank', 'noopener,noreferrer');
+            }
+        });
+        chatForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+            chatUserMessage.textContent = message;
+            chatUserMessage.hidden = false;
+            sendChatMessage({ message });
+        });
+
+        function renderChatOptions(options) {
+            chatOptions.replaceChildren();
+
+            options.forEach((option) => {
+                const button = document.createElement('button');
+                button.className = 'chat-option';
+                button.type = 'button';
+                button.textContent = option.label;
+                if (option.intent) button.dataset.intent = option.intent;
+                if (option.action) button.dataset.action = option.action;
+                if (option.url) button.dataset.url = option.url;
+
+                chatOptions.append(button);
+            });
+        }
+
+        function sendChatIntent(intent) {
+            chatUserMessage.hidden = true;
+            sendChatMessage({ intent });
+        }
+
+        async function sendChatMessage(payload) {
+            const buttons = [...chatOptions.querySelectorAll('button')];
+            buttons.forEach((button) => { button.disabled = true; });
+            chatInput.disabled = true;
+            chatSend.disabled = true;
+            chatStatus.textContent = 'Consultando información…';
+
+            try {
+                const response = await fetch('{{ route('api.chatbot') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': chatCsrfToken,
+                    },
+                    body: JSON.stringify(payload),
+                });
+                if (!response.ok) throw new Error('No se pudo consultar el chat');
+
+                const data = await response.json();
+                chatMessage.textContent = data.message;
+                renderChatOptions(data.options);
+                chatStatus.textContent = '';
+                chatMessage.scrollIntoView({ block: 'nearest' });
+                chatOptions.querySelector('button')?.focus();
+            } catch (error) {
+                chatStatus.textContent = 'No se pudo consultar la información. Intenta de nuevo en un momento.';
+                buttons.forEach((button) => { button.disabled = false; });
+            } finally {
+                chatInput.disabled = false;
+                chatSend.disabled = false;
+                chatInput.focus();
+            }
+        }
 
         async function cargarHorariosPublicos() {
             if (!dateInput.value) return;

@@ -13,6 +13,7 @@ use App\Http\Controllers\HorarioBloqueadoController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\OfficeSettingController;
+use App\Http\Controllers\ChatbotController;
 
 // --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
@@ -30,6 +31,9 @@ Route::get('/acerca-de', function(){
 Route::get('/ofertas', [OfertaController::class, 'publicIndex'])->name('ofertas.public');
 // Ruta pública para que el prospecto envíe su solicitud de cita
 Route::post('/solicitud-cita', [SolicitudController::class, 'storePublic'])->name('solicitud.storePublic');
+Route::post('/api/chatbot', [ChatbotController::class, 'respond'])
+    ->middleware('throttle:20,1')
+    ->name('api.chatbot');
 
 // Disponibilidad de citas (Pública para que cargue dinámicamente en el modal)
 Route::get('/api/disponibilidad', [CitaController::class, 'verificarDisponibilidad'])->name('api.disponibilidad');
