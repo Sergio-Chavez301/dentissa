@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Dentissa</string>
+    <string name="title_activity_main">Dentissa</string>
+    <string name="package_name">com.dentissa.patient</string>
+    <string name="custom_url_scheme">com.dentissa.patient</string>
+</resources>
