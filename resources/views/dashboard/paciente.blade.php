@@ -18,6 +18,20 @@
         <p class="text-muted mb-0">Consulta tus citas, tratamientos y datos de perfil en un solo lugar.</p>
     </header>
 
+    @if(config('mobile.android_app_download_url'))
+        <section class="card border-0 shadow-sm mb-4" aria-label="Aplicación móvil">
+            <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h2 class="h5 fw-bold mb-1">Lleva Dentissa contigo</h2>
+                    <p class="text-muted mb-0">Descarga la app para Android y consulta tu información desde tu teléfono.</p>
+                </div>
+                <a class="btn btn-outline-primary" href="{{ config('mobile.android_app_download_url') }}" rel="noopener">
+                    Descargar app Android
+                </a>
+            </div>
+        </section>
+    @endif
+
     <section class="row g-3 mb-4" aria-label="Resumen de citas">
         @foreach($estadosCita as $estado => [$etiqueta, $color])
             <div class="col-6 col-xl">

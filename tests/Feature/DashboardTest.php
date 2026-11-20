@@ -72,6 +72,8 @@ class DashboardTest extends TestCase
 
     public function test_paciente_dashboard_shows_personal_overview(): void
     {
+        config(['mobile.android_app_download_url' => 'https://downloads.example.com/dentissa.apk']);
+
         $role = Role::create([
             'id' => 3,
             'name' => 'Paciente',
@@ -135,6 +137,8 @@ class DashboardTest extends TestCase
         $response->assertSee('Citas realizadas para este tratamiento');
         $response->assertSee('65%');
         $response->assertSee(route('ofertas.public'));
+        $response->assertSee('Descargar app Android');
+        $response->assertSee('https://downloads.example.com/dentissa.apk');
     }
 
     public function test_paciente_without_linked_profile_sees_guidance_instead_of_error(): void
