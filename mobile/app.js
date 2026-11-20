@@ -56,73 +56,6 @@ async function apiRequest(path, options = {}) {
         headers.set('Authorization', `Bearer ${token}`);
     }
 
-    async function savePushToken(pushToken) {
-        nativePushToken = pushToken;
-        if (!token) {
-            return;
-        }
-
-        await apiRequest('/devices', {
-            method: 'POST',
-            body: JSON.stringify({
-                token: pushToken,
-                platform: 'android',
-            }),
-        });
-    }
-
-    async function enablePushNotifications() {
-        if (!Capacitor.isNativePlatform()) {
-            return;
-        }
-
-        if (!pushListenersInstalled) {
-            await PushNotifications.addListener('registration', async (registration) => {
-                try {
-                    await savePushToken(registration.value);
-                } catch (error) {
-                    showNotice(`Sesión iniciada, pero no se pudo activar el envío de avisos: ${error.message}`);
-                }
-            });
-            await PushNotifications.addListener('registrationError', (error) => {
-                showNotice(`No se pudo registrar este teléfono para recibir avisos: ${error.error}`);
-            });
-            await PushNotifications.addListener('pushNotificationActionPerformed', async () => {
-                if (token) {
-                    try {
-                        await loadDashboard();
-                    } catch (error) {
-                        showNotice(error.message);
-                    }
-                }
-            });
-            pushListenersInstalled = true;
-        }
-
-        let permission = await PushNotifications.checkPermissions();
-        if (permission.receive !== 'granted') {
-            permission = await PushNotifications.requestPermissions();
-        }
-
-        if (permission.receive !== 'granted') {
-            showNotice('No se activaron los permisos de notificación. Puedes habilitarlos en los ajustes de Android.');
-            return;
-        }
-
-        await PushNotifications.createChannel({
-            id: 'appointments',
-            name: 'Avisos de citas',
-            description: 'Confirmaciones, cancelaciones y recordatorios de Dentissa.',
-            importance: 4,
-            vibration: true,
-        });
-        await PushNotifications.register();
-
-        if (nativePushToken) {
-            await savePushToken(nativePushToken);
-        }
-    }
-
     const response = await fetch(`${apiBaseUrl}/api/mobile${path}`, {
         ...options,
         headers,
@@ -143,6 +76,73 @@ async function apiRequest(path, options = {}) {
     }
 
     return data;
+}
+
+async function savePushToken(pushToken) {
+    nativePushToken = pushToken;
+    if (!token) {
+        return;
+    }
+
+    await apiRequest('/devices', {
+        method: 'POST',
+        body: JSON.stringify({
+            token: pushToken,
+            platform: 'android',
+        }),
+    });
+}
+
+async function enablePushNotifications() {
+    if (!Capacitor.isNativePlatform()) {
+        return;
+    }
+
+    if (!pushListenersInstalled) {
+        await PushNotifications.addListener('registration', async (registration) => {
+            try {
+                await savePushToken(registration.value);
+            } catch (error) {
+                showNotice(`Sesión iniciada, pero no se pudo activar el envío de avisos: ${error.message}`);
+            }
+        });
+        await PushNotifications.addListener('registrationError', (error) => {
+            showNotice(`No se pudo registrar este teléfono para recibir avisos: ${error.error}`);
+        });
+        await PushNotifications.addListener('pushNotificationActionPerformed', async () => {
+            if (token) {
+                try {
+                    await loadDashboard();
+                } catch (error) {
+                    showNotice(error.message);
+                }
+            }
+        });
+        pushListenersInstalled = true;
+    }
+
+    let permission = await PushNotifications.checkPermissions();
+    if (permission.receive !== 'granted') {
+        permission = await PushNotifications.requestPermissions();
+    }
+
+    if (permission.receive !== 'granted') {
+        showNotice('No se activaron los permisos de notificación. Puedes habilitarlos en los ajustes de Android.');
+        return;
+    }
+
+    await PushNotifications.createChannel({
+        id: 'appointments',
+        name: 'Avisos de citas',
+        description: 'Confirmaciones, cancelaciones y recordatorios de Dentissa.',
+        importance: 4,
+        vibration: true,
+    });
+    await PushNotifications.register();
+
+    if (nativePushToken) {
+        await savePushToken(nativePushToken);
+    }
 }
 
 function fillSelect(select, items, placeholder, valueKey, labelKey) {
