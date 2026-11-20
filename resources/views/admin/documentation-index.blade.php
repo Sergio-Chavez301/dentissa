@@ -112,7 +112,7 @@
                     <span class="badge rounded-pill text-bg-light align-self-start">Vista general</span>
                 </div>
                 <div class="documentation-diagram" role="img" aria-label="Diagrama de arquitectura: web y aplicación móvil se conectan a Laravel; Laravel consulta la base de datos y envía notificaciones mediante Firebase Cloud Messaging">
-                    <svg viewBox="0 0 1000 330" xmlns="http://www.w3.org/2000/svg" aria-labelledby="architecture-svg-title architecture-svg-desc">
+                    <svg viewBox="0 0 1000 370" xmlns="http://www.w3.org/2000/svg" aria-labelledby="architecture-svg-title architecture-svg-desc">
                         <title id="architecture-svg-title">Arquitectura de Dentissa</title>
                         <desc id="architecture-svg-desc">Los pacientes y el personal acceden desde la web, mientras que los pacientes también pueden usar la aplicación Android. Ambos canales se conectan a Laravel. Laravel usa MySQL para los datos y Firebase Cloud Messaging para notificaciones. El Scheduler ejecuta recordatorios.</desc>
                         <defs>
@@ -129,8 +129,8 @@
                             <path d="M220 245 C290 245 290 185 360 185"/>
                             <path d="M590 145 L690 92"/>
                             <path d="M590 175 L690 225"/>
-                            <path d="M465 225 L465 270"/>
-                            <path d="M585 285 C680 285 675 245 690 235"/>
+                            <path d="M465 270 L465 225"/>
+                            <path d="M690 270 C620 350 240 350 122 285"/>
                         </g>
                         <g font-size="13" fill="#5d5257" text-anchor="middle">
                             <rect x="25" y="45" width="195" height="80" rx="12" fill="#fff" stroke="#e6c6d0"/>
@@ -142,7 +142,7 @@
                             <rect x="360" y="95" width="230" height="130" rx="16" fill="url(#architecture-main)" stroke="#d75078" stroke-width="2"/>
                             <text x="475" y="137" font-size="19" font-weight="700" fill="#a33154">Laravel</text>
                             <text x="475" y="162">Web · API móvil · autenticación</text>
-                            <text x="475" y="188">Scheduler · lógica de negocio</text>
+                            <text x="475" y="188">Reglas clínicas · envío FCM</text>
                             <rect x="690" y="45" width="270" height="95" rx="12" fill="#fff" stroke="#b9d8ca"/>
                             <text x="825" y="80" font-size="16" font-weight="700">MySQL</text>
                             <text x="825" y="104">Expedientes, citas y servicios</text>
@@ -150,13 +150,13 @@
                             <rect x="690" y="190" width="270" height="95" rx="12" fill="#fff" stroke="#c6d8e6"/>
                             <text x="825" y="224" font-size="16" font-weight="700">Firebase Cloud Messaging</text>
                             <text x="825" y="249">Confirmaciones y cancelaciones</text>
-                            <text x="825" y="269">Recordatorios programados</text>
+                            <text x="825" y="269">Avisos push al dispositivo</text>
                             <rect x="360" y="270" width="230" height="40" rx="10" fill="#f3f6f4" stroke="#cbd8d2"/>
                             <text x="475" y="295" font-size="13" font-weight="700">Laravel Cloud Scheduler</text>
                         </g>
                     </svg>
                 </div>
-                <p class="small text-muted mt-2 mb-0">Las citas y los datos clínicos permanecen en el servidor; la app móvil requiere internet. Las notificaciones requieren configuración de Firebase y Scheduler.</p>
+                <p class="small text-muted mt-2 mb-0">La web usa sesión Laravel; la app Android consume la API móvil por HTTPS con Sanctum. El Scheduler ejecuta el comando de recordatorios en Laravel; Laravel solicita a Firebase la entrega al dispositivo. La app y los datos clínicos requieren internet.</p>
             </div>
         </section>
 

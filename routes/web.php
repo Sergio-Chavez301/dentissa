@@ -97,6 +97,9 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/documentacion', [AdminDocumentationController::class, 'index'])->name('documentation.index');
+        Route::get('/documentacion/contenido/{document}', [AdminDocumentationController::class, 'content'])
+            ->where('document', '(index|diagrama-base-datos|flujo-sistema|documentacion-sistema)\.html')
+            ->name('documentation.content');
         Route::get('/documentacion/{document}', [AdminDocumentationController::class, 'show'])
             ->where('document', '(index|diagrama-base-datos|flujo-sistema|documentacion-sistema)\.html')
             ->name('documentation.show');

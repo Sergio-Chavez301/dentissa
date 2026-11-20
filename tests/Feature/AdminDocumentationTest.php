@@ -35,8 +35,15 @@ class AdminDocumentationTest extends TestCase
         $diagram = $this->get(route('admin.documentation.show', ['document' => 'diagrama-base-datos.html']));
         $diagram->assertOk();
         $diagram->assertSee('Diagrama de base de datos');
-        $diagram->assertSee(route('admin.documentation.index'), false);
-        $diagram->assertHeader('Content-Type', 'text/html; charset=UTF-8');
+        $diagram->assertSee('documentation-frame');
+        $diagram->assertSee(route('admin.documentation.content', ['document' => 'diagrama-base-datos.html']));
+        $diagram->assertSee('sidebar');
+
+        $content = $this->get(route('admin.documentation.content', ['document' => 'diagrama-base-datos.html']));
+        $content->assertOk();
+        $content->assertSee('Relaciones de datos de Dentissa');
+        $content->assertSee(url('/admin/documentacion/contenido').'/', false);
+        $content->assertHeader('Content-Type', 'text/html; charset=UTF-8');
     }
 
     public function test_non_administrator_cannot_open_admin_documentation(): void
@@ -58,6 +65,9 @@ class AdminDocumentationTest extends TestCase
             ->assertForbidden();
 
         $this->get(route('admin.documentation.show', ['document' => 'flujo-sistema.html']))
+            ->assertForbidden();
+
+        $this->get(route('admin.documentation.content', ['document' => 'flujo-sistema.html']))
             ->assertForbidden();
     }
 

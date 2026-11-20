@@ -16,7 +16,7 @@ La app incluye:
 - Perfil del paciente, resumen de citas, citas próximas e historial de tratamientos.
 - Ofertas activas y solicitud de citas con los servicios, fechas y horarios disponibles.
 - Notificaciones push de confirmaciones y cancelaciones de citas.
-- Recordatorio push 24 horas antes de una cita confirmada, una sola vez por cita.
+- Recordatorio push cuando una cita confirmada entra en la ventana aproximada de 24 horas. Se marca si FCM acepta al menos un envío (esto no confirma que Android lo haya mostrado); al reprogramar o volver a confirmar la cita se reinicia la marca.
 
 La confirmación de una solicitud de cita sigue siendo responsabilidad del consultorio y se realiza desde el sistema web.
 
@@ -162,9 +162,9 @@ Las notificaciones requieren cambios en Laravel además del APK:
    php artisan schedule:list
    ```
 
-6. Revisa los logs de Laravel Cloud durante la prueba. El backend notifica al dispositivo registrado cuando el personal confirma o cancela una cita; el recordatorio se envía 24 horas antes de una cita confirmada.
+6. Revisa los logs de Laravel Cloud durante la prueba. El backend notifica al dispositivo registrado cuando el personal confirma o cancela una cita; el recordatorio se intenta en la ventana aproximada de 24 horas antes de una cita confirmada.
 
-El Scheduler solo envía recordatorios mientras esté activo. Si no está activo, las confirmaciones y cancelaciones pueden funcionar, pero los recordatorios programados no se ejecutarán.
+El Scheduler solo ejecuta el comando de recordatorios mientras esté activo. El comando usa el servicio Firebase de Laravel; Scheduler no envía mensajes directamente. El recordatorio se marca cuando FCM acepta al menos un envío; esa respuesta no garantiza que Android haya mostrado la notificación. Al reprogramar una cita o volver a confirmarla se reinicia la marca. Si Scheduler no está activo, las confirmaciones y cancelaciones todavía pueden producir push, pero los recordatorios programados no se ejecutarán.
 
 ## 6. Probar el recorrido de notificaciones
 
