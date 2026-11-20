@@ -179,18 +179,42 @@
                 <span class="text-muted small text-uppercase fw-bold">Para ti</span>
                 <h2 id="ofertas-heading" class="h5 fw-bold mb-0 mt-1">Ofertas activas</h2>
             </div>
-            <a href="{{ route('ofertas.public') }}" class="btn btn-sm btn-outline-secondary">Ver todas</a>
+            @if($officeSettings->whatsapp_digits)
+                @php($allOffersMessage = rawurlencode('Hola, quisiera información sobre las ofertas de ' . $officeSettings->clinic_name . '.'))
+                <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $allOffersMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-success" onclick="return confirm('Se abrirá WhatsApp para solicitar información sobre las ofertas. ¿Deseas continuar?')">
+                    <i class="bi bi-whatsapp me-1" aria-hidden="true"></i>Consultar ofertas
+                </a>
+            @endif
         </div>
+        <p class="small text-muted mb-3">
+            @if($officeSettings->whatsapp_digits)
+                Al solicitar información, se abrirá WhatsApp con el nombre de la oferta.
+            @else
+                Para consultar una oferta, contacta directamente al consultorio.
+            @endif
+        </p>
         <div class="row g-3">
             @forelse($ofertas as $oferta)
+                @php
+                    $offerMessage = rawurlencode(
+                        'Hola, quisiera información sobre la oferta "' . $oferta->titulo . '" de ' . $officeSettings->clinic_name . '. ¿Podrían compartirme los detalles y su disponibilidad?'
+                    );
+                @endphp
                 <div class="col-md-4">
                     <article class="card border-0 shadow-sm h-100">
-                        <div class="card-body">
+                        <div class="card-body d-flex flex-column">
                             <span class="small text-dentissa fw-bold">{{ strtoupper($oferta->tag ?? 'PROMOCIÓN') }}</span>
                             <h3 class="h6 fw-bold mt-2">{{ $oferta->titulo }}</h3>
-                            <p class="small text-muted mb-2">{{ $oferta->descripcion }}</p>
+                            <p class="small text-muted mb-3">{{ $oferta->descripcion }}</p>
                             @if($oferta->precio)
-                                <div class="fw-bold">${{ number_format((float) $oferta->precio, 0) }}</div>
+                                <div class="fw-bold mb-3">${{ number_format((float) $oferta->precio, 0) }}</div>
+                            @endif
+                            @if($officeSettings->whatsapp_digits)
+                                <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $offerMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-success mt-auto" onclick="return confirm('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?')">
+                                    <i class="bi bi-whatsapp me-1" aria-hidden="true"></i>Solicitar más información
+                                </a>
+                            @else
+                                <span class="small text-muted mt-auto">Contacta al consultorio para consultar esta oferta.</span>
                             @endif
                         </div>
                     </article>

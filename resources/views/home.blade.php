@@ -344,6 +344,11 @@
                 @if($ofertas->isNotEmpty())
                     <div class="service-list">
                         @foreach($ofertas->take(3) as $oferta)
+                            @php
+                                $offerMessage = rawurlencode(
+                                    'Hola, quisiera información sobre la oferta "' . $oferta->titulo . '" de ' . $officeSettings->clinic_name . '. ¿Podrían compartirme los detalles y su disponibilidad?'
+                                );
+                            @endphp
                             <article class="service">
                                 <span class="service-index">{{ strtoupper($oferta->tag ?? 'PROMOCIÓN') }}</span>
                                 <h3>{{ $oferta->titulo }}</h3>
@@ -352,6 +357,11 @@
                                     <div class="service-price" style="font-weight: 700; color: var(--rose-dark); margin-top: 16px;">
                                         ${{ number_format((float) $oferta->precio, 0) }}
                                     </div>
+                                @endif
+                                @if($officeSettings->whatsapp_digits)
+                                    <a class="button button-outline" style="margin-top: 16px;" href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $offerMessage }}" target="_blank" rel="noopener noreferrer" onclick="return confirm('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?')">
+                                        Solicitar más información
+                                    </a>
                                 @endif
                             </article>
                         @endforeach

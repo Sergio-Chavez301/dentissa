@@ -36,8 +36,9 @@ class PatientController extends Controller
             ->orderBy('id')
             ->take(3)
             ->get();
+        $officeSettings = OfficeSetting::current();
 
-        return view('dashboard.paciente', compact('patient', 'ofertas'));
+        return view('dashboard.paciente', compact('patient', 'ofertas', 'officeSettings'));
     }
 
     public function index()
