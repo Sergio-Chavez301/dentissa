@@ -49,6 +49,8 @@ La documentación interactiva está en [`documentacion/informacion/`](documentac
 - [Flujos del sistema](documentacion/informacion/flujo-sistema.html)
 - [Referencia técnica, permisos y despliegue](documentacion/informacion/documentacion-sistema.html)
 
+El personal administrador también puede consultar estas guías y sus diagramas desde **Panel de administración > Documentación**. El área administrativa está protegida por autenticación y rol; la guía de Android se encuentra dentro del centro de documentación.
+
 ## Instalación local
 
 Requisitos: PHP 8.2+, Composer, Node.js/npm y MySQL o MariaDB.

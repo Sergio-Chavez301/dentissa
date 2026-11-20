@@ -14,6 +14,8 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\OfertaController;
 use App\Http\Controllers\OfficeSettingController;
 use App\Http\Controllers\ChatbotController;
+use App\Http\Controllers\MobileAppDocumentationController;
+use App\Http\Controllers\AdminDocumentationController;
 
 // --- VISTAS PÚBLICAS ---
 Route::get('/', function () {
@@ -94,6 +96,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::resource('servicios', ServicioController::class);
 
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
+        Route::get('/documentacion', [AdminDocumentationController::class, 'index'])->name('documentation.index');
+        Route::get('/documentacion/{document}', [AdminDocumentationController::class, 'show'])
+            ->where('document', '(index|diagrama-base-datos|flujo-sistema|documentacion-sistema)\.html')
+            ->name('documentation.show');
+        Route::get('/aplicacion-movil', [MobileAppDocumentationController::class, 'show'])->name('mobile-app-guide');
         Route::resource('ofertas', OfertaController::class);
         Route::get('/consultorio', [OfficeSettingController::class, 'edit'])->name('office-settings.edit');
         Route::put('/consultorio', [OfficeSettingController::class, 'update'])->name('office-settings.update');

@@ -1,57 +1,266 @@
-# Aplicación Android de Dentissa
+# Guía completa de la aplicación Android de Dentissa
 
-La app usa una interfaz local empaquetada con Capacitor y se conecta por HTTPS a la API de Laravel. Los datos y las citas permanecen en la base de datos del servidor; la app necesita internet. El token de acceso solo se mantiene en memoria, por lo que se solicita iniciar sesión otra vez al volver a abrir la app.
+Esta guía describe cómo preparar, compilar, instalar, configurar las notificaciones y distribuir la aplicación móvil de pacientes de Dentissa. Está dirigida al equipo que administra la aplicación Laravel y al personal que genera los APK.
 
-## Preparar el APK
+> **Estado importante:** la app Android consulta los datos del sistema web por internet. Compilar el APK no activa por sí solo las notificaciones: también se necesitan las credenciales privadas de Firebase, las migraciones desplegadas y el Scheduler activo en Laravel Cloud.
 
-1. Publica Laravel en un dominio HTTPS y configura la base de datos del servidor.
-2. Despliega los cambios del backend e instala la nueva tabla de tokens en el servidor:
+## 1. Qué hace la aplicación y qué necesita
+
+La app está construida con una interfaz web empaquetada localmente mediante Capacitor. El APK contiene la interfaz, el plugin nativo de notificaciones y la dirección HTTPS del backend que se utilizó al compilarlo.
+
+Los datos del paciente y las citas se consultan en Laravel; no se guardan en una base de datos local ni se pueden consultar sin internet. La sesión de la app se mantiene en memoria, por lo que el paciente tendrá que iniciar sesión de nuevo cuando se cierre completamente la aplicación.
+
+La app incluye:
+
+- Inicio de sesión para cuentas de pacientes activas.
+- Perfil del paciente, resumen de citas, citas próximas e historial de tratamientos.
+- Ofertas activas y solicitud de citas con los servicios, fechas y horarios disponibles.
+- Notificaciones push de confirmaciones y cancelaciones de citas.
+- Recordatorio push 24 horas antes de una cita confirmada, una sola vez por cita.
+
+La confirmación de una solicitud de cita sigue siendo responsabilidad del consultorio y se realiza desde el sistema web.
+
+## 2. Requisitos
+
+Antes de generar un APK, prepara:
+
+- El código fuente actualizado de Dentissa.
+- Node.js y npm, para compilar la interfaz móvil.
+- Android Studio, Android SDK y las herramientas de compilación Android.
+- Un dispositivo Android para instalar y probar el APK.
+- Una URL pública HTTPS del backend. Para producción de Dentissa se usa:
+
+  ```text
+  https://dentissa-production-5p0ftp.laravel.cloud
+  ```
+
+- Para activar notificaciones: un proyecto Firebase, el archivo Android `google-services.json` y credenciales privadas de una cuenta de servicio en Laravel Cloud.
+
+No uses URLs locales como `http://127.0.0.1:8000` en una compilación destinada a pacientes: en el teléfono apuntarían al propio teléfono, no al servidor.
+
+## 3. Preparar y compilar el proyecto Android
+
+### 3.1 Configurar la URL del backend
+
+Desde la raíz del repositorio, ejecuta:
+
+```sh
+DENTISSA_API_URL=https://dentissa-production-5p0ftp.laravel.cloud npm run android:sync
+```
+
+El comando:
+
+1. Valida que la dirección use HTTPS.
+2. Construye los recursos de la app móvil con Vite.
+3. Genera `mobile/config.json` con la URL del backend.
+4. Copia los recursos al proyecto nativo Android.
+5. sincroniza los plugins de Capacitor, incluido Push Notifications.
+
+`mobile/config.json` es un archivo generado y no se debe subir a Git. Si se cambia de servidor o dominio, vuelve a ejecutar el comando antes de generar otro APK.
+
+### 3.2 Abrir Android Studio y sincronizar
+
+Abre el proyecto `android` del repositorio en Android Studio. Espera hasta que termine **Gradle Sync**. El proyecto ya contiene la integración del plugin Google Services y de Capacitor Push Notifications; no agregues bloques Gradle duplicados siguiendo instrucciones genéricas de Firebase.
+
+Si Android Studio pide instalar una plataforma o herramienta del SDK, acepta la instalación y espera que termine.
+
+### 3.3 Generar un APK de prueba
+
+En Android Studio:
+
+1. Selecciona **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+2. Cuando el build termine, selecciona **Locate** en el aviso de Android Studio.
+3. El APK de depuración suele estar en:
+
+   ```text
+   android/app/build/outputs/apk/debug/app-debug.apk
+   ```
+
+El APK de depuración es para pruebas. No es el artefacto recomendado para distribución general.
+
+### 3.4 Instalar en el teléfono
+
+Puedes conectar el teléfono por USB y ejecutar la app desde Android Studio, o transferir el APK de depuración al dispositivo e instalarlo. Android puede solicitar permiso para instalar aplicaciones desde esa fuente; habilítalo solo para la aplicación desde la que abriste el APK y vuelve a desactivarlo al terminar si no lo necesitas.
+
+Después de instalar:
+
+1. Abre Dentissa e inicia sesión con una cuenta de paciente activa.
+2. Comprueba que se vean sus datos y citas.
+3. Acepta el permiso de notificaciones cuando Android lo solicite.
+4. Para probar avisos reales, completa también la configuración del backend de las secciones 4 y 5.
+
+## 4. Configurar Firebase para Android
+
+### 4.1 Registrar la aplicación Android
+
+1. En Firebase Console, crea o abre el proyecto de Firebase de Dentissa.
+2. Agrega una aplicación **Android**.
+3. Usa exactamente este ID de aplicación (package name):
+
+   ```text
+   com.dentissa.patient
+   ```
+
+4. Completa el registro de la app en Firebase y habilita Firebase Cloud Messaging (FCM) para el proyecto.
+5. Descarga `google-services.json`.
+6. Coloca el archivo en:
+
+   ```text
+   android/app/google-services.json
+   ```
+
+El archivo de configuración Android no es la clave privada de servidor. Aun así, este proyecto lo excluye de Git; no cambies esa exclusión ni publiques archivos privados por error. Después de agregarlo, ejecuta de nuevo `android:sync` y vuelve a compilar el APK.
+
+### 4.2 Crear credenciales de servidor (no van en Android)
+
+Laravel necesita una cuenta de servicio de Google para solicitar tokens OAuth y enviar mensajes por FCM HTTP v1:
+
+1. En Firebase Console o Google Cloud Console, abre el proyecto Firebase correcto.
+2. En **Configuración del proyecto > Cuentas de servicio**, abre la administración de cuentas de servicio de Google Cloud.
+3. Usa una cuenta de servicio con permiso para enviar mensajes de Firebase Cloud Messaging (por ejemplo, el rol **Firebase Cloud Messaging API Admin**).
+4. Genera y descarga una clave JSON de esa cuenta.
+5. Guarda el archivo en una ubicación privada y temporal para copiar su contenido directamente al gestor de secretos de Laravel Cloud.
+
+Configura en Laravel Cloud estas variables para el entorno de producción:
+
+| Variable | Valor |
+|---|---|
+| `FIREBASE_PROJECT_ID` | ID del proyecto Firebase, por ejemplo `dentissa-a40e6`. Debe coincidir con `project_id` de la cuenta de servicio. |
+| `FIREBASE_SERVICE_ACCOUNT_JSON` | Contenido JSON completo de la clave de la cuenta de servicio. Guárdalo como secreto y no lo pongas en el APK. |
+
+No pegues la cuenta de servicio en el chat, no la agregues a `google-services.json`, no la guardes en el repositorio y no la envíes a pacientes. Si la clave se expone, revócala y genera una nueva.
+
+Cuando se actualicen variables de entorno, aplica la configuración según el flujo de Laravel Cloud para que los procesos desplegados la reciban. El servicio valida que `FIREBASE_PROJECT_ID` coincida con el proyecto de la cuenta de servicio; si no coincide o falta una variable, FCM no podrá enviar avisos.
+
+## 5. Desplegar backend, base de datos y Scheduler
+
+Las notificaciones requieren cambios en Laravel además del APK:
+
+1. Despliega la versión del backend que contiene la API móvil, el registro de dispositivos push y el envío de notificaciones.
+2. En Laravel Cloud ejecuta las migraciones de producción:
 
    ```sh
-   composer install --no-dev --optimize-autoloader
    php artisan migrate --force
    ```
 
-3. Desde el proyecto, configura la URL de la API y sincroniza Android:
+3. Comprueba que estas migraciones estén aplicadas:
+
+   - `2026_11_19_214759_create_personal_access_tokens_table`
+   - `2026_11_19_230000_add_reminder_sent_at_to_citas_table`
+   - `2026_11_19_230001_create_push_devices_table`
+
+   Si la migración de tokens ya se aplicó anteriormente, no es necesario volver a aplicarla; Laravel solo ejecutará las pendientes. Revisa el resultado con:
 
    ```sh
-   DENTISSA_API_URL=https://dentissa-production-5p0ftp.laravel.cloud npm run android:sync
+   php artisan migrate:status
    ```
 
-   El comando solo acepta HTTPS y genera `mobile/config.json`, que no se versiona.
-4. Abre el proyecto nativo:
+4. En Laravel Cloud habilita **Scheduler** para el App cluster y despliega/aplica ese cambio. La tarea de recordatorios está programada cada minuto, con prevención de ejecuciones simultáneas.
+5. Confirma la programación dentro del entorno desplegado:
 
    ```sh
-   npm run android:open
+   php artisan schedule:list
    ```
 
-5. En Android Studio instala el SDK requerido y genera el APK desde **Build > Build Bundle(s) / APK(s) > Build APK(s)**.
+6. Revisa los logs de Laravel Cloud durante la prueba. El backend notifica al dispositivo registrado cuando el personal confirma o cancela una cita; el recordatorio se envía 24 horas antes de una cita confirmada.
 
-## Funciones incluidas
+El Scheduler solo envía recordatorios mientras esté activo. Si no está activo, las confirmaciones y cancelaciones pueden funcionar, pero los recordatorios programados no se ejecutarán.
 
-- Inicio de sesión para cuentas de pacientes activas.
-- Consulta de todos los datos de perfil del paciente, un resumen y listado de sus citas, tratamientos con progreso e historial, además de las tres ofertas activas.
-- Solicitud de una cita con servicio, fecha y horario disponible; queda pendiente de confirmación por el consultorio.
-- Tokens API revocables con vencimiento de 30 días y respuestas marcadas para no almacenarse en caché.
+## 6. Probar el recorrido de notificaciones
 
-La app no guarda datos clínicos ni funciona sin conexión. La confirmación de solicitudes continúa realizándose desde el sistema web.
+Haz la prueba con un dispositivo y una cuenta de paciente autorizada:
 
-## Notificaciones push y recordatorios
+1. Instala el APK compilado después de agregar `google-services.json`.
+2. Inicia sesión en la app y concede permiso para notificaciones.
+3. Confirma que el teléfono tenga conexión a internet y que Android no tenga bloqueadas las notificaciones de Dentissa.
+4. Comprueba en el backend que el dispositivo quedó registrado para la cuenta del paciente.
+5. Desde el sistema web cambia el estado de una cita de prueba a confirmada o cancelada. Revisa que el teléfono reciba el aviso.
+6. Para validar el recordatorio, usa una cita confirmada que entre en la ventana de 24 horas y verifica que el Scheduler ejecute el comando.
 
-Las confirmaciones y cancelaciones enviadas desde la gestión de citas notifican al dispositivo Android registrado del paciente. Una tarea programada envía un recordatorio 24 horas antes de cada cita confirmada y registra el envío para no repetirlo.
+Los mensajes usan texto general y no incluyen diagnósticos ni detalles clínicos en la pantalla bloqueada. Los permisos del teléfono permiten mostrar avisos, pero no sustituyen la configuración de Firebase ni el Scheduler.
 
-Para activar la entrega real:
+## 7. Firmar y distribuir
 
-1. Crea un proyecto Firebase, agrega una app Android con el ID `com.dentissa.patient` y activa Firebase Cloud Messaging.
-2. Descarga `google-services.json` y colócalo en `android/app/google-services.json` antes de sincronizar y compilar el APK. El archivo está excluido de Git.
-3. En Laravel Cloud configura `FIREBASE_PROJECT_ID` y `FIREBASE_SERVICE_ACCOUNT_JSON` como variables/secretos del backend. La cuenta de servicio debe tener permiso para enviar mensajes de Firebase Cloud Messaging; nunca incluyas su clave privada en el APK ni en Git.
-4. Despliega las migraciones nuevas y habilita **Scheduler** en el App cluster de Laravel Cloud (Infrastructure canvas). Guarda y vuelve a desplegar; Laravel Cloud ejecutará `schedule:run` cada minuto.
-5. Genera un APK nuevo, instálalo en los teléfonos y acepta el permiso de notificaciones. Los APK existentes no incluyen el plugin push.
+### APK firmado para compartir directamente
 
-Las notificaciones usan texto general para no exponer detalles de salud en la pantalla bloqueada. El paciente debe iniciar sesión en la app para asociar el dispositivo con su cuenta y aceptar el permiso de notificaciones. Si no configura Firebase o el scheduler, los avisos no se podrán entregar.
+1. En Android Studio selecciona **Build > Generate Signed Bundle / APK**.
+2. Elige **APK** y el módulo `app`.
+3. Si no tienes una clave de firma, elige **Create new…** y crea un keystore.
+4. Conserva el keystore, la contraseña, el alias y la contraseña de la clave en un gestor seguro y con respaldo. Son necesarios para futuras actualizaciones compatibles.
+5. Completa el asistente de firma y localiza el APK de lanzamiento que genera Android Studio.
+6. Prueba ese APK en un dispositivo antes de compartirlo.
+7. Aloja el archivo en una URL HTTPS pública controlada por el consultorio.
+8. Configura `ANDROID_APP_DOWNLOAD_URL` en Laravel Cloud con esa URL y despliega la configuración. La página pública y los mensajes de credenciales pueden mostrar el enlace de descarga.
 
-## Compartir la aplicación
+No compartas el archivo keystore ni sus contraseñas. Perder la clave puede impedir publicar actualizaciones de la misma app.
 
-Genera un APK de lanzamiento firmado desde Android Studio y súbelo a un alojamiento con URL HTTPS pública de descarga. En Laravel Cloud configura la variable de entorno `ANDROID_APP_DOWNLOAD_URL` con esa URL y despliega la configuración. Entonces el enlace aparecerá en la página pública y se incluirá en los mensajes de WhatsApp que contienen credenciales del paciente.
+### Google Play
 
-No uses el APK de depuración para compartirlo con pacientes. Para distribución general, genera un Android App Bundle (AAB) firmado y publica la aplicación en Google Play. Cada nueva versión requiere compilar y distribuir una actualización.
+Para publicar en Google Play, genera un **Android App Bundle (AAB)** firmado desde **Build > Generate Signed Bundle / APK > Android App Bundle** y completa el proceso de publicación de Google Play. Revisa además las políticas de privacidad, contenido y permisos exigidas por la tienda.
+
+Cada nueva versión de la app debe compilarse de nuevo, firmarse con la misma identidad y distribuirse a los pacientes. Un APK instalado anteriormente no recibe el código nuevo automáticamente.
+
+## 8. Actualizar la app sin instalar un APK viejo
+
+Al cambiar código móvil:
+
+1. Obtén la versión actualizada del repositorio.
+2. Ejecuta el comando `android:sync` con la URL HTTPS que debe usar esa compilación.
+3. Espera a que termine el build y la sincronización de Capacitor.
+4. En Android Studio vuelve a sincronizar Gradle y genera un APK nuevo.
+5. Instala el APK nuevo para validar la versión.
+
+En este proyecto se corrigió un error donde la función de activación push no estaba disponible al iniciar sesión. Si el teléfono aún muestra `enablePushNotifications is not defined`, tiene instalada una compilación anterior: sincroniza, compila e instala el APK actualizado. La compilación que incluye el arreglo ya no debe mostrar ese error.
+
+## 9. Solución de problemas
+
+### Android Studio no abre desde `npm run android:open`
+
+El comando solo abre Android Studio; no lo instala. Abre Android Studio manualmente y selecciona la carpeta `android` del proyecto.
+
+### `DENTISSA_API_URL` no está definida o la URL no usa HTTPS
+
+Ejecuta `android:sync` con la variable y una dirección HTTPS pública completa:
+
+```sh
+DENTISSA_API_URL=https://dentissa-production-5p0ftp.laravel.cloud npm run android:sync
+```
+
+### El APK carga, pero no aparecen los datos
+
+- Comprueba la conexión a internet del teléfono.
+- Verifica que el APK se haya compilado con la URL HTTPS correcta.
+- Confirma que la API del backend está desplegada y que la cuenta corresponde a un paciente activo.
+- No uses una URL `127.0.0.1`, una IP local o un dominio HTTP en la compilación del teléfono.
+
+### Aparece `enablePushNotifications is not defined`
+
+El teléfono tiene un APK anterior. Ejecuta `android:sync`, vuelve a compilar e instala el APK recién generado. No basta con cerrar y volver a abrir el APK anterior.
+
+### La app permite iniciar sesión, pero avisa que no pudo activar push
+
+- Asegúrate de que `android/app/google-services.json` corresponda a `com.dentissa.patient`.
+- Confirma que el JSON estaba en su ubicación antes de sincronizar y compilar el APK.
+- Acepta el permiso de notificaciones de Android y revisa que no esté bloqueado en Ajustes del dispositivo.
+- Verifica `FIREBASE_PROJECT_ID` y `FIREBASE_SERVICE_ACCOUNT_JSON` en Laravel Cloud y que ambos sean del mismo proyecto.
+- Confirma que el backend actualizado y las migraciones estén desplegados.
+- Revisa los logs del backend y el estado de Firebase Cloud Messaging.
+
+### Las confirmaciones funcionan, pero no llega el recordatorio
+
+- Confirma que Scheduler está habilitado para el App cluster en Laravel Cloud.
+- Ejecuta `php artisan schedule:list` en el entorno de producción y verifica `citas:enviar-recordatorios`.
+- El recordatorio es para citas confirmadas que se encuentran aproximadamente a 24 horas de iniciar; una cita ya pasada o fuera de esa ventana no genera el mismo aviso.
+- Comprueba que la cita no tenga ya registrado su recordatorio y revisa los logs.
+
+### Gradle pide configurar Firebase manualmente
+
+El proyecto ya aplica los plugins Gradle necesarios cuando `google-services.json` está presente. No copies otra vez las mismas declaraciones. Verifica primero que el JSON esté en `android/app/`, luego vuelve a sincronizar Capacitor y Gradle.
+
+## 10. Seguridad y privacidad
+
+- No introduzcas secretos en el código de la app, en el APK ni en el repositorio.
+- Mantén la cuenta de servicio de Firebase como secreto exclusivo del backend.
+- No uses datos de pacientes reales en capturas o pruebas que se vayan a compartir públicamente.
+- Entrega las credenciales temporales de los pacientes por un canal privado y recomienda cambiar la contraseña.
+- La app requiere internet y transmite solicitudes autenticadas al backend por HTTPS.
