@@ -12,6 +12,26 @@
             transition: transform 0.18s ease, box-shadow 0.18s ease;
         }
 
+        .documentation-hub .btn {
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+        }
+
+        .documentation-hub .btn:focus-visible,
+        .documentation-hub .documentation-card:focus-visible {
+            outline: 3px solid rgba(215, 80, 120, 0.45);
+            outline-offset: 3px;
+        }
+
+        .documentation-hub .documentation-card .card-footer {
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+
         .documentation-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 0.5rem 1.25rem rgba(30, 30, 36, 0.1) !important;
@@ -77,7 +97,7 @@
                 <h1 class="h3 fw-bold mt-1 mb-1">Documentación de Dentissa</h1>
                 <p class="text-muted mb-0">Guías técnicas, procesos operativos y diagramas del sistema en un solo lugar.</p>
             </div>
-            <a href="{{ route('dashboard.admin') }}" class="btn btn-outline-secondary flex-shrink-0">
+            <a href="{{ route('dashboard.admin') }}" class="btn btn-dentissa shrink-0">
                 <i class="bi bi-arrow-left me-1"></i>Volver al panel
             </a>
         </div>

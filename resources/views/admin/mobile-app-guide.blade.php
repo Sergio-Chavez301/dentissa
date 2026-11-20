@@ -97,7 +97,7 @@
                 <h1 class="h3 fw-bold mb-1">Guía de la app móvil</h1>
                 <p class="text-muted mb-0">Preparación, configuración, distribución y solución de problemas.</p>
             </div>
-            <a href="{{ route('admin.documentation.index') }}" class="btn btn-outline-secondary flex-shrink-0">
+            <a href="{{ route('admin.documentation.index') }}" class="btn btn-dentissa shrink-0">
                 <i class="bi bi-arrow-left me-1"></i>Volver a documentación
             </a>
         </div>
