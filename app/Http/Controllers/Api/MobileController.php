@@ -7,12 +7,14 @@ use App\Models\Cita;
 use App\Models\CasoClinico;
 use App\Models\Oferta;
 use App\Models\Patient;
+use App\Models\PushDevice;
 use App\Models\Servicio;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class MobileController extends Controller
@@ -57,6 +59,39 @@ class MobileController extends Controller
 
         return response()->json([
             'message' => 'Sesión cerrada.',
+        ])->header('Cache-Control', 'no-store');
+    }
+
+    public function registerPushDevice(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'token' => ['required', 'string', 'max:512'],
+            'platform' => ['required', Rule::in(['android'])],
+        ]);
+
+        PushDevice::updateOrCreate(
+            ['token' => $validated['token']],
+            [
+                'user_id' => $request->user()->id,
+                'platform' => $validated['platform'],
+            ]
+        );
+
+        return response()->json([
+            'message' => 'Este dispositivo recibirá avisos de Dentissa.',
+        ], 201)->header('Cache-Control', 'no-store');
+    }
+
+    public function removePushDevice(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'token' => ['required', 'string', 'max:512'],
+        ]);
+
+        $request->user()->pushDevices()->where('token', $validated['token'])->delete();
+
+        return response()->json([
+            'message' => 'Se desactivaron los avisos en este dispositivo.',
         ])->header('Cache-Control', 'no-store');
     }
 

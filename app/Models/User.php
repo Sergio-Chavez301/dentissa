@@ -42,6 +42,11 @@ class User extends Authenticatable
         return $this->hasMany(CasoClinico::class, 'user_id');
     }
 
+    public function pushDevices()
+    {
+        return $this->hasMany(PushDevice::class, 'user_id');
+    }
+
     public function isOnline()
     {
     return \Illuminate\Support\Facades\Cache::has('user-is-online-' . $this->id);

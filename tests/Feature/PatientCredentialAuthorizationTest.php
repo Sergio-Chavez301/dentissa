@@ -135,16 +135,36 @@ class PatientCredentialAuthorizationTest extends TestCase
             'fecha_nacimiento' => '1990-01-01',
         ]);
 
+        config(['mobile.android_app_download_url' => 'https://downloads.example/dentissa.apk']);
+
         $this->actingAs($administrator)
+            ->followingRedirects()
             ->post(route('patients.credentials.update', $patient), [
                 'username' => 'luis_paciente',
                 'password' => 'nueva1234',
                 'password_confirmation' => 'nueva1234',
             ])
-            ->assertRedirect(route('patients.show', $patient));
+            ->assertOk()
+            ->assertSee('https%3A%2F%2Fdownloads.example%2Fdentissa.apk', false);
 
         $this->assertSame('luis_paciente', $patientUser->fresh()->username);
         $this->assertTrue(Hash::check('nueva1234', $patientUser->fresh()->password));
         $this->assertSessionHas('temp_password', 'nueva1234');
+    }
+
+    public function test_public_home_shows_android_download_link_only_when_configured(): void
+    {
+        config(['mobile.android_app_download_url' => null]);
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertDontSee('Descargar app Android');
+
+        config(['mobile.android_app_download_url' => 'https://downloads.example/dentissa.apk']);
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('Descargar app Android')
+            ->assertSee('https://downloads.example/dentissa.apk');
     }
 }

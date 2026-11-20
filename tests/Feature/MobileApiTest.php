@@ -165,6 +165,35 @@ class MobileApiTest extends TestCase
             ->assertJsonPath('message', 'La cuenta no tiene acceso activo a la aplicación.');
     }
 
+    public function test_patient_can_register_and_remove_their_push_device(): void
+    {
+        $patient = $this->createPatient('patient', 'patient@example.com');
+        $token = $patient->user->createToken('test')->plainTextToken;
+
+        $this->withToken($token)
+            ->postJson('/api/mobile/devices', [
+                'token' => 'fcm-device-token',
+                'platform' => 'android',
+            ])
+            ->assertCreated();
+
+        $this->assertDatabaseHas('push_devices', [
+            'user_id' => $patient->user_id,
+            'token' => 'fcm-device-token',
+            'platform' => 'android',
+        ]);
+
+        $this->withToken($token)
+            ->deleteJson('/api/mobile/devices', [
+                'token' => 'fcm-device-token',
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseMissing('push_devices', [
+            'token' => 'fcm-device-token',
+        ]);
+    }
+
     private function createPatient(string $username, string $email, bool $active = true): Patient
     {
         $user = $this->createUser($username, $email, active: $active);

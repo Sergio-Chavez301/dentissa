@@ -36,6 +36,22 @@ La app usa una interfaz local empaquetada con Capacitor y se conecta por HTTPS a
 
 La app no guarda datos clínicos ni funciona sin conexión. La confirmación de solicitudes continúa realizándose desde el sistema web.
 
+## Notificaciones push y recordatorios
+
+Las confirmaciones y cancelaciones enviadas desde la gestión de citas notifican al dispositivo Android registrado del paciente. Una tarea programada envía un recordatorio 24 horas antes de cada cita confirmada y registra el envío para no repetirlo.
+
+Para activar la entrega real:
+
+1. Crea un proyecto Firebase, agrega una app Android con el ID `com.dentissa.patient` y activa Firebase Cloud Messaging.
+2. Descarga `google-services.json` y colócalo en `android/app/google-services.json` antes de sincronizar y compilar el APK. El archivo está excluido de Git.
+3. En Laravel Cloud configura `FIREBASE_PROJECT_ID` y `FIREBASE_SERVICE_ACCOUNT_JSON` como variables/secretos del backend. La cuenta de servicio debe tener permiso para enviar mensajes de Firebase Cloud Messaging; nunca incluyas su clave privada en el APK ni en Git.
+4. Despliega las migraciones nuevas y habilita **Scheduler** en el App cluster de Laravel Cloud (Infrastructure canvas). Guarda y vuelve a desplegar; Laravel Cloud ejecutará `schedule:run` cada minuto.
+5. Genera un APK nuevo, instálalo en los teléfonos y acepta el permiso de notificaciones. Los APK existentes no incluyen el plugin push.
+
+Las notificaciones usan texto general para no exponer detalles de salud en la pantalla bloqueada. El paciente debe iniciar sesión en la app para asociar el dispositivo con su cuenta y aceptar el permiso de notificaciones. Si no configura Firebase o el scheduler, los avisos no se podrán entregar.
+
 ## Compartir la aplicación
 
-Para una distribución de prueba, genera un APK de depuración desde Android Studio y comparte el archivo con los pacientes mediante un enlace privado de descarga. En Android tendrán que autorizar la instalación desde esa fuente. Para distribución general, genera un APK de lanzamiento firmado o un Android App Bundle (AAB) y publica la aplicación en Google Play. Cada nueva versión requiere compilar y distribuir una actualización.
+Genera un APK de lanzamiento firmado desde Android Studio y súbelo a un alojamiento con URL HTTPS pública de descarga. En Laravel Cloud configura la variable de entorno `ANDROID_APP_DOWNLOAD_URL` con esa URL y despliega la configuración. Entonces el enlace aparecerá en la página pública y se incluirá en los mensajes de WhatsApp que contienen credenciales del paciente.
+
+No uses el APK de depuración para compartirlo con pacientes. Para distribución general, genera un Android App Bundle (AAB) firmado y publica la aplicación en Google Play. Cada nueva versión requiere compilar y distribuir una actualización.

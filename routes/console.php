@@ -9,3 +9,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('citas:actualizar-vencidas')->daily();
+Schedule::command('citas:enviar-recordatorios')
+    ->everyMinute()
+    ->onOneServer()
+    ->withoutOverlapping();

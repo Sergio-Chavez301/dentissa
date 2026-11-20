@@ -182,7 +182,11 @@ class SolicitudController extends Controller
             if ($officeSettings->whatsapp_phone) {
                 $mensajeLineas[] = 'WhatsApp del consultorio: ' . $officeSettings->whatsapp_phone;
             }
-            $mensajeLineas[] = 'Tu acceso al portal: usuario ' . $usuario->username . ', contraseña temporal ' . $passwordTemporal . '. Ingresa en ' . url('/login') . ' y cambia tu contraseña después de iniciar sesión.';
+            $loginUrl = $request->getSchemeAndHttpHost() . route('login', [], false);
+            $mensajeLineas[] = 'Tu acceso al portal: usuario ' . $usuario->username . ', contraseña temporal ' . $passwordTemporal . '. Ingresa en ' . $loginUrl . ' y cambia tu contraseña después de iniciar sesión.';
+            if (config('mobile.android_app_download_url')) {
+                $mensajeLineas[] = 'Descarga la app de Dentissa para Android: ' . config('mobile.android_app_download_url');
+            }
             $mensaje = implode("\n", $mensajeLineas);
             return redirect()->route('citas.index')->with([
                 'success' => 'Cita agendada y cuenta creada para ' . $solicitud->nombre . '.',

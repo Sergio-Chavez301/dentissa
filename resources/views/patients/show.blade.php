@@ -46,6 +46,8 @@
             $telefonoLimpio = preg_replace('/[^0-9]/', '', session('temp_telefono') ?? $patient->telefono ?? '');
             $username = session('temp_username') ?? $patient->user?->username ?? 'Sin cuenta';
             $passwordTemporal = session('temp_password');
+            $appDownloadUrl = config('mobile.android_app_download_url');
+            $loginUrl = request()->getSchemeAndHttpHost() . route('login', [], false);
             $lineasConsultorio = array_filter([
                 'Consultorio: ' . $officeSettings->clinic_name,
                 $officeSettings->clinic_address ? 'Dirección: ' . $officeSettings->clinic_address : null,
@@ -53,11 +55,26 @@
             ]);
 
             if ($passwordTemporal) {
-                $mensaje = "Hola " . (session('temp_nombre') ?? $patient->nombre) . ", tus credenciales de acceso a Dentissa son:\nUsuario: " . $username . "\nContraseña temporal: " . $passwordTemporal . "\n" . implode("\n", $lineasConsultorio) . "\nInicia sesión en: " . url('/login');
+                $mensajeLineas = [
+                    "Hola " . (session('temp_nombre') ?? $patient->nombre) . ", tus credenciales de acceso a Dentissa son:",
+                    'Usuario: ' . $username,
+                    'Contraseña temporal: ' . $passwordTemporal,
+                    ...$lineasConsultorio,
+                    'Inicia sesión en: ' . $loginUrl,
+                ];
             } else {
-                $mensaje = "Hola " . $patient->nombre . ", te recordamos que tu usuario de acceso a Dentissa es: " . $username . "\n" . implode("\n", $lineasConsultorio) . "\nInicia sesión en: " . url('/login');
+                $mensajeLineas = [
+                    "Hola " . $patient->nombre . ", te recordamos que tu usuario de acceso a Dentissa es: " . $username,
+                    ...$lineasConsultorio,
+                    'Inicia sesión en: ' . $loginUrl,
+                ];
             }
 
+            if ($appDownloadUrl) {
+                $mensajeLineas[] = 'Descarga la app de Dentissa para Android: ' . $appDownloadUrl;
+            }
+
+            $mensaje = implode("\n", $mensajeLineas);
             $urlWhatsApp = !empty($telefonoLimpio) ? "https://wa.me/" . $telefonoLimpio . "?text=" . urlencode($mensaje) : "#";
         @endphp
 

@@ -11,6 +11,8 @@ Route::prefix('mobile')->group(function () {
         Route::post('/logout', [MobileController::class, 'logout']);
         Route::get('/dashboard', [MobileController::class, 'dashboard']);
         Route::get('/availability', [MobileController::class, 'availability']);
+        Route::post('/devices', [MobileController::class, 'registerPushDevice']);
+        Route::delete('/devices', [MobileController::class, 'removePushDevice']);
         Route::post('/appointments', [MobileController::class, 'storeAppointment'])
             ->middleware('throttle:10,1');
     });

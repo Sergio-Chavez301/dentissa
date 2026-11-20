@@ -178,6 +178,7 @@
             .hero-actions { align-items: stretch; flex-direction: column; gap: 8px; margin-top: 18px; }
             .hero-actions .button { width: 100%; }
             .hero-actions .button-outline { display: none; }
+            .hero-actions .app-download-button { display: inline-flex; }
             .hero-note { margin-top: 12px; padding-top: 10px; font-size: 11px; }
             .hero-visual { min-height: 0; aspect-ratio: 1; }
             .hero-photo { object-position: center 34%; }
@@ -257,6 +258,11 @@
                     <div class="hero-actions">
                         <button class="button" type="button" data-open-request>Solicitar una cita <span aria-hidden="true">↗</span></button>
                         <a class="button button-outline" href="#servicios">Conocer tratamientos</a>
+                        @if(config('mobile.android_app_download_url'))
+                            <a class="button button-outline app-download-button" href="{{ config('mobile.android_app_download_url') }}" rel="noopener">
+                                Descargar app Android
+                            </a>
+                        @endif
                     </div>
                     <div class="hero-note">
                         <span class="note-mark" aria-hidden="true">ML</span>

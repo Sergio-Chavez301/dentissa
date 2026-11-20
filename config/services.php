@@ -18,6 +18,11 @@ return [
         'key' => env('POSTMARK_API_KEY'),
     ],
 
+    'firebase' => [
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+        'service_account_json' => env('FIREBASE_SERVICE_ACCOUNT_JSON'),
+    ],
+
     'resend' => [
         'key' => env('RESEND_API_KEY'),
     ],

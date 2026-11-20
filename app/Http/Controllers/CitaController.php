@@ -12,6 +12,8 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str; 
+use App\Services\FirebasePushNotificationService;
+use Throwable;
 
 class CitaController extends Controller
 {
@@ -243,14 +245,25 @@ class CitaController extends Controller
             }
         }
 
+        $previousStatus = $cita->estado;
+        $appointmentTimeChanged = $request->fecha !== $cita->fecha || $request->hora !== $cita->hora;
         $cita->update([
             'caso_clinico_id' => $request->input('caso_clinico_id') ?: null,
             'fecha'  => $request->fecha,
             'hora'   => $request->hora,
             'estado' => $request->estado,
+            'reminder_sent_at' => $appointmentTimeChanged
+                || ($previousStatus !== $request->estado && $request->estado === Cita::ESTADO_CONFIRMADA)
+                    ? null
+                    : $cita->reminder_sent_at,
         ]);
 
-        return redirect()->route('citas.index')->with('success', 'Cita actualizada correctamente.');
+        $redirect = redirect()->route('citas.index')->with('success', 'Cita actualizada correctamente.');
+        $warning = $previousStatus !== $cita->estado
+            ? $this->notifyPatientOfAppointmentStatus($cita)
+            : null;
+
+        return $warning ? $redirect->with('notification_warning', $warning) : $redirect;
     }
 
     public function updateStatus(Request $request, Cita $cita)
@@ -267,7 +280,13 @@ class CitaController extends Controller
             'estado' => ['required', Rule::in($allowedTransitions)],
         ]);
 
-        $cita->update(['estado' => $validated['estado']]);
+        $previousStatus = $cita->estado;
+        $cita->update([
+            'estado' => $validated['estado'],
+            'reminder_sent_at' => $validated['estado'] === Cita::ESTADO_CONFIRMADA
+                ? null
+                : $cita->reminder_sent_at,
+        ]);
 
         $messages = [
             Cita::ESTADO_CONFIRMADA => 'La cita fue confirmada.',
@@ -276,7 +295,53 @@ class CitaController extends Controller
             Cita::ESTADO_NO_PRESENTO => 'La cita fue marcada como inasistencia.',
         ];
 
-        return redirect()->route('citas.index')->with('success', $messages[$validated['estado']]);
+        $redirect = redirect()->route('citas.index')->with('success', $messages[$validated['estado']]);
+        $warning = $previousStatus !== $cita->estado
+            ? $this->notifyPatientOfAppointmentStatus($cita)
+            : null;
+
+        return $warning ? $redirect->with('notification_warning', $warning) : $redirect;
+    }
+
+    private function notifyPatientOfAppointmentStatus(Cita $cita): ?string
+    {
+        if (!in_array($cita->estado, [Cita::ESTADO_CONFIRMADA, Cita::ESTADO_CANCELADA], true)) {
+            return null;
+        }
+
+        $cita->loadMissing(['paciente.user.pushDevices']);
+        $user = $cita->paciente?->user;
+
+        if (!$user || !$user->activo || $user->pushDevices->isEmpty()) {
+            return null;
+        }
+
+        $confirmed = $cita->estado === Cita::ESTADO_CONFIRMADA;
+
+        try {
+            $result = app(FirebasePushNotificationService::class)->sendToUser(
+                $user,
+                'Actualización de tu cita',
+                $confirmed
+                    ? 'Tu cita en Dentissa fue confirmada. Abre la app para consultar los detalles.'
+                    : 'Tu cita en Dentissa fue cancelada. Abre la app o contacta al consultorio.',
+                [
+                    'type' => 'appointment_status',
+                    'appointment_id' => (string) $cita->id,
+                    'status' => $cita->estado,
+                ]
+            );
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return 'La cita se actualizó, pero no se pudo enviar el aviso push. Revisa la configuración de Firebase.';
+        }
+
+        if ($result['failed'] > 0) {
+            return 'La cita se actualizó, pero hubo dispositivos a los que no se pudo enviar el aviso push.';
+        }
+
+        return null;
     }
 
     private function ensureStaffAccess(): void

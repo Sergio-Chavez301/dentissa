@@ -1,3 +1,6 @@
+import { Capacitor } from '@capacitor/core';
+import { PushNotifications } from '@capacitor/push-notifications';
+
 const loginView = document.querySelector('#login-view');
 const dashboardView = document.querySelector('#dashboard-view');
 const notice = document.querySelector('#notice');
@@ -9,6 +12,8 @@ const serviceSelect = document.querySelector('#service');
 
 let apiBaseUrl;
 let token;
+let nativePushToken;
+let pushListenersInstalled = false;
 
 function showNotice(message, success = false) {
     notice.textContent = message;
@@ -49,6 +54,73 @@ async function apiRequest(path, options = {}) {
     }
     if (token) {
         headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    async function savePushToken(pushToken) {
+        nativePushToken = pushToken;
+        if (!token) {
+            return;
+        }
+
+        await apiRequest('/devices', {
+            method: 'POST',
+            body: JSON.stringify({
+                token: pushToken,
+                platform: 'android',
+            }),
+        });
+    }
+
+    async function enablePushNotifications() {
+        if (!Capacitor.isNativePlatform()) {
+            return;
+        }
+
+        if (!pushListenersInstalled) {
+            await PushNotifications.addListener('registration', async (registration) => {
+                try {
+                    await savePushToken(registration.value);
+                } catch (error) {
+                    showNotice(`Sesión iniciada, pero no se pudo activar el envío de avisos: ${error.message}`);
+                }
+            });
+            await PushNotifications.addListener('registrationError', (error) => {
+                showNotice(`No se pudo registrar este teléfono para recibir avisos: ${error.error}`);
+            });
+            await PushNotifications.addListener('pushNotificationActionPerformed', async () => {
+                if (token) {
+                    try {
+                        await loadDashboard();
+                    } catch (error) {
+                        showNotice(error.message);
+                    }
+                }
+            });
+            pushListenersInstalled = true;
+        }
+
+        let permission = await PushNotifications.checkPermissions();
+        if (permission.receive !== 'granted') {
+            permission = await PushNotifications.requestPermissions();
+        }
+
+        if (permission.receive !== 'granted') {
+            showNotice('No se activaron los permisos de notificación. Puedes habilitarlos en los ajustes de Android.');
+            return;
+        }
+
+        await PushNotifications.createChannel({
+            id: 'appointments',
+            name: 'Avisos de citas',
+            description: 'Confirmaciones, cancelaciones y recordatorios de Dentissa.',
+            importance: 4,
+            vibration: true,
+        });
+        await PushNotifications.register();
+
+        if (nativePushToken) {
+            await savePushToken(nativePushToken);
+        }
     }
 
     const response = await fetch(`${apiBaseUrl}/api/mobile${path}`, {
@@ -357,6 +429,11 @@ loginForm.addEventListener('submit', async (event) => {
         token = response.token;
         await loadDashboard();
         loginForm.reset();
+        try {
+            await enablePushNotifications();
+        } catch (error) {
+            showNotice(`Sesión iniciada, pero no se pudieron activar los avisos push: ${error.message}`);
+        }
     } catch (error) {
         token = null;
         setView(false);
@@ -368,10 +445,22 @@ loginForm.addEventListener('submit', async (event) => {
 
 document.querySelector('#logout-button').addEventListener('click', async () => {
     try {
+        if (nativePushToken) {
+            await apiRequest('/devices', {
+                method: 'DELETE',
+                body: JSON.stringify({ token: nativePushToken }),
+            });
+        }
         await apiRequest('/logout', { method: 'POST' });
     } catch (error) {
         showNotice(error.message);
     } finally {
+        if (Capacitor.isNativePlatform()) {
+            await PushNotifications.unregister().catch((error) => {
+                showNotice(`No se pudo desactivar el registro push del teléfono: ${error.message}`);
+            });
+        }
+        nativePushToken = null;
         token = null;
         setView(false);
     }

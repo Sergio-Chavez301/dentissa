@@ -17,6 +17,8 @@
 /public/hot
 /public/storage
 /mobile/config.json
+/mobile/dist
+/android/app/google-services.json
 /storage/*.key
 /storage/pail
 /vendor
