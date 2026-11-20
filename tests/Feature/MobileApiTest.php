@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Cita;
+use App\Models\CasoClinico;
+use App\Models\Oferta;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\Servicio;
@@ -19,6 +21,25 @@ class MobileApiTest extends TestCase
     {
         $patient = $this->createPatient('patient', 'patient@example.com');
         $otherPatient = $this->createPatient('other', 'other@example.com');
+        $patient->update([
+            'alergias' => 'Penicilina',
+            'enfermedades' => 'Asma',
+            'tratamientos' => 'Revisión semestral',
+        ]);
+        CasoClinico::create([
+            'paciente_id' => $patient->id,
+            'tratamiento_base' => 'Ortodoncia',
+            'progreso' => 45,
+            'estado' => 'activo',
+        ]);
+        Oferta::create([
+            'titulo' => 'Limpieza con descuento',
+            'tag' => 'Promoción',
+            'descripcion' => 'Precio especial este mes.',
+            'precio' => 400,
+            'orden' => 1,
+            'activo' => true,
+        ]);
         $service = Servicio::create([
             'nombre' => 'Limpieza',
             'descripcion' => 'Limpieza dental',
@@ -49,8 +70,15 @@ class MobileApiTest extends TestCase
             ->getJson('/api/mobile/dashboard')
             ->assertOk()
             ->assertJsonPath('patient.name', 'Ana Paciente')
+            ->assertJsonPath('patient.username', 'patient')
+            ->assertJsonPath('patient.birth_date', '1990-01-01')
+            ->assertJsonPath('patient.allergies', 'Penicilina')
+            ->assertJsonPath('appointment_counts.en_espera', 1)
             ->assertJsonCount(1, 'appointments')
             ->assertJsonPath('appointments.0.service', 'Limpieza')
+            ->assertJsonPath('treatments.0.name', 'Ortodoncia')
+            ->assertJsonPath('treatments.0.progress', 45)
+            ->assertJsonPath('offers.0.title', 'Limpieza con descuento')
             ->assertJsonMissing(['name' => 'Otro Paciente']);
     }
 

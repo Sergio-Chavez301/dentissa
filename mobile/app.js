@@ -116,26 +116,196 @@ function renderAppointments(appointments) {
         service.textContent = appointment.service;
 
         const date = document.createElement('p');
-        date.textContent = `${appointment.date} · ${appointment.time}`;
+        date.textContent = `${formatDate(appointment.date)} · ${appointment.time}`;
 
         const status = document.createElement('span');
         status.className = 'status';
         status.textContent = labels[appointment.status] || appointment.status;
 
-        item.append(service, date, status);
+        item.append(service, date);
+        if (appointment.treatment) {
+            const treatment = document.createElement('p');
+            treatment.className = 'muted';
+            treatment.textContent = appointment.treatment;
+            item.append(treatment);
+        }
+        item.append(status);
         list.append(item);
+    }
+}
+
+function renderAppointmentSummary(counts) {
+    const summary = document.querySelector('#appointment-summary');
+    const states = [
+        ['En espera', counts.en_espera],
+        ['Confirmadas', counts.confirmada],
+        ['Canceladas', counts.cancelada],
+        ['No se presentó', counts.no_presento],
+        ['Realizadas', counts.realizada],
+    ];
+
+    summary.replaceChildren();
+    for (const [label, count] of states) {
+        const card = document.createElement('article');
+        card.className = 'summary-card';
+        const title = document.createElement('span');
+        title.textContent = label;
+        const value = document.createElement('strong');
+        value.textContent = count;
+        card.append(title, value);
+        summary.append(card);
+    }
+}
+
+function formatDate(value) {
+    if (!value) {
+        return 'No registrada';
+    }
+
+    const [year, month, day] = value.split('-');
+    return year && month && day ? `${day}/${month}/${year}` : value;
+}
+
+function renderPatientProfile(patient) {
+    const profile = document.querySelector('#patient-profile');
+    const fields = [
+        ['Nombre completo', patient.name],
+        ['Usuario', patient.username || 'No disponible'],
+        ['Correo', patient.email || 'No registrado'],
+        ['Teléfono', patient.phone || 'No registrado'],
+        ['Fecha de nacimiento', formatDate(patient.birth_date)],
+        ['Alergias', patient.allergies || 'Sin registro'],
+        ['Enfermedades', patient.conditions || 'Sin registro'],
+        ['Tratamientos actuales', patient.current_treatments || 'Sin registro'],
+    ];
+
+    profile.replaceChildren();
+    for (const [label, value] of fields) {
+        const group = document.createElement('div');
+        const term = document.createElement('dt');
+        term.textContent = label;
+        const description = document.createElement('dd');
+        description.textContent = value;
+        group.append(term, description);
+        profile.append(group);
+    }
+}
+
+function renderTreatments(treatments) {
+    const list = document.querySelector('#treatments');
+    list.replaceChildren();
+
+    if (treatments.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'muted';
+        empty.textContent = 'Aún no hay tratamientos registrados en tu expediente.';
+        list.append(empty);
+        return;
+    }
+
+    for (const treatment of treatments) {
+        const card = document.createElement('article');
+        card.className = 'treatment';
+
+        const heading = document.createElement('div');
+        heading.className = 'treatment-heading';
+        const name = document.createElement('h3');
+        name.textContent = treatment.name;
+        const status = document.createElement('span');
+        status.className = 'status';
+        status.textContent = treatment.status === 'activo' ? 'Activo' : 'Finalizado';
+        heading.append(name, status);
+
+        const progressLabel = document.createElement('div');
+        progressLabel.className = 'progress-label';
+        const progressText = document.createElement('span');
+        progressText.textContent = 'Progreso del tratamiento';
+        const progressValue = document.createElement('strong');
+        progressValue.textContent = `${treatment.progress}%`;
+        progressLabel.append(progressText, progressValue);
+
+        const progress = document.createElement('progress');
+        progress.className = 'progress';
+        progress.max = 100;
+        progress.value = treatment.progress;
+
+        const historyTitle = document.createElement('h4');
+        historyTitle.textContent = 'Citas realizadas';
+        card.append(heading, progressLabel, progress, historyTitle);
+
+        if (treatment.completed_appointments.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'muted';
+            empty.textContent = 'Todavía no hay citas realizadas asociadas a este tratamiento.';
+            card.append(empty);
+        } else {
+            const history = document.createElement('ul');
+            history.className = 'treatment-history';
+            for (const appointment of treatment.completed_appointments) {
+                const item = document.createElement('li');
+                const service = document.createElement('span');
+                service.textContent = appointment.service;
+                const date = document.createElement('span');
+                date.className = 'muted';
+                date.textContent = `${formatDate(appointment.date)} · ${appointment.time}`;
+                item.append(service, date);
+                history.append(item);
+            }
+            card.append(history);
+        }
+
+        list.append(card);
+    }
+}
+
+function renderOffers(offers) {
+    const list = document.querySelector('#offers');
+    list.replaceChildren();
+
+    if (offers.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'muted';
+        empty.textContent = 'No hay ofertas activas por el momento.';
+        list.append(empty);
+        return;
+    }
+
+    for (const offer of offers) {
+        const card = document.createElement('article');
+        card.className = 'offer';
+        const tag = document.createElement('p');
+        tag.className = 'eyebrow';
+        tag.textContent = offer.tag || 'Promoción';
+        const title = document.createElement('h3');
+        title.textContent = offer.title;
+        const description = document.createElement('p');
+        description.className = 'muted';
+        description.textContent = offer.description;
+        card.append(tag, title, description);
+
+        if (offer.price !== null) {
+            const price = document.createElement('strong');
+            price.textContent = new Intl.NumberFormat('es-MX', {
+                style: 'currency',
+                currency: 'MXN',
+                maximumFractionDigits: 0,
+            }).format(offer.price);
+            card.append(price);
+        }
+
+        list.append(card);
     }
 }
 
 async function loadDashboard() {
     const dashboard = await apiRequest('/dashboard');
     document.querySelector('#patient-name').textContent = dashboard.patient.name;
-    document.querySelector('#patient-contact').textContent = [
-        dashboard.patient.email,
-        dashboard.patient.phone,
-    ].filter(Boolean).join(' · ');
+    renderPatientProfile(dashboard.patient);
+    renderAppointmentSummary(dashboard.appointment_counts);
     fillSelect(serviceSelect, dashboard.services, 'Selecciona un servicio', 'id', 'name');
     renderAppointments(dashboard.appointments);
+    renderTreatments(dashboard.treatments);
+    renderOffers(dashboard.offers);
     setView(true);
 }
 

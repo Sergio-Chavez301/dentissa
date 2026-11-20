@@ -15,10 +15,10 @@ La app usa una interfaz local empaquetada con Capacitor y se conecta por HTTPS a
 3. Desde el proyecto, configura la URL de la API y sincroniza Android:
 
    ```sh
-   DENTISSA_API_URL=https://dentissa.example npm run android:sync
+   DENTISSA_API_URL=https://dentissa-production-5p0ftp.laravel.cloud npm run android:sync
    ```
 
-   Sustituye `https://dentissa.example` por el dominio real. El comando solo acepta HTTPS y genera `mobile/config.json`, que no se versiona.
+   El comando solo acepta HTTPS y genera `mobile/config.json`, que no se versiona.
 4. Abre el proyecto nativo:
 
    ```sh
@@ -30,8 +30,12 @@ La app usa una interfaz local empaquetada con Capacitor y se conecta por HTTPS a
 ## Funciones incluidas
 
 - Inicio de sesión para cuentas de pacientes activas.
-- Consulta del perfil básico y de las citas del paciente autenticado.
+- Consulta de todos los datos de perfil del paciente, un resumen y listado de sus citas, tratamientos con progreso e historial, además de las tres ofertas activas.
 - Solicitud de una cita con servicio, fecha y horario disponible; queda pendiente de confirmación por el consultorio.
 - Tokens API revocables con vencimiento de 30 días y respuestas marcadas para no almacenarse en caché.
 
 La app no guarda datos clínicos ni funciona sin conexión. La confirmación de solicitudes continúa realizándose desde el sistema web.
+
+## Compartir la aplicación
+
+Para una distribución de prueba, genera un APK de depuración desde Android Studio y comparte el archivo con los pacientes mediante un enlace privado de descarga. En Android tendrán que autorizar la instalación desde esa fuente. Para distribución general, genera un APK de lanzamiento firmado o un Android App Bundle (AAB) y publica la aplicación en Google Play. Cada nueva versión requiere compilar y distribuir una actualización.

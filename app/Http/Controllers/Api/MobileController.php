@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cita;
+use App\Models\CasoClinico;
+use App\Models\Oferta;
 use App\Models\Patient;
 use App\Models\Servicio;
 use App\Models\User;
@@ -60,9 +62,11 @@ class MobileController extends Controller
 
     public function dashboard(Request $request): JsonResponse
     {
-        $patient = $this->patientFor($request->user());
+        $user = $request->user();
+        $patient = $this->patientFor($user);
 
         $appointments = Cita::with('servicio:id,nombre')
+            ->with('casoClinico:id,tratamiento_base')
             ->where('paciente_id', $patient->id)
             ->orderByDesc('fecha')
             ->orderByDesc('hora')
@@ -74,15 +78,68 @@ class MobileController extends Controller
                 'time' => substr($appointment->hora, 0, 5),
                 'status' => $appointment->estado,
                 'service' => $appointment->servicio?->nombre ?? 'Consulta general',
+                'treatment' => $appointment->casoClinico?->tratamiento_base,
+            ]);
+
+        $appointmentCounts = Cita::where('paciente_id', $patient->id)
+            ->selectRaw('estado, COUNT(*) as total')
+            ->groupBy('estado')
+            ->pluck('total', 'estado');
+
+        $treatments = CasoClinico::with([
+            'citas' => fn ($query) => $query
+                ->reorder()
+                ->where('estado', Cita::ESTADO_REALIZADA)
+                ->with('servicio:id,nombre')
+                ->orderByDesc('fecha')
+                ->orderByDesc('hora'),
+        ])
+            ->where('paciente_id', $patient->id)
+            ->get()
+            ->map(fn (CasoClinico $treatment) => [
+                'name' => $treatment->tratamiento_base ?: 'Tratamiento dental',
+                'progress' => min(100, max(0, (int) $treatment->progreso)),
+                'status' => $treatment->estado,
+                'completed_appointments' => $treatment->citas->map(fn (Cita $appointment) => [
+                    'service' => $appointment->servicio?->nombre ?? 'Consulta general',
+                    'date' => $appointment->fecha,
+                    'time' => substr($appointment->hora, 0, 5),
+                ])->values(),
+            ]);
+
+        $offers = Oferta::where('activo', true)
+            ->orderBy('orden')
+            ->orderBy('id')
+            ->limit(3)
+            ->get(['titulo', 'tag', 'descripcion', 'precio'])
+            ->map(fn (Oferta $offer) => [
+                'title' => $offer->titulo,
+                'tag' => $offer->tag,
+                'description' => $offer->descripcion,
+                'price' => $offer->precio,
             ]);
 
         return response()->json([
             'patient' => [
                 'name' => trim($patient->nombre . ' ' . $patient->apellidos),
-                'email' => $patient->email,
+                'username' => $user->username,
+                'email' => $patient->email ?? $user->email,
                 'phone' => $patient->telefono,
+                'birth_date' => $patient->fecha_nacimiento,
+                'allergies' => $patient->alergias,
+                'conditions' => $patient->enfermedades,
+                'current_treatments' => $patient->tratamientos,
+            ],
+            'appointment_counts' => [
+                'en_espera' => (int) $appointmentCounts->get(Cita::ESTADO_EN_ESPERA, 0),
+                'confirmada' => (int) $appointmentCounts->get(Cita::ESTADO_CONFIRMADA, 0),
+                'cancelada' => (int) $appointmentCounts->get(Cita::ESTADO_CANCELADA, 0),
+                'no_presento' => (int) $appointmentCounts->get(Cita::ESTADO_NO_PRESENTO, 0),
+                'realizada' => (int) $appointmentCounts->get(Cita::ESTADO_REALIZADA, 0),
             ],
             'appointments' => $appointments,
+            'treatments' => $treatments,
+            'offers' => $offers,
             'services' => Servicio::query()
                 ->orderBy('nombre')
                 ->get(['id', 'nombre'])

@@ -161,8 +161,132 @@ h2 {
     border-bottom: 0;
 }
 
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 16px 12px;
+    margin: 18px 0 0;
+}
+
+.profile-grid dt {
+    margin-bottom: 4px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.profile-grid dd {
+    margin: 0;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.summary-card {
+    display: flex;
+    min-height: 76px;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
+    border: 1px solid #ebe7e9;
+    border-radius: 14px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.summary-card strong {
+    color: #24232a;
+    font-size: 24px;
+}
+
 .appointment p {
     margin: 5px 0;
+}
+
+.treatment,
+.offer {
+    padding: 16px 0;
+    border-bottom: 1px solid #eee9eb;
+}
+
+.treatment:first-child,
+.offer:first-child {
+    padding-top: 4px;
+}
+
+.treatment:last-child,
+.offer:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+.treatment-heading,
+.progress-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.treatment-heading h3,
+.offer h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.progress-label {
+    margin: 14px 0 6px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.progress-label strong {
+    color: #24232a;
+}
+
+.progress {
+    display: block;
+    width: 100%;
+    height: 9px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 999px;
+    accent-color: var(--brand);
+}
+
+.treatment h4 {
+    margin: 18px 0 4px;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.treatment-history {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.treatment-history li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1edef;
+    font-size: 13px;
+}
+
+.offer .eyebrow {
+    margin-bottom: 6px;
+}
+
+.offer .muted {
+    margin: 8px 0;
 }
 
 .status {
@@ -187,5 +311,9 @@ h2 {
 
     .panel {
         padding: 24px;
+    }
+
+    .summary-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 }

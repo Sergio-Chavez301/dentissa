@@ -37,10 +37,16 @@
                 <div>
                     <p class="eyebrow">Mi cuenta</p>
                     <h2 id="patient-name"></h2>
-                    <p id="patient-contact" class="muted"></p>
                 </div>
                 <button id="logout-button" class="button button-secondary" type="button">Salir</button>
             </div>
+
+            <section class="panel">
+                <h2>Perfil personal</h2>
+                <dl id="patient-profile" class="profile-grid"></dl>
+            </section>
+
+            <section id="appointment-summary" class="summary-grid" aria-label="Resumen de citas"></section>
 
             <section class="panel">
                 <h2>Solicitar una cita</h2>
@@ -61,6 +67,16 @@
             <section class="panel">
                 <h2>Mis citas</h2>
                 <div id="appointments" class="appointments"></div>
+            </section>
+
+            <section class="panel">
+                <h2>Mis tratamientos</h2>
+                <div id="treatments" class="treatments"></div>
+            </section>
+
+            <section class="panel">
+                <h2>Ofertas activas</h2>
+                <div id="offers" class="offers"></div>
             </section>
         </section>
     </main>
