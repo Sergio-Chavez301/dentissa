@@ -16,6 +16,10 @@ class Cita extends Model
     const ESTADO_CANCELADA  = 'cancelada';
     const ESTADO_NO_PRESENTO = 'no_presento';
 
+    const ORIGEN_APP = 'app';
+    const ORIGEN_CONSULTORIO = 'consultorio';
+    const ORIGEN_WEB = 'web';
+
     protected $fillable = [
         'paciente_id',
         'caso_clinico_id',
@@ -23,6 +27,7 @@ class Cita extends Model
         'fecha',
         'hora',
         'estado',
+        'origen',
         'reminder_sent_at',
     ];
 

@@ -126,6 +126,7 @@ class MobileApiTest extends TestCase
             'fecha' => $date,
             'hora' => '09:00:00',
             'estado' => Cita::ESTADO_EN_ESPERA,
+            'origen' => Cita::ORIGEN_APP,
         ]);
     }
 

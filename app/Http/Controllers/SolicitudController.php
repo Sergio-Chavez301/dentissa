@@ -26,8 +26,16 @@ class SolicitudController extends Controller
             $solicitudes = SolicitudCita::where('estado', SolicitudCita::ESTADO_ESPERANDO_CONFIRMACION)
                                         ->orderBy('fecha_hora_propuesta', 'asc')
                                         ->get();
-                                        
-            return view('solicitudes.index', compact('solicitudes'));
+            $solicitudesApp = Cita::with(['paciente', 'servicio'])
+                ->where('estado', Cita::ESTADO_EN_ESPERA)
+                ->where(fn ($query) => $query
+                    ->where('origen', Cita::ORIGEN_APP)
+                    ->orWhereNull('origen'))
+                ->orderBy('fecha')
+                ->orderBy('hora')
+                ->get();
+
+            return view('solicitudes.index', compact('solicitudes', 'solicitudesApp'));
         } catch (\Exception $e) {
             return "Error en la base de datos: " . $e->getMessage();
         }
@@ -149,6 +157,7 @@ class SolicitudController extends Controller
                     'fecha' => $fechaHora->format('Y-m-d'),
                     'hora' => $fechaHora->format('H:i:s'),
                     'estado' => Cita::ESTADO_CONFIRMADA,
+                    'origen' => Cita::ORIGEN_WEB,
                 ]);
 
                 $solicitud->update(['estado' => SolicitudCita::ESTADO_CONFIRMADA]);

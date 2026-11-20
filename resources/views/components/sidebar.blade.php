@@ -87,7 +87,7 @@
                     <li class="mb-2">
                         <a href="{{ route('solicitudes.index')}}" class="nav-link text-dark d-flex align-items-center justify-content-between py-2 px-3 {{ request()->routeIs('solicitudes*') ? 'active-dentissa' : 'link-hover' }}">
                             <div class="d-flex align-items-center">
-                                <i class="bi bi-envelope-check me-2 fs-5"></i> <span>Solicitudes Web</span>
+                                <i class="bi bi-envelope-check me-2 fs-5"></i> <span>Solicitudes de cita</span>
                             </div>
                             @if(isset($nuevasSolicitudes) && $nuevasSolicitudes > 0)
                                 <span class="badge rounded-pill" style="background-color: #d75078; font-size: 0.65rem;">{{ $nuevasSolicitudes }}</span>

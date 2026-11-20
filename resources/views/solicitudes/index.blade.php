@@ -1,9 +1,9 @@
 <x-plantilla>
-    <x-slot:title>Solicitudes Web | Dentissa</x-slot:title>
+    <x-slot:title>Solicitudes de Cita | Dentissa</x-slot:title>
 
     <div class="pb-2 mb-4 border-bottom">
-        <h1 class="h2 fw-bold" style="color: #1e1e24;">Solicitudes de Cita Web</h1>
-        <p class="text-muted">Gestión de peticiones recibidas desde el portal de pacientes.</p>
+        <h1 class="h2 fw-bold" style="color: #1e1e24;">Solicitudes de Cita</h1>
+        <p class="text-muted">Gestiona las peticiones recibidas desde la web y la app de pacientes.</p>
     </div>
 
     @if(session('success'))
@@ -24,17 +24,27 @@
                 <thead>
                     <tr class="text-muted" style="font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">
                         <th>Paciente</th>
+                        <th>Origen</th>
                         <th>Fecha Propuesta</th>
                         <th>Estado</th>
                         <th class="text-end">Acción</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($solicitudes as $solicitud)
+                    @if($solicitudes->isEmpty() && $solicitudesApp->isEmpty())
+                        <tr>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-inbox fs-2 d-block mb-2 text-light"></i>
+                                No hay solicitudes registradas.
+                            </td>
+                        </tr>
+                    @else
+                    @foreach($solicitudes as $solicitud)
                         <tr>
                             <td>
                                 <div class="fw-semibold text-dark">{{ $solicitud->nombre }} {{ $solicitud->apellidos }}</div>
                             </td>
+                            <td><span class="badge rounded-pill bg-info-subtle text-info px-2">Web</span></td>
                             <td>{{ \Carbon\Carbon::parse($solicitud->fecha_hora_propuesta)->format('d/m/Y h:i A') }}</td>
                             
                             <td>
@@ -59,14 +69,41 @@
                                 </a>
                             </td>
                         </tr>
-                    @empty
+                    @endforeach
+                    @foreach($solicitudesApp as $solicitudApp)
                         <tr>
-                            <td colspan="4" class="text-center py-5 text-muted">
-                                <i class="bi bi-inbox fs-2 d-block mb-2 text-light"></i>
-                                No hay solicitudes registradas.
+                            <td>
+                                <div class="fw-semibold text-dark">
+                                    {{ $solicitudApp->paciente?->nombre ?? 'Paciente' }}
+                                    {{ $solicitudApp->paciente?->apellidos }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill {{ $solicitudApp->origen === \App\Models\Cita::ORIGEN_APP ? 'bg-primary-subtle text-primary' : 'bg-secondary-subtle text-secondary' }} px-2">
+                                    {{ $solicitudApp->origen === \App\Models\Cita::ORIGEN_APP ? 'App' : 'Origen anterior' }}
+                                </span>
+                            </td>
+                            <td>{{ \Carbon\Carbon::parse($solicitudApp->fecha . ' ' . $solicitudApp->hora)->format('d/m/Y h:i A') }}</td>
+                            <td><span class="badge rounded-pill bg-warning-subtle text-warning px-2">Esperando Confirmación</span></td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-1">
+                                    <form action="{{ route('citas.status', $solicitudApp) }}" method="POST" class="m-0">
+                                        @csrf
+                                        <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_CONFIRMADA }}">
+                                        <input type="hidden" name="return_to" value="solicitudes.index">
+                                        <button type="submit" class="btn btn-sm btn-success">Confirmar</button>
+                                    </form>
+                                    <form action="{{ route('citas.status', $solicitudApp) }}" method="POST" class="m-0" onsubmit="return confirm('¿Rechazar y cancelar esta solicitud?');">
+                                        @csrf
+                                        <input type="hidden" name="estado" value="{{ \App\Models\Cita::ESTADO_CANCELADA }}">
+                                        <input type="hidden" name="return_to" value="solicitudes.index">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
-                    @endforelse
+                    @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>

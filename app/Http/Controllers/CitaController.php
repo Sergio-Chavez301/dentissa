@@ -149,7 +149,8 @@ class CitaController extends Controller
             'servicio_id' => $validated['servicio_id'],
             'fecha'       => $validated['fecha'],
             'hora'        => $validated['hora'],
-            'estado'      => Cita::ESTADO_EN_ESPERA
+            'estado'      => Cita::ESTADO_EN_ESPERA,
+            'origen'      => Cita::ORIGEN_CONSULTORIO,
         ]);
 
         if ($request->filled('nombre') || $request->has('nuevo_paciente')) {
@@ -194,6 +195,7 @@ class CitaController extends Controller
             'fecha' => $validated['fecha'],
             'hora' => $validated['hora'],
             'estado' => Cita::ESTADO_EN_ESPERA,
+            'origen' => Cita::ORIGEN_CONSULTORIO,
         ]);
 
         return redirect()->route('casos.edit', $caso)
@@ -278,6 +280,7 @@ class CitaController extends Controller
 
         $validated = $request->validate([
             'estado' => ['required', Rule::in($allowedTransitions)],
+            'return_to' => ['nullable', Rule::in(['solicitudes.index'])],
         ]);
 
         $previousStatus = $cita->estado;
@@ -295,7 +298,7 @@ class CitaController extends Controller
             Cita::ESTADO_NO_PRESENTO => 'La cita fue marcada como inasistencia.',
         ];
 
-        $redirect = redirect()->route('citas.index')->with('success', $messages[$validated['estado']]);
+        $redirect = redirect()->route($validated['return_to'] ?? 'citas.index')->with('success', $messages[$validated['estado']]);
         $warning = $previousStatus !== $cita->estado
             ? $this->notifyPatientOfAppointmentStatus($cita)
             : null;

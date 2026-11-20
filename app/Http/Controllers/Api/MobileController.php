@@ -225,6 +225,7 @@ class MobileController extends Controller
                 'fecha' => $validated['date'],
                 'hora' => $time,
                 'estado' => Cita::ESTADO_EN_ESPERA,
+                'origen' => Cita::ORIGEN_APP,
             ])->load('servicio:id,nombre');
         });
 

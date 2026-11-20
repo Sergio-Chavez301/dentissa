@@ -14,7 +14,7 @@ La app incluye:
 
 - Inicio de sesión para cuentas de pacientes activas.
 - Perfil del paciente, resumen de citas, citas próximas e historial de tratamientos.
-- Ofertas activas y solicitud de citas con los servicios, fechas y horarios disponibles.
+- Ofertas activas y solicitud de citas con los servicios, fechas y horarios disponibles. Las solicitudes nuevas de la app aparecen en **Solicitudes de cita** del panel web y se pueden confirmar o cancelar desde ahí.
 - Notificaciones push de confirmaciones y cancelaciones de citas.
 - Recordatorio push cuando una cita confirmada entra en la ventana aproximada de 24 horas. Se marca si FCM acepta al menos un envío (esto no confirma que Android lo haya mostrado); al reprogramar o volver a confirmar la cita se reinicia la marca.
 
