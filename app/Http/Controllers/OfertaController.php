@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Oferta;
 use App\Models\OfficeSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OfertaController extends Controller
 {
@@ -86,6 +87,10 @@ class OfertaController extends Controller
             ->get();
 
         $officeSettings = OfficeSetting::current();
+
+        if (Auth::check()) {
+            return view('dashboard.ofertas', compact('ofertas', 'officeSettings'));
+        }
 
         return view('web.ofertas', compact('ofertas', 'officeSettings'));
     }

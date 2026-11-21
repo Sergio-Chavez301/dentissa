@@ -75,7 +75,7 @@ class OfertaWebTest extends TestCase
             'activo' => true,
         ]);
 
-        $response = $this->actingAs($patient)->get(route('ofertas.public'));
+        $response = $this->get(route('ofertas.public'));
         $whatsappMessage = rawurlencode(
             'Hola, quisiera información sobre la oferta "Limpieza dental" de Consultorio Dentissa. ¿Podrían compartirme los detalles y su disponibilidad?'
         );
@@ -86,7 +86,8 @@ class OfertaWebTest extends TestCase
             ->assertSee('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?')
             ->assertSee('https://wa.me/525512345678?text=' . $whatsappMessage, false)
             ->assertSee(route('home'))
-            ->assertDontSee(route('dashboard.paciente'));
+            ->assertSee('Volver al sitio')
+            ->assertDontSee('Volver al dashboard');
     }
 
     public function test_patient_dashboard_offer_buttons_open_whatsapp_with_the_offer_name(): void
@@ -135,5 +136,13 @@ class OfertaWebTest extends TestCase
                 'Hola, quisiera información sobre la oferta "Limpieza dental" de Consultorio Dentissa. ¿Podrían compartirme los detalles y su disponibilidad?'
             ), false)
             ->assertSee('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?');
+
+        $this->actingAs($patientUser)
+            ->get(route('ofertas.public'))
+            ->assertOk()
+            ->assertSee('Volver al dashboard')
+            ->assertSee(route('dashboard.paciente'))
+            ->assertSee('Solicitar más información')
+            ->assertDontSee('Volver al sitio');
     }
 }
