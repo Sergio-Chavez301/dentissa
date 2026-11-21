@@ -365,6 +365,26 @@ function renderOffers(offers) {
             card.append(price);
         }
 
+        const requestButton = document.createElement('button');
+        requestButton.type = 'button';
+        requestButton.className = 'button offer-request-button';
+        requestButton.textContent = 'Solicitar más información';
+        requestButton.addEventListener('click', () => {
+            if (!offer.whatsapp_digits) {
+                showNotice('El WhatsApp del consultorio aún no está configurado.');
+                return;
+            }
+
+            const clinicName = offer.clinic_name || 'el consultorio';
+            const message = `Hola, quisiera información sobre la oferta "${offer.title}" de ${clinicName}. ¿Podrían compartirme los detalles y su disponibilidad?`;
+            if (!window.confirm('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?')) {
+                return;
+            }
+
+            window.open(`https://wa.me/${offer.whatsapp_digits}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
+        });
+        card.append(requestButton);
+
         list.append(card);
     }
 }

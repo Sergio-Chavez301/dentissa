@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Cita;
 use App\Models\CasoClinico;
 use App\Models\Oferta;
+use App\Models\OfficeSetting;
 use App\Models\Patient;
 use App\Models\Role;
 use App\Models\Servicio;
@@ -31,6 +32,10 @@ class MobileApiTest extends TestCase
             'tratamiento_base' => 'Ortodoncia',
             'progreso' => 45,
             'estado' => 'activo',
+        ]);
+        OfficeSetting::current()->update([
+            'clinic_name' => 'Consultorio Dentissa',
+            'whatsapp_phone' => '+52 55 1234 5678',
         ]);
         Oferta::create([
             'titulo' => 'Limpieza con descuento',
@@ -79,6 +84,8 @@ class MobileApiTest extends TestCase
             ->assertJsonPath('treatments.0.name', 'Ortodoncia')
             ->assertJsonPath('treatments.0.progress', 45)
             ->assertJsonPath('offers.0.title', 'Limpieza con descuento')
+            ->assertJsonPath('offers.0.whatsapp_digits', '525512345678')
+            ->assertJsonPath('offers.0.clinic_name', 'Consultorio Dentissa')
             ->assertJsonMissing(['name' => 'Otro Paciente']);
     }
 

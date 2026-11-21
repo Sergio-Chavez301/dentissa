@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cita;
 use App\Models\CasoClinico;
 use App\Models\Oferta;
+use App\Models\OfficeSetting;
 use App\Models\Patient;
 use App\Models\PushDevice;
 use App\Models\Servicio;
@@ -142,6 +143,7 @@ class MobileController extends Controller
                 ])->values(),
             ]);
 
+        $officeSettings = OfficeSetting::current();
         $offers = Oferta::where('activo', true)
             ->orderBy('orden')
             ->orderBy('id')
@@ -152,6 +154,8 @@ class MobileController extends Controller
                 'tag' => $offer->tag,
                 'description' => $offer->descripcion,
                 'price' => $offer->precio,
+                'whatsapp_digits' => preg_replace('/\D+/', '', $officeSettings->whatsapp_phone ?? ''),
+                'clinic_name' => $officeSettings->clinic_name,
             ]);
 
         return response()->json([

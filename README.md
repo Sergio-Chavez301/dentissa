@@ -19,9 +19,9 @@ Dentissa centraliza la operación de una clínica dental en una aplicación web:
 - **Agenda:** consulta de disponibilidad, bloqueos de horario y estados de cita: en espera, confirmada, realizada, cancelada y no se presentó.
 - **Pacientes:** datos personales y clínicos, usuario de acceso y expediente vinculado.
 - **Tratamientos:** casos clínicos con progreso y citas relacionadas.
-- **Paneles por rol:** administrador, asistente y paciente, con vistas acordes a sus tareas.
+- **Paneles por rol:** administrador, asistente y paciente, con vistas acordes a sus tareas. Las ofertas públicas tienen una vista independiente; las vistas de pacientes mantienen el sidebar y la navegación hacia su dashboard.
 - **Administración:** servicios, usuarios, solicitudes, ofertas, reportes y datos de contacto/ubicación del consultorio.
-- **Mensajes de WhatsApp:** enlaces preparados para confirmar citas, compartir credenciales temporales y contactar al consultorio.
+- **Mensajes de WhatsApp:** enlaces preparados para confirmar citas, compartir credenciales temporales y solicitar información sobre una oferta específica desde la web y la app móvil.
 - **Asistente guiado:** responde por botones o preguntas escritas sobre servicios, ofertas vigentes, horario y ubicación, y orienta a solicitudes de cita o WhatsApp.
 
 ## Roles
@@ -48,6 +48,7 @@ La documentación interactiva está en [`documentacion/informacion/`](documentac
 - [Diagrama interactivo de la base de datos](documentacion/informacion/diagrama-base-datos.html)
 - [Flujos del sistema](documentacion/informacion/flujo-sistema.html)
 - [Referencia técnica, permisos y despliegue](documentacion/informacion/documentacion-sistema.html)
+- [Guía completa de la aplicación Android](docs/android-app.md)
 
 El personal administrador también puede consultar estas guías y sus diagramas desde **Panel de administración > Documentación**. El área administrativa está protegida por autenticación y rol; la guía de Android se encuentra dentro del centro de documentación.
 

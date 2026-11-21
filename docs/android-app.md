@@ -14,7 +14,8 @@ La app incluye:
 
 - Inicio de sesión para cuentas de pacientes activas.
 - Perfil del paciente, resumen de citas, citas próximas e historial de tratamientos.
-- Ofertas activas y solicitud de citas con los servicios, fechas y horarios disponibles. Las solicitudes nuevas de la app aparecen en **Solicitudes de cita** del panel web y se pueden confirmar o cancelar desde ahí.
+- Ofertas activas con un botón **Solicitar más información** que abre WhatsApp con el nombre de la promoción seleccionada; el número se toma de la configuración del consultorio.
+- Solicitud de citas con los servicios, fechas y horarios disponibles. Las solicitudes nuevas de la app aparecen en **Solicitudes de cita** del panel web y se pueden confirmar o cancelar desde ahí.
 - Notificaciones push de confirmaciones y cancelaciones de citas.
 - Recordatorio push cuando una cita confirmada entra en la ventana aproximada de 24 horas. Se marca si FCM acepta al menos un envío (esto no confirma que Android lo haya mostrado); al reprogramar o volver a confirmar la cita se reinicia la marca.
 
@@ -191,6 +192,7 @@ Los mensajes usan texto general y no incluyen diagnósticos ni detalles clínico
 6. Prueba ese APK en un dispositivo antes de compartirlo.
 7. Aloja el archivo en una URL HTTPS pública controlada por el consultorio.
 8. Configura `ANDROID_APP_DOWNLOAD_URL` en Laravel Cloud con esa URL y despliega la configuración. La página pública y los mensajes de credenciales pueden mostrar el enlace de descarga.
+9. Cada nueva compilación debe incrementar `versionCode` y `versionName` antes de firmarla. Para actualizaciones directas conserva el mismo keystore y reutiliza el enlace estable del último release, por ejemplo el endpoint `/releases/latest/download/Dentissa.apk` de GitHub cuando el nombre del archivo se mantiene constante.
 
 No compartas el archivo keystore ni sus contraseñas. Perder la clave puede impedir publicar actualizaciones de la misma app.
 
