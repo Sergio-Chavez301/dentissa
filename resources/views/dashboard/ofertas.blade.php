@@ -27,6 +27,10 @@
             <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $generalMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-success" onclick="return confirm('Se abrirá WhatsApp para solicitar información sobre las ofertas. ¿Deseas continuar?')">
                 <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Consultar por WhatsApp
             </a>
+        @else
+            <button type="button" class="btn btn-success" onclick="alert('El WhatsApp del consultorio aún no está configurado. Contacta al administrador.')">
+                <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Consultar por WhatsApp
+            </button>
         @endif
     </div>
 
@@ -61,7 +65,9 @@
                                     <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Solicitar más información
                                 </a>
                             @else
-                                <span class="small text-muted mt-auto">Configura el WhatsApp del consultorio para consultar esta oferta.</span>
+                                <button type="button" class="btn btn-outline-success mt-auto" onclick="alert('El WhatsApp del consultorio aún no está configurado. Contacta al administrador.')">
+                                    <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Solicitar más información
+                                </button>
                             @endif
                         </div>
                     </article>

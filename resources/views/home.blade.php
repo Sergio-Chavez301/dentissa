@@ -362,6 +362,10 @@
                                     <a class="button button-outline" style="margin-top: 16px;" href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $offerMessage }}" target="_blank" rel="noopener noreferrer" onclick="return confirm('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?')">
                                         Solicitar más información
                                     </a>
+                                @else
+                                    <button class="button button-outline" style="margin-top: 16px;" type="button" onclick="alert('El WhatsApp del consultorio aún no está configurado. Contacta al administrador.')">
+                                        Solicitar más información
+                                    </button>
                                 @endif
                             </article>
                         @endforeach
