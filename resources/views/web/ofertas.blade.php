@@ -120,7 +120,9 @@
                 @endif
             </div>
             @if($officeSettings->whatsapp_digits)
-                @php($generalMessage = rawurlencode('Hola, quisiera información sobre las ofertas de ' . $officeSettings->clinic_name . '.'))
+                @php
+                    $generalMessage = rawurlencode('Hola, quisiera información sobre las ofertas de ' . $officeSettings->clinic_name . '.');
+                @endphp
                 <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $generalMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-success" onclick="return confirm('Se abrirá WhatsApp para solicitar información sobre las ofertas. ¿Deseas continuar?')">
                     <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Consultar por WhatsApp
                 </a>

@@ -111,7 +111,9 @@
                         </thead>
                         <tbody>
                             @foreach($patient->citas->sortByDesc(fn ($cita) => $cita->fecha . ' ' . $cita->hora) as $cita)
-                                @php($estadoCita = $estadosCita[$cita->estado] ?? [ucfirst(str_replace('_', ' ', $cita->estado)), 'text-bg-secondary'])
+                                @php
+                                    $estadoCita = $estadosCita[$cita->estado] ?? [ucfirst(str_replace('_', ' ', $cita->estado)), 'text-bg-secondary'];
+                                @endphp
                                 <tr>
                                     <td>{{ \Illuminate\Support\Carbon::parse($cita->fecha)->format('d/m/Y') }}</td>
                                     <td>{{ substr($cita->hora, 0, 5) }}</td>
@@ -135,7 +137,9 @@
             <h2 id="tratamientos-heading" class="h5 fw-bold mb-0 mt-1">Mis tratamientos</h2>
         </div>
         @forelse($patient->casosClinicos as $caso)
-            @php($progreso = min(100, max(0, (int) $caso->progreso)))
+            @php
+                $progreso = min(100, max(0, (int) $caso->progreso));
+            @endphp
             <article class="card border-0 shadow-sm mb-3">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
@@ -151,7 +155,11 @@
                     </div>
 
                     <h4 class="small fw-bold text-muted text-uppercase mb-2">Citas realizadas para este tratamiento</h4>
-                    @php($citasRealizadas = $caso->citas->where('estado', \App\Models\Cita::ESTADO_REALIZADA)->sortByDesc(fn ($cita) => $cita->fecha . ' ' . $cita->hora))
+                    @php
+                        $citasRealizadas = $caso->citas
+                            ->where('estado', \App\Models\Cita::ESTADO_REALIZADA)
+                            ->sortByDesc(fn ($cita) => $cita->fecha . ' ' . $cita->hora);
+                    @endphp
                     @if($citasRealizadas->isNotEmpty())
                         <ul class="list-group list-group-flush">
                             @foreach($citasRealizadas as $citaRealizada)
@@ -180,7 +188,9 @@
                 <h2 id="ofertas-heading" class="h5 fw-bold mb-0 mt-1">Ofertas activas</h2>
             </div>
             @if($officeSettings->whatsapp_digits)
-                @php($allOffersMessage = rawurlencode('Hola, quisiera información sobre las ofertas de ' . $officeSettings->clinic_name . '.'))
+                @php
+                    $allOffersMessage = rawurlencode('Hola, quisiera información sobre las ofertas de ' . $officeSettings->clinic_name . '.');
+                @endphp
                 <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $allOffersMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-success" onclick="return confirm('Se abrirá WhatsApp para solicitar información sobre las ofertas. ¿Deseas continuar?')">
                     <i class="bi bi-whatsapp me-1" aria-hidden="true"></i>Consultar ofertas
                 </a>
