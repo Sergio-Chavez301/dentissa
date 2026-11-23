@@ -119,11 +119,11 @@
                         </a>
                     </li>
 
-                    <li class="mb-2">
+                    <!-- <li class="mb-2">
                         <a href="{{ route('admin.documentation.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('admin.documentation.*') ? 'active-dentissa' : 'link-hover' }}">
                             <i class="bi bi-journal-richtext me-2 fs-5"></i> <span>Documentación</span>
                         </a>
-                    </li>
+                    </li> -->
 
                     <li class="mb-2">
                         <a href="{{ route('reportes.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('reportes.*') ? 'active-dentissa' : 'link-hover' }}">

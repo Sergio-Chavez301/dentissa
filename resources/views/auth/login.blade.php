@@ -71,7 +71,7 @@
                 </div>
             </div>
 
-            <div class="flex items-center">
+            <!-- <div class="flex items-center">
                 <input id="remember" 
                        name="remember" 
                        type="checkbox" 
@@ -81,7 +81,7 @@
                 <label for="remember" class="ml-2 block text-sm text-gray-900">
                     Mantener mi sesión en este equipo
                 </label>
-            </div>
+            </div> -->
 
             <div>
                 <button type="submit" 
