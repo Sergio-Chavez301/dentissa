@@ -1,16 +1,16 @@
 <x-plantilla>
-    <x-slot:title>Casos Clínicos | Dentissa</x-slot:title>
+    <x-slot:title>Tratamientos | Dentissa</x-slot:title>
 
     <div class="d-flex justify-content-between align-items-center pb-2 mb-4 border-bottom">
         <div>
-            <h1 class="h2 fw-bold" style="color: #1e1e24;">Casos Clínicos</h1>
+            <h1 class="h2 fw-bold" style="color: #1e1e24;">Tratamientos</h1>
             <p class="text-muted">Gestión y seguimiento de tratamientos.</p>
         </div>
         
-        {{-- Ocultar el botón "Nuevo Caso" si el usuario es un paciente (role_id == 3) --}}
+        {{-- Ocultar el botón "Nuevo Tratamiento" si el usuario es un paciente (role_id == 3) --}}
         @if(auth()->check() && auth()->user()->role_id != 3)
             <a href="{{ route('casos.create') }}" class="btn text-white bg-dentissa shadow-sm px-3">
-                <i class="bi bi-plus-lg me-1"></i>Nuevo Caso
+                <i class="bi bi-plus-lg me-1"></i>Nuevo Tratamiento
             </a>
         @endif
     </div>
@@ -59,7 +59,7 @@
                 <tr>
                     <td colspan="{{ (auth()->check() && auth()->user()->role_id == 3) ? 4 : 5 }}" class="text-center text-muted py-4">
                         <i class="bi bi-folder-x fs-3 d-block mb-2 text-secondary"></i>
-                        No hay casos clínicos registrados actualmente.
+                        No hay tratamientos registrados actualmente.
                     </td>
                 </tr>
                 @endforelse

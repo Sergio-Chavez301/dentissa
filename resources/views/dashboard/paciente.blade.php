@@ -104,7 +104,7 @@
                             <tr class="text-muted small">
                                 <th>Fecha</th>
                                 <th>Hora</th>
-                                <th>Servicio</th>
+                                <th>Atención</th>
                                 <th>Tratamiento</th>
                                 <th>Estado</th>
                             </tr>
@@ -117,9 +117,20 @@
                                 <tr>
                                     <td>{{ \Illuminate\Support\Carbon::parse($cita->fecha)->format('d/m/Y') }}</td>
                                     <td>{{ substr($cita->hora, 0, 5) }}</td>
-                                    <td>{{ $cita->servicio?->nombre ?? 'Consulta general' }}</td>
+                                    <td>{{ $cita->tratamiento_realizado ?: ($cita->servicio?->nombre ?? 'Consulta general') }}</td>
                                     <td>{{ $cita->casoClinico?->tratamiento_base ?? 'Sin tratamiento asociado' }}</td>
-                                    <td><span class="badge {{ $estadoCita[1] }}">{{ $estadoCita[0] }}</span></td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="badge {{ $estadoCita[1] }}">{{ $estadoCita[0] }}</span>
+                                            <a href="{{ route('citas.show', $cita) }}" class="btn btn-sm btn-outline-secondary">Ver cita</a>
+                                            @if(in_array($cita->estado, [\App\Models\Cita::ESTADO_EN_ESPERA, \App\Models\Cita::ESTADO_CONFIRMADA], true))
+                                                <form action="{{ route('citas.cancel', $cita) }}" method="POST" class="m-0" onsubmit="return confirm('¿Cancelar esta cita?');">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -143,7 +154,10 @@
             <article class="card border-0 shadow-sm mb-3">
                 <div class="card-body p-4">
                     <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
-                        <h3 class="h6 fw-bold mb-0">{{ $caso->tratamiento_base ?? 'Tratamiento dental' }}</h3>
+                        <div>
+                            <h3 class="h6 fw-bold mb-1">{{ $caso->tratamiento_base ?? 'Tratamiento dental' }}</h3>
+                            <a href="{{ route('casos.show', $caso) }}" class="btn btn-sm btn-outline-secondary">Ver tratamiento</a>
+                        </div>
                         <span class="badge {{ $caso->estado === 'activo' ? 'text-bg-success' : 'text-bg-secondary' }}">{{ ucfirst($caso->estado) }}</span>
                     </div>
                     <div class="d-flex justify-content-between small mb-1">
@@ -154,18 +168,33 @@
                         <div class="progress-bar bg-dentissa" style="width: {{ $progreso }}%"></div>
                     </div>
 
-                    <h4 class="small fw-bold text-muted text-uppercase mb-2">Citas realizadas para este tratamiento</h4>
+                    <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+                        <h4 class="small fw-bold text-muted text-uppercase mb-0">Citas de este tratamiento</h4>
+                        @if($caso->estado === \App\Models\CasoClinico::ESTADO_ACTIVO)
+                            <a href="{{ route('patients.treatment.request', $caso) }}" class="btn btn-sm btn-dentissa text-nowrap">
+                                <i class="bi bi-calendar-plus me-1"></i>Solicitar cita
+                            </a>
+                        @endif
+                    </div>
                     @php
                         $citasRealizadas = $caso->citas
-                            ->where('estado', \App\Models\Cita::ESTADO_REALIZADA)
                             ->sortByDesc(fn ($cita) => $cita->fecha . ' ' . $cita->hora);
                     @endphp
                     @if($citasRealizadas->isNotEmpty())
                         <ul class="list-group list-group-flush">
                             @foreach($citasRealizadas as $citaRealizada)
-                                <li class="list-group-item px-0 d-flex justify-content-between gap-3">
-                                    <span>{{ $citaRealizada->servicio?->nombre ?? 'Consulta general' }}</span>
-                                    <span class="text-muted text-nowrap">{{ \Illuminate\Support\Carbon::parse($citaRealizada->fecha)->format('d/m/Y') }} · {{ substr($citaRealizada->hora, 0, 5) }}</span>
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <span>{{ $citaRealizada->tratamiento_realizado ?: ($citaRealizada->servicio?->nombre ?? 'Consulta general') }}</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="text-muted text-nowrap">{{ \Illuminate\Support\Carbon::parse($citaRealizada->fecha)->format('d/m/Y') }} · {{ substr($citaRealizada->hora, 0, 5) }}</span>
+                                        <a href="{{ route('citas.show', $citaRealizada) }}" class="btn btn-sm btn-outline-secondary">Ver cita</a>
+                                        @if(in_array($citaRealizada->estado, [\App\Models\Cita::ESTADO_EN_ESPERA, \App\Models\Cita::ESTADO_CONFIRMADA], true))
+                                            <form action="{{ route('citas.cancel', $citaRealizada) }}" method="POST" class="m-0" onsubmit="return confirm('¿Cancelar esta cita?');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </li>
                             @endforeach
                         </ul>
@@ -239,5 +268,32 @@
                 <div class="col-12"><p class="text-muted mb-0">No hay ofertas activas por el momento.</p></div>
             @endforelse
         </div>
+
+        @if($officeSettings->map_embed_link || $officeSettings->map_link)
+            <section class="card border-0 shadow-sm mt-4" aria-label="Ubicación del consultorio">
+                <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-bold">Ubicación</span>
+                        <h3 class="h6 fw-bold mt-1 mb-1">{{ $officeSettings->clinic_name }}</h3>
+                        <p class="text-muted mb-0">{{ $officeSettings->clinic_address ?: 'Ubicación próximamente disponible.' }}</p>
+                    </div>
+                    @if($officeSettings->map_link)
+                        <a href="{{ $officeSettings->map_link }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary">
+                            <i class="bi bi-geo-alt me-1"></i>Cómo llegar
+                        </a>
+                    @endif
+                </div>
+                @if($officeSettings->map_embed_link)
+                    <iframe
+                        src="{{ $officeSettings->map_embed_link }}"
+                        title="Mapa de ubicación de {{ $officeSettings->clinic_name }}"
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        allowfullscreen
+                        style="display:block;width:100%;height:280px;border:0;border-radius:0 0 6px 6px">
+                    </iframe>
+                @endif
+            </section>
+        @endif
     </section>
 </x-plantilla>

@@ -10,13 +10,13 @@ class ActualizarCitasVencidas extends Command
 {
     protected $signature = 'citas:actualizar-vencidas';
 
-    protected $description = 'Marca automáticamente como "no_presento" las citas pasadas que siguen en estado "en_espera"';
+    protected $description = 'Marca automáticamente como "no_presento" las citas vencidas pendientes o confirmadas';
 
     public function handle()
     {
         $hoy = Carbon::today();
         
-        $citasVencidas = Cita::where('estado', Cita::ESTADO_EN_ESPERA)
+        $citasVencidas = Cita::whereIn('estado', [Cita::ESTADO_EN_ESPERA, Cita::ESTADO_CONFIRMADA])
             ->where('fecha', '<', $hoy)
             ->get();
 

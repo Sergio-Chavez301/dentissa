@@ -9,7 +9,7 @@
     <div class="card p-4 shadow-sm border-0 bg-white" style="max-width: 500px;">
         <ul class="list-group list-group-flush">
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Paciente:</strong> {{ $cita->paciente->nombre }} {{ $cita->paciente->apellidos }}</li>
-            <li class="list-group-item d-flex justify-content-between px-0"><strong>Tratamiento:</strong> {{ $cita->servicio->nombre }}</li>
+            <li class="list-group-item d-flex justify-content-between px-0"><strong>Tratamiento:</strong> {{ $cita->tratamiento_realizado ?: ($cita->servicio->nombre ?? 'Sin tratamiento registrado') }}</li>
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Fecha:</strong> {{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}</li>
             <li class="list-group-item d-flex justify-content-between px-0"><strong>Hora:</strong> {{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</li>
             
@@ -34,8 +34,15 @@
             </li>
         </ul>
         
-        <div class="mt-4 text-end">
-            <a href="{{ route('citas.edit', $cita->id) }}" class="btn btn-outline-secondary">Editar</a>
+        <div class="mt-4 d-flex justify-content-end gap-2">
+            @if(auth()->user()->role_id != 3)
+                <a href="{{ route('citas.edit', $cita->id) }}" class="btn btn-outline-secondary">Editar</a>
+            @elseif(in_array($cita->estado, [\App\Models\Cita::ESTADO_EN_ESPERA, \App\Models\Cita::ESTADO_CONFIRMADA], true))
+                <form action="{{ route('citas.cancel', $cita) }}" method="POST" class="m-0" onsubmit="return confirm('¿Cancelar esta cita?');">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-danger">Cancelar cita</button>
+                </form>
+            @endif
         </div>
     </div>
 </x-plantilla>

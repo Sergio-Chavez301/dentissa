@@ -107,7 +107,7 @@ public function store(Request $request)
 
     public function show(string $id)
     {
-        $query = Patient::with(['citas', 'casosClinicos']);
+        $query = Patient::with(['citas.servicio', 'citas.casoClinico', 'casosClinicos.citas']);
 
         if ((int) Auth::user()->role_id === 3) {
             $query->where('user_id', Auth::id());
@@ -167,7 +167,7 @@ public function store(Request $request)
 
         $patient->delete();
 
-        return redirect()->route('patients.index')->with('success', 'Paciente, su cuenta de usuario, citas y casos clínicos fueron eliminados correctamente.');
+        return redirect()->route('patients.index')->with('success', 'Paciente, su cuenta de usuario, citas y tratamientos fueron eliminados correctamente.');
     }
 
     public function enviarCredencialesWhatsApp(string $id)

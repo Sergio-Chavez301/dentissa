@@ -24,6 +24,7 @@ class Cita extends Model
         'paciente_id',
         'caso_clinico_id',
         'servicio_id',
+        'tratamiento_realizado',
         'fecha',
         'hora',
         'estado',

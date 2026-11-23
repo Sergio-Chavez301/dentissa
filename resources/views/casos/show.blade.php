@@ -1,11 +1,11 @@
 <x-plantilla>
-    <x-slot:title>Detalle del Caso | Dentissa</x-slot:title>
+    <x-slot:title>Detalle del Tratamiento | Dentissa</x-slot:title>
 
     <div class="pb-2 mb-4 border-bottom">
         <a href="{{ route('casos.index') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
             <i class="bi bi-arrow-left me-1"></i> Volver al listado
         </a>
-        <h1 class="h2 fw-bold" style="color: #1e1e24;">Detalle del Caso</h1>
+        <h1 class="h2 fw-bold" style="color: #1e1e24;">Detalle del Tratamiento</h1>
         <p class="text-muted">Consulta la información y el progreso del tratamiento.</p>
     </div>
 
@@ -17,7 +17,7 @@
             </div>
 
             <div class="col-md-6">
-                <label class="text-muted small text-uppercase fw-bold">Estado del Caso</label>
+                <label class="text-muted small text-uppercase fw-bold">Estado del Tratamiento</label>
                 <div>
                     @if($caso->estado === \App\Models\CasoClinico::ESTADO_ACTIVO)
                         <span class="badge rounded-pill bg-success-subtle text-success px-3 py-2">
@@ -64,7 +64,7 @@
         <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
             <div>
                 <h2 class="h4 fw-bold mb-1" style="color: #1e1e24;">Citas del tratamiento</h2>
-                <p class="text-muted mb-0">Seguimiento de las visitas asociadas a este caso.</p>
+                <p class="text-muted mb-0">Seguimiento de las visitas asociadas a este tratamiento.</p>
             </div>
             @if(auth()->user()->role_id != 3)
                 <a href="{{ route('citas.create', ['paciente_id' => $caso->paciente_id, 'caso_clinico_id' => $caso->id]) }}" class="btn text-white bg-dentissa flex-shrink-0">
@@ -81,6 +81,9 @@
                             <th>Fecha</th>
                             <th>Servicio</th>
                             <th>Estado</th>
+                            @if(auth()->user()->role_id != 3)
+                                <th class="text-end">Acciones</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -98,12 +101,19 @@
                                     {{ \Illuminate\Support\Carbon::parse($cita->fecha)->format('d/m/Y') }}
                                     <span class="text-muted ms-1">{{ substr($cita->hora, 0, 5) }}</span>
                                 </td>
-                                <td>{{ $cita->servicio->nombre ?? 'Servicio eliminado' }}</td>
+                                <td>{{ $cita->tratamiento_realizado ?: ($cita->servicio->nombre ?? 'Sin tratamiento registrado') }}</td>
                                 <td><span class="badge bg-light text-dark border">{{ $estadoCita }}</span></td>
+                                @if(auth()->user()->role_id != 3)
+                                    <td class="text-end">
+                                        <a href="{{ route('citas.edit', $cita) }}" class="btn btn-sm btn-light border" title="Modificar cita">
+                                            <i class="bi bi-pencil-fill text-muted"></i> Modificar
+                                        </a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="text-center text-muted py-4">Todavía no hay citas asociadas a este tratamiento.</td>
+                                <td colspan="4" class="text-center text-muted py-4">Todavía no hay citas asociadas a este tratamiento.</td>
                             </tr>
                         @endforelse
                     </tbody>

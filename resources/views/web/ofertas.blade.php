@@ -94,6 +94,10 @@
             .public-main {
                 padding-top: 28px;
             }
+
+            .office-map iframe {
+                height: 280px !important;
+            }
         }
     </style>
 </head>
@@ -176,7 +180,7 @@
             </div>
         @endif
 
-        <section class="card border-0 shadow-sm mt-4" aria-labelledby="office-location-title">
+        <section class="card border-0 shadow-sm mt-4 office-map" aria-labelledby="office-location-title">
             <div class="card-body p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
                 <div>
                     <span class="text-secondary small text-uppercase fw-bold">Visítanos</span>

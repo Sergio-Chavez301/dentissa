@@ -93,6 +93,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::resource('casos', CasoClinicoController::class);
     Route::get('/casos/{caso}/citas/create', [CitaController::class, 'createForCase'])->name('casos.citas.create');
     Route::post('/casos/{caso}/citas', [CitaController::class, 'storeForCase'])->name('casos.citas.store');
+    Route::get('/mis-tratamientos/{caso}/solicitar-cita', [CitaController::class, 'createForPatientCase'])->name('patients.treatment.request');
+    Route::post('/mis-tratamientos/{caso}/solicitar-cita', [CitaController::class, 'storeForPatientCase'])->name('patients.treatment.store');
+    Route::post('/citas/{cita}/cancelar', [CitaController::class, 'cancelForPatient'])->name('citas.cancel');
+    Route::get('/mis-citas/solicitar', [CitaController::class, 'createForPatient'])->name('citas.patient.create');
+    Route::post('/mis-citas/solicitar', [CitaController::class, 'storeForPatient'])->name('citas.patient.store');
     Route::resource('servicios', ServicioController::class);
 
     Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {

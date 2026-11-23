@@ -118,7 +118,7 @@ class CasoClinicoController extends Controller
         }
 
         $redirect = redirect()->route('casos.index')
-                              ->with('success', 'Caso clínico registrado exitosamente.');
+                              ->with('success', 'Tratamiento registrado exitosamente.');
 
         if ($passwordTemporal) {
             $redirect->with([
@@ -135,6 +135,14 @@ class CasoClinicoController extends Controller
     public function show(string $id)
     {
         $caso = CasoClinico::with(['paciente', 'citas.servicio'])->findOrFail($id);
+
+        if ((int) Auth::user()->role_id === 3) {
+            $paciente = Patient::where('user_id', Auth::id())
+                ->orWhere('email', Auth::user()->email)
+                ->first();
+            abort_unless($paciente && $caso->paciente_id === $paciente->id, 403);
+        }
+
         return view('casos.show', compact('caso'));
     }
 
@@ -150,16 +158,13 @@ class CasoClinicoController extends Controller
         $caso = CasoClinico::findOrFail($id);
 
         $validated = $request->validate([
-            'paciente_id'      => 'required|exists:pacientes,id',
-            'tratamiento_base' => 'required|string|max:255',
-            'descripcion'      => 'nullable|string',
-            'progreso'         => 'required|integer|min:0|max:100',
-            'estado'           => 'required|in:activo,pausado,completado',
+            'progreso' => 'required|integer|min:0|max:100',
+            'estado'   => 'required|in:activo,finalizado',
         ]);
 
         $caso->update($validated);
 
-        return redirect()->route('casos.index')->with('success', 'Caso clínico actualizado correctamente.');
+        return redirect()->route('casos.index')->with('success', 'Tratamiento actualizado correctamente.');
     }
 
     public function destroy(string $id)
@@ -167,6 +172,6 @@ class CasoClinicoController extends Controller
         $caso = CasoClinico::findOrFail($id);
         $caso->delete();
 
-        return redirect()->route('casos.index')->with('success', 'Caso clínico eliminado correctamente.');
+        return redirect()->route('casos.index')->with('success', 'Tratamiento eliminado correctamente.');
     }
 }

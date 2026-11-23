@@ -58,7 +58,7 @@
                                 <tr>
                                     <td class="fw-semibold text-dark">{{ \Carbon\Carbon::parse($cita->hora)->format('h:i A') }}</td>
                                     <td>{{ $cita->paciente->nombre ?? 'N/A' }} {{ $cita->paciente->apellidos ?? '' }}</td>
-                                    <td>{{ $cita->servicio->nombre ?? 'Tratamiento General' }}</td>
+                                    <td>{{ $cita->tratamiento_realizado ?: ($cita->servicio->nombre ?? 'Tratamiento General') }}</td>
                                     <td>
                                         @if(strtolower($cita->estado ?? '') === 'confirmada')
                                             <span class="badge rounded-pill bg-success-subtle text-success px-2.5 py-1">Confirmada</span>
@@ -80,7 +80,7 @@
             <div class="card p-3 p-md-4 shadow-sm border-0 bg-white">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold mb-0 fs-6 fs-md-5" style="color: #1e1e24;">
-                        <i class="bi bi-file-earmark-medical text-dentissa me-2"></i>Casos Clínicos Activos
+                        <i class="bi bi-file-earmark-medical text-dentissa me-2"></i>Tratamientos Activos
                     </h5>
                 </div>
                 <div class="table-responsive">
@@ -109,7 +109,7 @@
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="4" class="text-center text-muted py-4">No hay casos activos.</td></tr>
+                                <tr><td colspan="4" class="text-center text-muted py-4">No hay tratamientos activos.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -128,7 +128,7 @@
                         <i class="bi bi-person-plus me-2"></i>Registrar Paciente
                     </a>
                     <a href="{{ route('casos.create')}}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
-                        <i class="bi bi-clipboard-plus me-2"></i>Nuevo Caso Clínico
+                        <i class="bi bi-clipboard-plus me-2"></i>Nuevo Tratamiento
                     </a>
                     <a href="{{ route('admin.documentation.index') }}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
                         <i class="bi bi-journal-richtext me-2"></i>Documentación del sistema

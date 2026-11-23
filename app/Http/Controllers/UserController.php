@@ -166,6 +166,6 @@ class UserController extends Controller
         $usuario->delete();
 
         return redirect()->route('users.index')
-            ->with('success', 'El usuario, su perfil de paciente, citas y casos clínicos han sido eliminados correctamente del sistema.');
+            ->with('success', 'El usuario, su perfil de paciente, citas y tratamientos han sido eliminados correctamente del sistema.');
     }
 }

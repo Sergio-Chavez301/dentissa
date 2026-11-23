@@ -16,7 +16,7 @@
     @endif
 
     <div class="card p-4 shadow-sm border-0 bg-white" style="max-width: 700px;">
-        <form action="{{ isset($caso) ? route('casos.citas.store', $caso) : route('citas.store') }}" method="POST">
+        <form action="{{ isset($patientGeneralRequest) ? route('citas.patient.store') : (isset($patientRequest) ? route('patients.treatment.store', $caso) : (isset($caso) ? route('casos.citas.store', $caso) : route('citas.store')) ) }}" method="POST">
             @csrf
 
             @if(isset($caso))
@@ -42,18 +42,6 @@
                     </select>
                 </div>
 
-                <div id="casoClinicoField" class="mt-3">
-                    <label for="caso_clinico_id" class="form-label fw-semibold">Caso clínico (opcional)</label>
-                    <select name="caso_clinico_id" id="caso_clinico_id" class="form-select">
-                        <option value="">Sin asociar a un caso</option>
-                        @foreach($casos as $caso)
-                            <option value="{{ $caso->id }}" data-paciente="{{ $caso->paciente_id }}" {{ (string) old('caso_clinico_id', $casoSeleccionado) === (string) $caso->id ? 'selected' : '' }}>
-                                {{ $caso->tratamiento_base }} · {{ $caso->paciente->nombre }} {{ $caso->paciente->apellidos }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('caso_clinico_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
-                </div>
 
                 <div id="formNuevoPaciente" class="p-3 bg-light rounded border mt-2" style="display: none;">
                     <h6 class="fw-bold mb-3">Datos del Nuevo Paciente</h6>
@@ -74,7 +62,7 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Fecha</label>
-                    <input type="date" id="fecha" name="fecha" class="form-control" onchange="cargarHorarios()" required>
+                    <input type="date" id="fecha" name="fecha" class="form-control" min="{{ now()->toDateString() }}" value="{{ old('fecha') }}" onchange="cargarHorarios()" required>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Hora disponible</label>
@@ -84,15 +72,39 @@
                 </div>
             </div>
             
-            <div class="mb-3">
-                <label class="form-label fw-semibold">Servicio</label>
-                <select name="servicio_id" class="form-select" required>
-                    <option value="">Seleccione un tratamiento...</option>
-                    @foreach($servicios as $servicio)
-                        <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
-                    @endforeach
-                </select>
-            </div>
+            @if(isset($patientGeneralRequest))
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Servicio</label>
+                    <select name="servicio_id" class="form-select" required>
+                        <option value="">Seleccione un servicio...</option>
+                        @foreach($servicios as $servicio)
+                            <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @elseif(isset($patientRequest))
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tratamiento solicitado</label>
+                    <input type="text" class="form-control bg-light" value="{{ $caso->tratamiento_base }}" disabled>
+                </div>
+            @elseif(isset($caso))
+                <input type="hidden" name="servicio_id" value="">
+                <div class="mb-3">
+                    <label for="tratamiento_realizado" class="form-label fw-semibold">Tratamiento realizado</label>
+                    <input type="text" id="tratamiento_realizado" name="tratamiento_realizado" class="form-control" value="{{ old('tratamiento_realizado', $caso->tratamiento_base) }}" maxlength="255" required>
+                    <div class="form-text">Describe el procedimiento correspondiente a esta cita.</div>
+                </div>
+            @else
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Servicio</label>
+                    <select name="servicio_id" class="form-select" required>
+                        <option value="">Seleccione un servicio...</option>
+                        @foreach($servicios as $servicio)
+                            <option value="{{ $servicio->id }}">{{ $servicio->nombre }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
 
             <div class="mt-4 d-flex justify-content-end gap-2">
                 <a href="{{ isset($caso) ? route('casos.edit', $caso) : route('citas.index') }}" class="btn btn-light border">Cancelar</a>
@@ -106,8 +118,6 @@
             const selectorDiv = document.getElementById('selectorPaciente');
             const formNuevo = document.getElementById('formNuevoPaciente');
             const selectPaciente = document.getElementById('paciente_id');
-            const casoField = document.getElementById('casoClinicoField');
-            const selectCaso = document.getElementById('caso_clinico_id');
             
             const inputNombre = formNuevo.querySelector('input[name="nombre"]');
             const inputApellidos = formNuevo.querySelector('input[name="apellidos"]');
@@ -117,8 +127,6 @@
                 selectorDiv.style.display = 'none';
                 selectPaciente.disabled = true;
                 selectPaciente.value = ""; 
-                casoField.style.display = 'none';
-                selectCaso.value = "";
                 
                 formNuevo.style.display = 'block';
                 
@@ -132,8 +140,6 @@
             } else {
                 selectorDiv.style.display = 'block';
                 selectPaciente.disabled = false;
-                casoField.style.display = 'block';
-                filtrarCasos();
                 
                 formNuevo.style.display = 'none';
                 
@@ -147,24 +153,6 @@
             }
         }
 
-        function filtrarCasos() {
-            const pacienteId = document.getElementById('paciente_id').value;
-            const selectCaso = document.getElementById('caso_clinico_id');
-
-            Array.from(selectCaso.options).forEach(option => {
-                option.hidden = option.value !== '' && (!pacienteId || option.dataset.paciente !== pacienteId);
-            });
-
-            if (selectCaso.selectedOptions[0]?.hidden) {
-                selectCaso.value = '';
-            }
-        }
-
-        const selectPaciente = document.getElementById('paciente_id');
-        if (selectPaciente) {
-            selectPaciente.addEventListener('change', filtrarCasos);
-            filtrarCasos();
-        }
 
         function cargarHorarios() {
             let fecha = document.getElementById('fecha').value;

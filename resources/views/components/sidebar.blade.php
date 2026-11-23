@@ -41,7 +41,7 @@
 
                 <li class="mb-2">
                     <a href="{{ route('casos.index') }}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('casos*') ? 'active-dentissa' : 'link-hover' }}">
-                        <i class="bi bi-file-earmark-medical me-2 fs-5"></i> <span>Casos Clínicos</span>
+                        <i class="bi bi-file-earmark-medical me-2 fs-5"></i> <span>Tratamientos</span>
                     </a>
                 </li>
 
@@ -73,7 +73,7 @@
 
                 <li class="mb-2">
                     <a href="{{ route('casos.index')}}" class="nav-link text-dark d-flex align-items-center py-2 px-3 {{ request()->routeIs('casos*') ? 'active-dentissa' : 'link-hover' }}">
-                        <i class="bi bi-file-earmark-medical me-2 fs-5"></i> <span>Casos Clínicos</span>
+                        <i class="bi bi-file-earmark-medical me-2 fs-5"></i> <span>Tratamientos</span>
                     </a>
                 </li>
 

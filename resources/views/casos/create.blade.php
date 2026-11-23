@@ -1,11 +1,11 @@
 <x-plantilla>
-    <x-slot:title>Registrar Caso | Dentissa</x-slot:title>
+    <x-slot:title>Registrar Tratamiento | Dentissa</x-slot:title>
 
     <div class="pb-2 mb-4 border-bottom">
         <a href="{{ route('casos.index') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
             <i class="bi bi-arrow-left me-1"></i> Volver al listado
         </a>
-        <h1 class="h2 fw-bold" style="color: #1e1e24;">Registrar Nuevo Caso</h1>
+        <h1 class="h2 fw-bold" style="color: #1e1e24;">Registrar Nuevo Tratamiento</h1>
         <p class="text-muted">Asigna un tratamiento base y progreso al paciente.</p>
     </div>
 
@@ -20,13 +20,13 @@
                 </div>
                 <div class="col-md-4">
                     <label for="progreso" class="form-label fw-semibold text-dark">Progreso Inicial (%)</label>
-                    <input type="number" class="form-control" id="progreso" name="progreso" value="0" min="0" max="100" required>
+                    <input type="number" class="form-control" id="progreso" name="progreso" value="0" min="0" max="100" step="1" oninput="this.value = Math.min(100, Math.max(0, parseInt(this.value || 0, 10)));" required>
                 </div>
 
                 <div class="col-md-12 mt-3">
                     <div class="form-check form-switch mb-3">
                         <input class="form-check-input" type="checkbox" name="nuevo_paciente" id="checkNuevo" onchange="toggleForm(this)">
-                        <label class="form-check-label fw-bold" for="checkNuevo">Registrar nuevo paciente en este caso</label>
+                        <label class="form-check-label fw-bold" for="checkNuevo">Registrar nuevo paciente en este tratamiento</label>
                     </div>
 
                     <div id="selectorPaciente">
@@ -60,7 +60,7 @@
                     Cancelar
                 </a>
                 <button type="submit" class="btn text-white border-0 py-2 px-4 fw-semibold shadow-sm bg-dentissa">
-                    <i class="bi bi-save me-2"></i> Guardar Caso
+                    <i class="bi bi-save me-2"></i> Guardar Tratamiento
                 </button>
             </div>
         </form>

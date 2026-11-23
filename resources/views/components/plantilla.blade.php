@@ -73,6 +73,28 @@
                 height: calc(100dvh - 56px);
                 overflow-y: auto;
                 overscroll-behavior: contain;
+                box-shadow: 8px 0 24px rgba(30, 30, 36, .12);
+            }
+
+            .sidebar:not(.show) {
+                display: none;
+            }
+
+            .main-content .table-responsive {
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .main-content .card {
+                border-radius: 10px;
+            }
+
+            .main-content h1 {
+                font-size: 1.75rem;
+            }
+
+            .main-content .d-flex.justify-content-between.align-items-center.pb-2,
+            .main-content .d-flex.justify-content-between.align-items-start.flex-wrap {
+                gap: .75rem;
             }
 
             .main-content {

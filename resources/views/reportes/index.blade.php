@@ -98,7 +98,7 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted">Casos activos</span>
+                        <span class="text-muted">Tratamientos activos</span>
                         <span class="fw-bold text-dark">{{ $casosActivos }}</span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -133,7 +133,7 @@
                         @forelse($ultimasCitas as $cita)
                             <tr>
                                 <td>{{ $cita->paciente->nombre ?? 'Sin dato' }} {{ $cita->paciente->apellidos ?? '' }}</td>
-                                <td>{{ $cita->servicio->nombre ?? 'Sin servicio' }}</td>
+                                <td>{{ $cita->tratamiento_realizado ?: ($cita->servicio->nombre ?? 'Sin tratamiento registrado') }}</td>
                                 <td>{{ $cita->fecha }}</td>
                                 <td>
                                     <span class="badge {{ $cita->estado === 'realizada' ? 'bg-success-subtle text-success' : ($cita->estado === 'cancelada' ? 'bg-secondary-subtle text-secondary' : 'bg-warning-subtle text-warning') }}">

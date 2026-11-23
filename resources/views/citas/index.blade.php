@@ -14,6 +14,12 @@
                     <i class="bi bi-calendar-plus-fill me-2"></i>Nueva Cita
                 </a>
             </div>
+        @else
+            <div>
+                <a href="{{ route('citas.patient.create') }}" class="btn text-white border-0 py-2 px-3 fw-semibold bg-dentissa shadow-sm">
+                    <i class="bi bi-calendar-plus-fill me-2"></i>Solicitar cita
+                </a>
+            </div>
         @endif
     </div>
 
@@ -72,7 +78,7 @@
                     @forelse($citas as $cita)
                         <tr>
                             <td class="fw-semibold text-dark">{{ $cita->paciente->nombre ?? 'N/A' }} {{ $cita->paciente->apellidos ?? '' }}</td>
-                            <td>{{ $cita->servicio->nombre ?? 'N/A' }}</td>
+                            <td>{{ $cita->tratamiento_realizado ?: ($cita->servicio->nombre ?? 'N/A') }}</td>
                             <td>
                                 <i class="bi bi-calendar-event me-1 text-muted"></i> {{ \Carbon\Carbon::parse($cita->fecha)->format('d/m/Y') }}
                                 <br>
@@ -98,6 +104,15 @@
                                     @default
                                         <span class="badge rounded-pill bg-light text-dark px-2.5 py-1">{{ ucfirst($cita->estado) }}</span>
                                 @endswitch
+                                @if(auth()->check() && auth()->user()->role_id == 3)
+                                    <a href="{{ route('citas.show', $cita) }}" class="btn btn-sm btn-outline-secondary d-inline ms-2">Ver cita</a>
+                                @endif
+                                @if(auth()->check() && auth()->user()->role_id == 3 && in_array($cita->estado, [\App\Models\Cita::ESTADO_EN_ESPERA, \App\Models\Cita::ESTADO_CONFIRMADA], true))
+                                    <form action="{{ route('citas.cancel', $cita) }}" method="POST" class="d-inline ms-2" onsubmit="return confirm('¿Cancelar esta cita?');">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                    </form>
+                                @endif
                             </td>
                            
                            {{-- Ocultar los botones de acciones si es paciente --}}

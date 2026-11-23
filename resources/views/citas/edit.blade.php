@@ -23,24 +23,14 @@
                     <input type="text" class="form-control bg-light" value="{{ $cita->paciente->nombre }} {{ $cita->paciente->apellidos }}" disabled>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label fw-semibold text-dark">Servicio</label>
-                    <input type="text" class="form-control bg-light" value="{{ $cita->servicio->nombre }}" disabled>
+                    <label class="form-label fw-semibold text-dark">Tratamiento</label>
+                    <input type="text" class="form-control bg-light" value="{{ $cita->tratamiento_realizado ?: ($cita->servicio->nombre ?? 'Sin tratamiento registrado') }}" disabled>
                 </div>
 
-                <div class="col-md-12">
-                    <label for="caso_clinico_id" class="form-label fw-semibold text-dark">Caso clínico (opcional)</label>
-                    <select class="form-select" id="caso_clinico_id" name="caso_clinico_id">
-                        <option value="">Sin asociar a un caso</option>
-                        @foreach($casos as $caso)
-                            <option value="{{ $caso->id }}" {{ (string) old('caso_clinico_id', $cita->caso_clinico_id) === (string) $caso->id ? 'selected' : '' }}>{{ $caso->tratamiento_base }}</option>
-                        @endforeach
-                    </select>
-                    @error('caso_clinico_id') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
-                </div>
 
                 <div class="col-md-6">
                     <label for="fecha" class="form-label fw-semibold text-dark">Fecha</label>
-                    <input type="date" class="form-control" id="fecha" name="fecha" value="{{ old('fecha', $cita->fecha) }}" onchange="cargarHorarios()" required>
+                    <input type="date" class="form-control" id="fecha" name="fecha" value="{{ old('fecha', $cita->fecha) }}" min="{{ now()->toDateString() }}" onchange="cargarHorarios()" required>
                 </div>
 
                 <div class="col-md-6">

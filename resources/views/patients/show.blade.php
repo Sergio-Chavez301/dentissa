@@ -193,7 +193,7 @@
     </div>
 
     <div class="card p-4 shadow-sm border-0 bg-white mb-4" style="max-width: 900px;">
-        <h5 class="text-muted text-uppercase small fw-bold mb-3">Casos Clínicos</h5>
+        <h5 class="text-muted text-uppercase small fw-bold mb-3">Tratamientos</h5>
         <div class="table-responsive">
             <table class="table align-middle table-hover">
                 <thead class="bg-light">
@@ -201,6 +201,10 @@
                         <th>Tratamiento</th>
                         <th>Progreso</th>
                         <th>Estado</th>
+                        <th>Citas del tratamiento</th>
+                        @if(auth()->user()->role_id == 3)
+                            <th class="text-end">Acciones</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody>
@@ -218,9 +222,27 @@
                                     {{ ucfirst($caso->estado) }}
                                 </span>
                             </td>
+                            <td>
+                                @forelse($caso->citas->sortByDesc(fn ($cita) => $cita->fecha . ' ' . $cita->hora)->take(3) as $citaTratamiento)
+                                    <div class="small text-nowrap">
+                                        {{ \Illuminate\Support\Carbon::parse($citaTratamiento->fecha)->format('d/m/Y') }} · {{ substr($citaTratamiento->hora, 0, 5) }}
+                                    </div>
+                                @empty
+                                    <span class="text-muted small">Sin citas</span>
+                                @endforelse
+                            </td>
+                            @if(auth()->user()->role_id == 3)
+                                <td class="text-end">
+                                    @if($caso->estado === \App\Models\CasoClinico::ESTADO_ACTIVO)
+                                        <a href="{{ route('patients.treatment.request', $caso) }}" class="btn btn-sm btn-dentissa">
+                                            Solicitar cita
+                                        </a>
+                                    @endif
+                                </td>
+                            @endif
                         </tr>
                     @empty
-                        <tr><td colspan="3" class="text-center text-muted py-3">No hay casos clínicos registrados.</td></tr>
+                        <tr><td colspan="5" class="text-center text-muted py-3">No hay tratamientos registrados.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -240,8 +262,8 @@
                 <tbody>
                     @forelse($patient->citas as $cita)
                         <tr>
-                            <td>{{ $cita->fecha }}</td>
-                            <td>{{ $cita->motivo ?? 'Consulta general' }}</td>
+                            <td>{{ \Illuminate\Support\Carbon::parse($cita->fecha)->format('d/m/Y') }} · {{ substr($cita->hora, 0, 5) }}</td>
+                            <td>{{ $cita->tratamiento_realizado ?: ($cita->casoClinico?->tratamiento_base ?: ($cita->servicio?->nombre ?? 'Consulta general')) }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="2" class="text-center text-muted py-3">No hay citas registradas.</td></tr>

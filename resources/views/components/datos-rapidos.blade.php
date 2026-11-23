@@ -35,7 +35,7 @@
                     <i class="bi bi-file-earmark-medical fs-4" style="color: #1e1e24;"></i>
                 </div>
                 <div>
-                    <h6 class="card-subtitle text-muted mb-1 fs-7 text-uppercase fw-bold" style="letter-spacing: 0.5px;">Casos Activos</h6>
+                    <h6 class="card-subtitle text-muted mb-1 fs-7 text-uppercase fw-bold" style="letter-spacing: 0.5px;">Tratamientos Activos</h6>
                     <h4 class="card-title mb-0 fw-bold">{{ $casos }}</h4>
                 </div>
             </div>

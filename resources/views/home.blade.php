@@ -156,7 +156,8 @@
             .nav-inner { min-height: 68px; }
             .brand img { width: 148px; height: 50px; }
             .nav-links { gap: 16px; }
-            .nav-links > a:not(.button) { display: none; }
+            .nav-links > a[href="#servicios"],
+            .nav-links > a[href="#proceso"] { display: none; }
             .nav-links .button { min-height: 42px; padding-inline: 14px; font-size: 13px; }
             .hero { padding-top: 28px; padding-bottom: 42px; }
             .hero-grid { grid-template-columns: 1fr; gap: 34px; }
@@ -171,7 +172,11 @@
             .topline-inner { min-height: 32px; font-size: 10px; }
             .topline-inner p:last-child { display: none; }
             .wrap { width: calc(100% - 32px); }
-            .nav-links .button { padding-inline: 11px; }
+            .nav-inner { gap: 8px; }
+            .brand img { width: 118px; }
+            .nav-links { gap: 6px; }
+            .nav-links > a[href$="login"] { font-size: 11px; }
+            .nav-links .button { padding-inline: 8px; font-size: 11px; }
             h1 { margin-top: 14px; margin-bottom: 12px; font-size: 39px; }
             .hero-copy { font-size: 15px; line-height: 1.55; }
             .hero-grid { gap: 20px; }

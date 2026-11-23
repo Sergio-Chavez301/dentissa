@@ -1,12 +1,12 @@
 <x-plantilla>
-    <x-slot:title>Editar Caso | Dentissa</x-slot:title>
+    <x-slot:title>Editar Tratamiento | Dentissa</x-slot:title>
 
     <div class="pb-2 mb-4 border-bottom">
         <a href="{{ route('casos.index') }}" class="text-decoration-none text-muted small d-inline-flex align-items-center mb-2">
             <i class="bi bi-arrow-left me-1"></i> Volver al listado
         </a>
         <h1 class="h2 fw-bold" style="color: #1e1e24;">Editar Progreso</h1>
-        <p class="text-muted">Actualiza los datos del caso clínico seleccionado.</p>
+        <p class="text-muted">Actualiza los datos del tratamiento seleccionado.</p>
     </div>
 
     @if(session('success'))
@@ -35,14 +35,14 @@
 
                 <div class="col-md-6">
                     <label for="progreso" class="form-label fw-semibold text-dark">Progreso Actual (%)</label>
-                    <input type="number" class="form-control @error('progreso') is-invalid @enderror" id="progreso" name="progreso" value="{{ old('progreso', $caso->progreso) }}" min="0" max="100" required>
+                    <input type="number" class="form-control @error('progreso') is-invalid @enderror" id="progreso" name="progreso" value="{{ old('progreso', $caso->progreso) }}" min="0" max="100" step="1" oninput="this.value = Math.min(100, Math.max(0, parseInt(this.value || 0, 10)));" required>
                     @error('progreso')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="col-md-6">
-                    <label for="estado" class="form-label fw-semibold text-dark">Estado del Caso</label>
+                    <label for="estado" class="form-label fw-semibold text-dark">Estado del Tratamiento</label>
                     <select class="form-select @error('estado') is-invalid @enderror" id="estado" name="estado" required>
                         <option value="activo" {{ old('estado', $caso->estado) == 'activo' ? 'selected' : '' }}>Activo</option>
                         <option value="finalizado" {{ old('estado', $caso->estado) == 'finalizado' ? 'selected' : '' }}>Finalizado</option>
@@ -85,6 +85,9 @@
                             <th>Fecha</th>
                             <th>Servicio</th>
                             <th>Estado</th>
+                            @if(auth()->user()->role_id != 3)
+                                <th class="text-end">Acciones</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody>
@@ -102,12 +105,19 @@
                                     {{ \Illuminate\Support\Carbon::parse($cita->fecha)->format('d/m/Y') }}
                                     <span class="text-muted ms-1">{{ substr($cita->hora, 0, 5) }}</span>
                                 </td>
-                                <td>{{ $cita->servicio->nombre ?? 'Servicio eliminado' }}</td>
+                                <td>{{ $cita->tratamiento_realizado ?: ($cita->servicio->nombre ?? 'Sin tratamiento registrado') }}</td>
                                 <td><span class="badge bg-light text-dark border">{{ $estadoCita }}</span></td>
+                                @if(auth()->user()->role_id != 3)
+                                    <td class="text-end">
+                                        <a href="{{ route('citas.edit', $cita) }}" class="btn btn-sm btn-light border" title="Modificar cita">
+                                            <i class="bi bi-pencil-fill text-muted"></i> Modificar
+                                        </a>
+                                    </td>
+                                @endif
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="text-center text-muted py-4">Todavía no hay citas registradas para este tratamiento.</td>
+                                <td colspan="4" class="text-center text-muted py-4">Todavía no hay citas registradas para este tratamiento.</td>
                             </tr>
                         @endforelse
                     </tbody>
