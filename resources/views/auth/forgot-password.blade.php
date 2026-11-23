@@ -32,7 +32,7 @@
             @csrf
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
-                <input id="email" name="email" type="email" required value="{{ old('email') }}" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-dentissa">
+                <input id="email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-dentissa">
             </div>
             @error('email')
                 <p class="text-sm text-red-600">{{ $message }}</p>

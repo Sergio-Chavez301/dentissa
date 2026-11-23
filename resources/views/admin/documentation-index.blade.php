@@ -156,7 +156,7 @@
                         </g>
                     </svg>
                 </div>
-                <p class="small text-muted mt-2 mb-0">La web usa sesión Laravel; la app Android consume la API móvil por HTTPS con Sanctum. El Scheduler ejecuta el comando de recordatorios en Laravel; Laravel solicita a Firebase la entrega al dispositivo. La app y los datos clínicos requieren internet.</p>
+                <p class="small text-muted mt-2 mb-0">La web usa sesión Laravel; la app Android consume la API móvil por HTTPS con Sanctum y puede conservar su token si el usuario activa “Recordar este dispositivo”. El Scheduler marca citas vencidas cada hora y ejecuta recordatorios de citas confirmadas cada minuto. Laravel solicita a Firebase la entrega al dispositivo. La app incluye citas generales, citas de tratamientos, cancelaciones, ofertas y mapa; todos los datos clínicos requieren internet.</p>
             </div>
         </section>
 

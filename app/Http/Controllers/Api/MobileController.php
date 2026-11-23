@@ -15,6 +15,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -51,6 +52,33 @@ class MobileController extends Controller
             'user' => [
                 'name' => trim($user->nombre . ' ' . $user->apellidos),
             ],
+        ])->header('Cache-Control', 'no-store');
+    }
+
+    public function forgotPassword(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+        ]);
+
+        if (app()->environment('production') && config('mail.default') === 'log') {
+            return response()->json([
+                'message' => 'La recuperación por correo no está disponible temporalmente. Contacta al consultorio.',
+            ], 503)->header('Cache-Control', 'no-store');
+        }
+
+        try {
+            Password::sendResetLink(['email' => $validated['email']]);
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return response()->json([
+                'message' => 'No pudimos enviar el correo en este momento. Inténtalo más tarde.',
+            ], 503)->header('Cache-Control', 'no-store');
+        }
+
+        return response()->json([
+            'message' => 'Si el correo corresponde a una cuenta activa, recibirás un enlace para restablecer la contraseña.',
         ])->header('Cache-Control', 'no-store');
     }
 
@@ -113,7 +141,7 @@ class MobileController extends Controller
                 'date' => $appointment->fecha,
                 'time' => substr($appointment->hora, 0, 5),
                 'status' => $appointment->estado,
-                'service' => $appointment->servicio?->nombre ?? 'Consulta general',
+                'service' => $appointment->tratamiento_realizado ?: ($appointment->servicio?->nombre ?? 'Consulta general'),
                 'treatment' => $appointment->casoClinico?->tratamiento_base,
             ]);
 
@@ -125,7 +153,6 @@ class MobileController extends Controller
         $treatments = CasoClinico::with([
             'citas' => fn ($query) => $query
                 ->reorder()
-                ->where('estado', Cita::ESTADO_REALIZADA)
                 ->with('servicio:id,nombre')
                 ->orderByDesc('fecha')
                 ->orderByDesc('hora'),
@@ -133,13 +160,16 @@ class MobileController extends Controller
             ->where('paciente_id', $patient->id)
             ->get()
             ->map(fn (CasoClinico $treatment) => [
+                'id' => $treatment->id,
                 'name' => $treatment->tratamiento_base ?: 'Tratamiento dental',
                 'progress' => min(100, max(0, (int) $treatment->progreso)),
                 'status' => $treatment->estado,
                 'completed_appointments' => $treatment->citas->map(fn (Cita $appointment) => [
-                    'service' => $appointment->servicio?->nombre ?? 'Consulta general',
+                    'id' => $appointment->id,
+                    'service' => $appointment->tratamiento_realizado ?: ($appointment->servicio?->nombre ?? 'Consulta general'),
                     'date' => $appointment->fecha,
                     'time' => substr($appointment->hora, 0, 5),
+                    'status' => $appointment->estado,
                 ])->values(),
             ]);
 
@@ -179,6 +209,12 @@ class MobileController extends Controller
             'appointments' => $appointments,
             'treatments' => $treatments,
             'offers' => $offers,
+            'office_location' => [
+                'name' => $officeSettings->clinic_name,
+                'address' => $officeSettings->clinic_address,
+                'map_link' => $officeSettings->map_link,
+                'map_embed_link' => $officeSettings->map_embed_link,
+            ],
             'services' => Servicio::query()
                 ->orderBy('nombre')
                 ->get(['id', 'nombre'])
@@ -243,6 +279,75 @@ class MobileController extends Controller
                 'service' => $appointment->servicio?->nombre ?? 'Consulta general',
             ],
         ], 201)->header('Cache-Control', 'no-store');
+    }
+
+    public function storeTreatmentAppointment(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'treatment_id' => ['required', 'integer', 'exists:casos_clinicos,id'],
+            'date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today'],
+            'time' => ['required', 'date_format:H:i'],
+        ]);
+
+        $patient = $this->patientFor($request->user());
+        $treatment = CasoClinico::whereKey($validated['treatment_id'])
+            ->where('paciente_id', $patient->id)
+            ->where('estado', CasoClinico::ESTADO_ACTIVO)
+            ->firstOrFail();
+
+        $appointment = DB::transaction(function () use ($validated, $patient, $treatment) {
+            $time = $validated['time'] . ':00';
+            $availableSlots = Cita::getHorariosDisponibles($validated['date']);
+
+            if (!in_array($time, $availableSlots, true)) {
+                throw ValidationException::withMessages([
+                    'time' => 'Ese horario ya no está disponible. Actualiza los horarios y elige otro.',
+                ]);
+            }
+
+            return Cita::create([
+                'paciente_id' => $patient->id,
+                'caso_clinico_id' => $treatment->id,
+                'servicio_id' => null,
+                'tratamiento_realizado' => $treatment->tratamiento_base,
+                'fecha' => $validated['date'],
+                'hora' => $time,
+                'estado' => Cita::ESTADO_EN_ESPERA,
+                'origen' => Cita::ORIGEN_APP,
+            ]);
+        });
+
+        return response()->json([
+            'message' => 'La cita para el tratamiento quedó pendiente de confirmación.',
+            'appointment' => [
+                'id' => $appointment->id,
+                'date' => $appointment->fecha,
+                'time' => substr($appointment->hora, 0, 5),
+                'status' => $appointment->estado,
+                'service' => $treatment->tratamiento_base,
+            ],
+        ], 201)->header('Cache-Control', 'no-store');
+    }
+
+    public function cancelAppointment(Request $request, Cita $appointment): JsonResponse
+    {
+        $patient = $this->patientFor($request->user());
+
+        if ($appointment->paciente_id !== $patient->id) {
+            abort(403, 'No puedes cancelar una cita que no te pertenece.');
+        }
+
+        if (!in_array($appointment->estado, [Cita::ESTADO_EN_ESPERA, Cita::ESTADO_CONFIRMADA], true)) {
+            return response()->json([
+                'message' => 'Esta cita ya no puede cancelarse.',
+            ], 422)->header('Cache-Control', 'no-store');
+        }
+
+        $appointment->update(['estado' => Cita::ESTADO_CANCELADA]);
+
+        return response()->json([
+            'message' => 'La cita fue cancelada correctamente.',
+        ])->header('Cache-Control', 'no-store');
     }
 
     private function patientFor(User $user): Patient

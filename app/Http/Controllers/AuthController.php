@@ -108,7 +108,7 @@ class AuthController extends Controller
 
         return back()->withErrors([
             'username' => 'Las credenciales son incorrectas o la cuenta está desactivada.',
-        ])->onlyInput('username');
+        ])->onlyInput(['username', 'remember']);
     }   
 
     public function logout(Request $request)

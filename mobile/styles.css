@@ -295,6 +295,55 @@ h2 {
     margin-top: 12px;
 }
 
+.remember-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+}
+
+.remember-option input {
+    width: 18px;
+    min-height: 18px;
+}
+
+.text-button,
+.text-link {
+    min-height: 40px;
+    border: 0;
+    color: var(--brand);
+    background: transparent;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.forgot-password-form {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #eee9eb;
+}
+
+.forgot-password-form h3 {
+    margin: 0;
+}
+
+.office-location {
+    margin-top: 16px;
+}
+
+.office-location h3 {
+    margin-bottom: 6px;
+}
+
+.office-map {
+    width: 100%;
+    height: 280px;
+    margin-top: 12px;
+    border: 0;
+    border-radius: 12px;
+}
+
 .status {
     display: inline-block;
     padding: 4px 9px;

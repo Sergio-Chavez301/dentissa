@@ -14,6 +14,10 @@ let apiBaseUrl;
 let token;
 let nativePushToken;
 let pushListenersInstalled = false;
+const rememberedToken = localStorage.getItem('dentissa_remembered_token');
+if (rememberedToken) {
+    token = rememberedToken;
+}
 
 function showNotice(message, success = false) {
     notice.textContent = message;
@@ -202,6 +206,23 @@ function renderAppointments(appointments) {
             item.append(treatment);
         }
         item.append(status);
+        if (["en_espera", "confirmada"].includes(appointment.status)) {
+            const cancelButton = document.createElement('button');
+            cancelButton.type = 'button';
+            cancelButton.className = 'button button-secondary';
+            cancelButton.textContent = 'Cancelar cita';
+            cancelButton.addEventListener('click', async () => {
+                if (!window.confirm('¿Cancelar esta cita?')) return;
+                try {
+                    const result = await apiRequest(`/appointments/${appointment.id}/cancel`, { method: 'POST' });
+                    showNotice(result.message, true);
+                    await loadDashboard();
+                } catch (error) {
+                    showNotice(error.message);
+                }
+            });
+            item.append(cancelButton);
+        }
         list.append(item);
     }
 }
@@ -301,14 +322,25 @@ function renderTreatments(treatments) {
         progress.max = 100;
         progress.value = treatment.progress;
 
+        if (treatment.status === 'activo') {
+            const requestButton = document.createElement('button');
+            requestButton.type = 'button';
+            requestButton.className = 'button';
+            requestButton.textContent = 'Solicitar cita para este tratamiento';
+            requestButton.addEventListener('click', () => requestTreatmentAppointment(treatment));
+            card.append(heading, progressLabel, progress, requestButton);
+        } else {
+            card.append(heading, progressLabel, progress);
+        }
+
         const historyTitle = document.createElement('h4');
-        historyTitle.textContent = 'Citas realizadas';
-        card.append(heading, progressLabel, progress, historyTitle);
+        historyTitle.textContent = 'Citas del tratamiento';
+        card.append(historyTitle);
 
         if (treatment.completed_appointments.length === 0) {
             const empty = document.createElement('p');
             empty.className = 'muted';
-            empty.textContent = 'Todavía no hay citas realizadas asociadas a este tratamiento.';
+            empty.textContent = 'Todavía no hay citas asociadas a este tratamiento.';
             card.append(empty);
         } else {
             const history = document.createElement('ul');
@@ -321,6 +353,32 @@ function renderTreatments(treatments) {
                 date.className = 'muted';
                 date.textContent = `${formatDate(appointment.date)} · ${appointment.time}`;
                 item.append(service, date);
+
+                const statusLabels = {
+                    en_espera: 'Pendiente', confirmada: 'Confirmada', realizada: 'Realizada', cancelada: 'Cancelada', no_presento: 'No se presentó'
+                };
+                const status = document.createElement('span');
+                status.className = 'status';
+                status.textContent = statusLabels[appointment.status] || appointment.status;
+                item.append(status);
+
+                if (["en_espera", "confirmada"].includes(appointment.status)) {
+                    const cancelButton = document.createElement('button');
+                    cancelButton.type = 'button';
+                    cancelButton.className = 'button button-secondary';
+                    cancelButton.textContent = 'Cancelar';
+                    cancelButton.addEventListener('click', async () => {
+                        if (!window.confirm('¿Cancelar esta cita del tratamiento?')) return;
+                        try {
+                            const result = await apiRequest(`/appointments/${appointment.id}/cancel`, { method: 'POST' });
+                            showNotice(result.message, true);
+                            await loadDashboard();
+                        } catch (error) {
+                            showNotice(error.message);
+                        }
+                    });
+                    item.append(cancelButton);
+                }
                 history.append(item);
             }
             card.append(history);
@@ -389,6 +447,65 @@ function renderOffers(offers) {
     }
 }
 
+async function requestTreatmentAppointment(treatment) {
+    const today = localDateString(new Date());
+    const date = window.prompt('Fecha de la cita (AAAA-MM-DD)', today);
+    if (!date || date < today) {
+        showNotice('Selecciona una fecha válida, igual o posterior a hoy.');
+        return;
+    }
+
+    try {
+        const result = await apiRequest(`/availability?date=${encodeURIComponent(date)}`);
+        if (!result.slots.length) {
+            showNotice('No hay horarios disponibles para esa fecha.');
+            return;
+        }
+
+        const time = window.prompt(`Horario disponible: ${result.slots.join(', ')}`, result.slots[0]);
+        if (!time || !result.slots.includes(time)) {
+            showNotice('Selecciona un horario disponible de la lista.');
+            return;
+        }
+
+        const response = await apiRequest('/treatment-appointments', {
+            method: 'POST',
+            body: JSON.stringify({
+                treatment_id: treatment.id,
+                date,
+                time,
+            }),
+        });
+        showNotice(response.message, true);
+        await loadDashboard();
+    } catch (error) {
+        showNotice(error.message);
+    }
+}
+
+function renderOfficeLocation(location) {
+    const container = document.querySelector('#office-location');
+    container.replaceChildren();
+    if (!location || (!location.map_embed_link && !location.map_link)) return;
+
+    const title = document.createElement('h3');
+    title.textContent = location.name || 'Consultorio';
+    const address = document.createElement('p');
+    address.className = 'muted';
+    address.textContent = location.address || 'Ubicación próximamente disponible.';
+    container.append(title, address);
+
+    if (location.map_embed_link) {
+        const map = document.createElement('iframe');
+        map.src = location.map_embed_link;
+        map.title = `Mapa de ${location.name || 'Dentissa'}`;
+        map.loading = 'lazy';
+        map.referrerPolicy = 'no-referrer-when-downgrade';
+        map.className = 'office-map';
+        container.append(map);
+    }
+}
+
 async function loadDashboard() {
     const dashboard = await apiRequest('/dashboard');
     document.querySelector('#patient-name').textContent = dashboard.patient.name;
@@ -398,6 +515,7 @@ async function loadDashboard() {
     renderAppointments(dashboard.appointments);
     renderTreatments(dashboard.treatments);
     renderOffers(dashboard.offers);
+    renderOfficeLocation(dashboard.office_location);
     setView(true);
 }
 
@@ -447,6 +565,12 @@ loginForm.addEventListener('submit', async (event) => {
             }),
         });
         token = response.token;
+        const rememberDevice = document.querySelector('#remember-device')?.checked;
+        if (rememberDevice) {
+            localStorage.setItem('dentissa_remembered_token', token);
+        } else {
+            localStorage.removeItem('dentissa_remembered_token');
+        }
         await loadDashboard();
         loginForm.reset();
         try {
@@ -482,6 +606,7 @@ document.querySelector('#logout-button').addEventListener('click', async () => {
         }
         nativePushToken = null;
         token = null;
+        localStorage.removeItem('dentissa_remembered_token');
         setView(false);
     }
 });
@@ -519,4 +644,50 @@ appointmentForm.addEventListener('submit', async (event) => {
 });
 
 setView(false);
-loadConfig();
+loadConfig().then(async () => {
+    if (apiBaseUrl && token) {
+        try {
+            await loadDashboard();
+        } catch (error) {
+            localStorage.removeItem('dentissa_remembered_token');
+            token = null;
+            setView(false);
+            showNotice(error.message);
+        }
+    }
+});
+
+const loginFormElement = document.querySelector('#login-form');
+const forgotPasswordForm = document.querySelector('#forgot-password-form');
+
+document.querySelector('#forgot-password-button').addEventListener('click', () => {
+    loginFormElement.hidden = true;
+    forgotPasswordForm.hidden = false;
+    document.querySelector('#forgot-email').focus();
+});
+
+document.querySelector('#forgot-back-button').addEventListener('click', () => {
+    forgotPasswordForm.hidden = true;
+    loginFormElement.hidden = false;
+});
+
+forgotPasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    showNotice('');
+    const button = document.querySelector('#forgot-submit');
+    button.disabled = true;
+
+    try {
+        const formData = new FormData(forgotPasswordForm);
+        const response = await apiRequest('/forgot-password', {
+            method: 'POST',
+            body: JSON.stringify({ email: formData.get('email') }),
+        });
+        showNotice(response.message, true);
+        forgotPasswordForm.reset();
+    } catch (error) {
+        showNotice(error.message);
+    } finally {
+        button.disabled = false;
+    }
+});

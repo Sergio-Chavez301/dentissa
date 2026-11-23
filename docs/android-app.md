@@ -8,14 +8,17 @@ Esta guía describe cómo preparar, compilar, instalar, configurar las notificac
 
 La app está construida con una interfaz web empaquetada localmente mediante Capacitor. El APK contiene la interfaz, el plugin nativo de notificaciones y la dirección HTTPS del backend que se utilizó al compilarlo.
 
-Los datos del paciente y las citas se consultan en Laravel; no se guardan en una base de datos local ni se pueden consultar sin internet. La sesión de la app se mantiene en memoria, por lo que el paciente tendrá que iniciar sesión de nuevo cuando se cierre completamente la aplicación.
+Los datos del paciente y las citas se consultan en Laravel; no se guardan como expediente clínico local ni se pueden consultar sin internet. Si el paciente activa **Recordar este dispositivo**, el token Sanctum se conserva de forma local para abrir el panel sin volver a escribir las credenciales; al cerrar sesión se elimina. Sin esa opción, la sesión es temporal.
 
 La app incluye:
 
-- Inicio de sesión para cuentas de pacientes activas.
+- Inicio de sesión para cuentas de pacientes activas y opción **Mantener mi sesión en este dispositivo**; está desactivada por defecto y elimina el token al cerrar sesión.
 - Perfil del paciente, resumen de citas, citas próximas e historial de tratamientos.
-- Ofertas activas con un botón **Solicitar más información** que abre WhatsApp con el nombre de la promoción seleccionada; el número se toma de la configuración del consultorio.
-- Solicitud de citas con los servicios, fechas y horarios disponibles. Las solicitudes nuevas de la app aparecen en **Solicitudes de cita** del panel web y se pueden confirmar o cancelar desde ahí.
+- Visualización y cancelación de citas pendientes o confirmadas.
+- Solicitud de citas generales con servicios, fechas y horarios disponibles.
+- Solicitud y cancelación de citas asociadas a cada tratamiento activo.
+- Ofertas activas con un botón **Solicitar más información** que abre WhatsApp y mapa del consultorio con dirección y enlace **Cómo llegar**.
+- Recuperación de contraseña desde **¿Olvidaste tu contraseña?** dentro de la app. La app solicita al backend enviar el enlace por correo; el restablecimiento se realiza desde el enlace web y requiere que el servidor tenga correo configurado.
 - Notificaciones push de confirmaciones y cancelaciones de citas.
 - Recordatorio push cuando una cita confirmada entra en la ventana aproximada de 24 horas. Se marca si FCM acepta al menos un envío (esto no confirma que Android lo haya mostrado); al reprogramar o volver a confirmar la cita se reinicia la marca.
 
@@ -149,6 +152,8 @@ Las notificaciones requieren cambios en Laravel además del APK:
    - `2026_11_19_214759_create_personal_access_tokens_table`
    - `2026_11_19_230000_add_reminder_sent_at_to_citas_table`
    - `2026_11_19_230001_create_push_devices_table`
+   - `2026_11_20_000001_add_origen_to_citas_table`
+   - `2026_11_23_000001_add_custom_treatment_to_citas_table`
 
    Si la migración de tokens ya se aplicó anteriormente, no es necesario volver a aplicarla; Laravel solo ejecutará las pendientes. Revisa el resultado con:
 
@@ -156,7 +161,7 @@ Las notificaciones requieren cambios en Laravel además del APK:
    php artisan migrate:status
    ```
 
-4. En Laravel Cloud habilita **Scheduler** para el App cluster y despliega/aplica ese cambio. La tarea de recordatorios está programada cada minuto, con prevención de ejecuciones simultáneas.
+4. En Laravel Cloud habilita **Scheduler** para el App cluster y despliega/aplica ese cambio. El Scheduler ejecuta cada hora la actualización de citas vencidas y cada minuto los recordatorios push, ambos con prevención de ejecuciones simultáneas.
 5. Confirma la programación dentro del entorno desplegado:
 
    ```sh

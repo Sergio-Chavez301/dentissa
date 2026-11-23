@@ -79,7 +79,7 @@
                       {{ old('remember') ? 'checked' : '' }}
                        class="h-4 w-4 text-dentissa focus:ring-dentissa border-gray-300 rounded">
                 <label for="remember" class="ml-2 block text-sm text-gray-900">
-                    Recordarme en este equipo
+                    Mantener mi sesión en este equipo
                 </label>
             </div>
 

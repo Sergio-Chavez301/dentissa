@@ -20,11 +20,11 @@
             </div>
             <div>
                 <label for="password" class="block text-sm font-medium text-gray-700">Nueva contraseña</label>
-                <input id="password" name="password" type="password" required class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2">
+                <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2">
             </div>
             <div>
                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmar contraseña</label>
-                <input id="password_confirmation" name="password_confirmation" type="password" required class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2">
+                <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" minlength="8" required class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2">
             </div>
             @error('email')
                 <p class="text-sm text-red-600">{{ $message }}</p>
