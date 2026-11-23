@@ -466,39 +466,6 @@
         </div>
     </footer>
 
-    <section class="chat-panel" id="chatPanel" role="dialog" aria-labelledby="chatTitle" aria-modal="false" hidden>
-        <header class="chat-header">
-            <div>
-                <h2 id="chatTitle">Asistente Dentissa</h2>
-                <p>Información general del consultorio</p>
-            </div>
-            <button class="chat-close" id="chatClose" type="button" aria-label="Cerrar chat">×</button>
-        </header>
-        <div class="chat-content" id="chatContent" aria-live="polite">
-            <p class="chat-user-message" id="chatUserMessage" hidden></p>
-            <p class="chat-message" id="chatMessage">¡Hola! Puedo orientarte con información general del consultorio. Puedes elegir una opción o escribir una pregunta.</p>
-            <div class="chat-options" id="chatOptions">
-                <button class="chat-option" type="button" data-intent="services">Ver servicios</button>
-                <button class="chat-option" type="button" data-intent="offers">Ver ofertas</button>
-                <button class="chat-option" type="button" data-intent="hours">Horario de atención</button>
-                <button class="chat-option" type="button" data-intent="location">Ubicación</button>
-                <button class="chat-option" type="button" data-intent="appointment">Solicitar una cita</button>
-                <button class="chat-option" type="button" data-intent="contact">Contactar al consultorio</button>
-                <button class="chat-option" type="button" data-intent="urgent">Tengo una urgencia</button>
-            </div>
-            <p class="chat-status" id="chatStatus" role="status"></p>
-            <form class="chat-form" id="chatForm">
-                <label class="visually-hidden" for="chatInput">Escribe una pregunta</label>
-                <input class="chat-input" id="chatInput" name="message" maxlength="500" placeholder="Escribe tu pregunta…" autocomplete="off" required>
-                <button class="chat-send" id="chatSend" type="submit">Enviar</button>
-            </form>
-            <p class="chat-privacy">No incluyas datos personales ni información clínica identificable.</p>
-        </div>
-    </section>
-    <button class="chat-launcher" id="chatLauncher" type="button" aria-controls="chatPanel" aria-expanded="false">
-        <span aria-hidden="true">✦</span> ¿Necesitas ayuda?
-    </button>
-
     <dialog id="modalSolicitud" aria-labelledby="modalSolicitudTitulo">
         <div class="dialog-head">
             <div>
@@ -575,18 +542,6 @@
         const dateInput = document.getElementById('fecha_propuesta');
         const timeSelect = document.getElementById('hora_propuesta');
         const previousTime = @json(old('hora_propuesta'));
-        const chatPanel = document.getElementById('chatPanel');
-        const chatLauncher = document.getElementById('chatLauncher');
-        const chatClose = document.getElementById('chatClose');
-        const chatForm = document.getElementById('chatForm');
-        const chatInput = document.getElementById('chatInput');
-        const chatSend = document.getElementById('chatSend');
-        const chatUserMessage = document.getElementById('chatUserMessage');
-        const chatMessage = document.getElementById('chatMessage');
-        const chatOptions = document.getElementById('chatOptions');
-        const chatStatus = document.getElementById('chatStatus');
-        const chatCsrfToken = document.querySelector('meta[name="csrf-token"]').content;
-
         document.querySelectorAll('[data-open-request]').forEach((button) => {
             button.addEventListener('click', () => dialog.showModal());
         });
@@ -601,101 +556,6 @@
         imageViewer.addEventListener('click', (event) => {
             if (event.target === imageViewer) imageViewer.close();
         });
-        chatLauncher.addEventListener('click', () => {
-            const isOpen = !chatPanel.hidden;
-            chatPanel.hidden = isOpen;
-            chatLauncher.setAttribute('aria-expanded', String(!isOpen));
-            if (!isOpen) chatOptions.querySelector('button')?.focus();
-        });
-        chatClose.addEventListener('click', () => {
-            chatPanel.hidden = true;
-            chatLauncher.setAttribute('aria-expanded', 'false');
-            chatLauncher.focus();
-        });
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && !chatPanel.hidden) {
-                chatPanel.hidden = true;
-                chatLauncher.setAttribute('aria-expanded', 'false');
-                chatLauncher.focus();
-            }
-        });
-        chatOptions.addEventListener('click', (event) => {
-            const button = event.target.closest('.chat-option');
-            if (!button || button.disabled) return;
-
-            if (button.dataset.intent) {
-                sendChatIntent(button.dataset.intent);
-            } else if (button.dataset.action === 'request') {
-                dialog.showModal();
-            } else if (button.dataset.action === 'link' && button.dataset.url) {
-                window.open(button.dataset.url, '_blank', 'noopener,noreferrer');
-            }
-        });
-        chatForm.addEventListener('submit', (event) => {
-            event.preventDefault();
-            const message = chatInput.value.trim();
-            if (!message) return;
-            chatUserMessage.textContent = message;
-            chatUserMessage.hidden = false;
-            sendChatMessage({ message });
-        });
-
-        function renderChatOptions(options) {
-            chatOptions.replaceChildren();
-
-            options.forEach((option) => {
-                const button = document.createElement('button');
-                button.className = 'chat-option';
-                button.type = 'button';
-                button.textContent = option.label;
-                if (option.intent) button.dataset.intent = option.intent;
-                if (option.action) button.dataset.action = option.action;
-                if (option.url) button.dataset.url = option.url;
-
-                chatOptions.append(button);
-            });
-        }
-
-        function sendChatIntent(intent) {
-            chatUserMessage.hidden = true;
-            sendChatMessage({ intent });
-        }
-
-        async function sendChatMessage(payload) {
-            const buttons = [...chatOptions.querySelectorAll('button')];
-            buttons.forEach((button) => { button.disabled = true; });
-            chatInput.disabled = true;
-            chatSend.disabled = true;
-            chatStatus.textContent = 'Consultando información…';
-
-            try {
-                const response = await fetch('{{ route('api.chatbot') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': chatCsrfToken,
-                    },
-                    body: JSON.stringify(payload),
-                });
-                if (!response.ok) throw new Error('No se pudo consultar el chat');
-
-                const data = await response.json();
-                chatMessage.textContent = data.message;
-                renderChatOptions(data.options);
-                chatStatus.textContent = '';
-                chatMessage.scrollIntoView({ block: 'nearest' });
-                chatOptions.querySelector('button')?.focus();
-            } catch (error) {
-                chatStatus.textContent = 'No se pudo consultar la información. Intenta de nuevo en un momento.';
-                buttons.forEach((button) => { button.disabled = false; });
-            } finally {
-                chatInput.disabled = false;
-                chatSend.disabled = false;
-                chatInput.focus();
-            }
-        }
-
         async function cargarHorariosPublicos() {
             if (!dateInput.value) return;
             timeSelect.disabled = true;
