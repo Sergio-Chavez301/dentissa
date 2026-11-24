@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1100" height="430" viewBox="0 0 1100 430" role="img" aria-labelledby="title description">
-  <title id="title">Funciones de cada rol en Dentissa</title>
-  <desc id="description">La administradora configura el sistema, la asistente gestiona la operación diaria y el paciente consulta solo su propia información.</desc>
+  <title id="title">Acceso de cada rol en Dentissa</title>
+  <desc id="description">Administradora, asistente y paciente acceden a funciones distintas. Laravel comprueba permisos en el servidor; el paciente queda limitado a su propia información.</desc>
   <defs>
     <style>
       text{font-family:Arial,sans-serif;fill:#34212d}
@@ -11,37 +11,34 @@
     </style>
   </defs>
   <rect width="1100" height="430" rx="24" fill="#fff9fb"/>
-  <text x="550" y="52" text-anchor="middle" class="title">Cada persona ve las herramientas de su trabajo</text>
+  <text x="550" y="52" text-anchor="middle" class="title">Cada perfil tiene un acceso distinto</text>
 
   <rect x="45" y="96" width="320" height="278" rx="20" fill="#fff" class="card"/>
   <rect x="45" y="96" width="320" height="64" rx="20" fill="#d75078"/>
   <path d="M45 140h320v20H45z" fill="#d75078"/>
-  <text x="205" y="137" text-anchor="middle" class="role" fill="#fff">Doctora / Administradora</text>
-  <text x="75" y="204" class="body">• Administra cuentas y permisos</text>
-  <text x="75" y="240" class="body">• Configura servicios y horarios</text>
-  <text x="75" y="276" class="body">• Gestiona la agenda y pacientes</text>
-  <text x="75" y="312" class="body">• Consulta expedientes y reportes</text>
-  <text x="75" y="348" class="body">• Administra ofertas y consultorio</text>
+  <text x="205" y="137" text-anchor="middle" class="role" fill="#fff">Administradora</text>
+  <text x="75" y="204" class="body">• Herramientas administrativas</text>
+  <text x="75" y="240" class="body">• Usuarios y configuración</text>
+  <text x="75" y="276" class="body">• Agenda y operación clínica</text>
+  <text x="75" y="312" class="body">• Expedientes y reportes permitidos</text>
 
   <rect x="390" y="96" width="320" height="278" rx="20" fill="#fff" class="card"/>
-  <rect x="390" y="96" width="320" height="64" rx="20" fill="#f3c4d2"/>
-  <path d="M390 140h320v20H390z" fill="#f3c4d2"/>
+  <rect x="390" y="96" width="320" height="64" rx="20" fill="#c6d9ed"/>
+  <path d="M390 140h320v20H390z" fill="#c6d9ed"/>
   <text x="550" y="137" text-anchor="middle" class="role">Asistente</text>
-  <text x="420" y="204" class="body">• Organiza citas y solicitudes</text>
-  <text x="420" y="240" class="body">• Registra y actualiza pacientes</text>
-  <text x="420" y="276" class="body">• Reagenda y cancela citas</text>
-  <text x="420" y="312" class="body">• Registra la atención realizada</text>
-  <text x="420" y="348" class="body">• Apoya la operación diaria</text>
+  <text x="420" y="204" class="body">• Agenda y solicitudes</text>
+  <text x="420" y="240" class="body">• Pacientes y servicios permitidos</text>
+  <text x="420" y="276" class="body">• Atención y seguimiento</text>
+  <text x="420" y="312" class="body">• Sin rutas exclusivas de admin</text>
 
   <rect x="735" y="96" width="320" height="278" rx="20" fill="#fff" class="card"/>
-  <rect x="735" y="96" width="320" height="64" rx="20" fill="#d7e56b"/>
-  <path d="M735 140h320v20H735z" fill="#d7e56b"/>
+  <rect x="735" y="96" width="320" height="64" rx="20" fill="#dcefe5"/>
+  <path d="M735 140h320v20H735z" fill="#dcefe5"/>
   <text x="895" y="137" text-anchor="middle" class="role">Paciente</text>
-  <text x="765" y="204" class="body">• Consulta sus citas y estado</text>
-  <text x="765" y="240" class="body">• Solicita o cancela una cita</text>
-  <text x="765" y="276" class="body">• Consulta sus tratamientos</text>
-  <text x="765" y="312" class="body">• Actualiza datos permitidos</text>
-  <text x="765" y="348" class="body">• No ve datos de otras personas</text>
+  <text x="765" y="204" class="body">• Consulta sus citas y tratamiento</text>
+  <text x="765" y="240" class="body">• Solicita o cancela según reglas</text>
+  <text x="765" y="276" class="body">• Actualiza datos permitidos</text>
+  <text x="765" y="312" class="body">• No ve datos de otras personas</text>
 
-  <text x="550" y="408" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#68545f">Los permisos se validan en el servidor; cambiar una dirección no concede acceso a otro rol.</text>
+  <text x="550" y="408" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" fill="#68545f">Los permisos se validan en Laravel; cambiar una URL no concede acceso a otro rol.</text>
 </svg>

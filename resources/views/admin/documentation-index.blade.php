@@ -107,14 +107,14 @@
                 <div class="d-flex flex-column flex-md-row justify-content-between gap-2 mb-3">
                     <div>
                         <h2 id="architecture-title" class="h5 fw-bold mb-1">Mapa de arquitectura</h2>
-                        <p class="small text-muted mb-0">Cómo se conectan los canales, el backend, los datos y las notificaciones.</p>
+                        <p class="small text-muted mb-0">La app abre el portal web; Laravel aplica los permisos y consulta los datos.</p>
                     </div>
                     <span class="badge rounded-pill text-bg-light align-self-start">Vista general</span>
                 </div>
-                <div class="documentation-diagram" role="img" aria-label="Diagrama de arquitectura: web y aplicación móvil se conectan a Laravel; Laravel consulta la base de datos y envía notificaciones mediante Firebase Cloud Messaging">
+                <div class="documentation-diagram" role="img" aria-label="La web pública y la app Android llegan al portal Laravel; la app usa el portal por HTTPS y sesión web. Laravel aplica permisos y consulta la base de datos. La API y las notificaciones push no son usadas por la app actual.">
                     <svg viewBox="0 0 1000 370" xmlns="http://www.w3.org/2000/svg" aria-labelledby="architecture-svg-title architecture-svg-desc">
                         <title id="architecture-svg-title">Arquitectura de Dentissa</title>
-                        <desc id="architecture-svg-desc">Los pacientes y el personal acceden desde la web, mientras que los pacientes también pueden usar la aplicación Android. Ambos canales se conectan a Laravel. Laravel usa MySQL para los datos y Firebase Cloud Messaging para notificaciones. El Scheduler ejecuta recordatorios.</desc>
+                        <desc id="architecture-svg-desc">La web pública y la app Android acceden al portal Laravel. La app muestra el portal web con una sesión. Laravel valida roles y consulta la base de datos configurada. La API Sanctum existe aparte, pero la app actual no la consume ni registra notificaciones push.</desc>
                         <defs>
                             <marker id="architecture-arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
                                 <path d="M0,0 L0,6 L9,3 z" fill="#9c7080"/>
@@ -128,9 +128,6 @@
                             <path d="M220 85 C290 85 290 130 360 130"/>
                             <path d="M220 245 C290 245 290 185 360 185"/>
                             <path d="M590 145 L690 92"/>
-                            <path d="M590 175 L690 225"/>
-                            <path d="M465 270 L465 225"/>
-                            <path d="M690 270 C620 350 240 350 122 285"/>
                         </g>
                         <g font-size="13" fill="#5d5257" text-anchor="middle">
                             <rect x="25" y="45" width="195" height="80" rx="12" fill="#fff" stroke="#e6c6d0"/>
@@ -138,41 +135,39 @@
                             <text x="122" y="99">Pacientes y personal</text>
                             <rect x="25" y="205" width="195" height="80" rx="12" fill="#fff" stroke="#e6c6d0"/>
                             <text x="122" y="236" font-size="15" font-weight="700">App Android</text>
-                            <text x="122" y="259">Pacientes · HTTPS</text>
+                            <text x="122" y="259">WebView · sesión HTTPS</text>
                             <rect x="360" y="95" width="230" height="130" rx="16" fill="url(#architecture-main)" stroke="#d75078" stroke-width="2"/>
                             <text x="475" y="137" font-size="19" font-weight="700" fill="#a33154">Laravel</text>
-                            <text x="475" y="162">Web · API móvil · autenticación</text>
-                            <text x="475" y="188">Reglas clínicas · envío FCM</text>
+                            <text x="475" y="162">Portal web · sesión · roles</text>
+                            <text x="475" y="188">Agenda · reglas · permisos</text>
                             <rect x="690" y="45" width="270" height="95" rx="12" fill="#fff" stroke="#b9d8ca"/>
-                            <text x="825" y="80" font-size="16" font-weight="700">MySQL</text>
+                            <text x="825" y="80" font-size="16" font-weight="700">Base de datos</text>
                             <text x="825" y="104">Expedientes, citas y servicios</text>
-                            <text x="825" y="124">Tokens de acceso y dispositivos</text>
-                            <rect x="690" y="190" width="270" height="95" rx="12" fill="#fff" stroke="#c6d8e6"/>
-                            <text x="825" y="224" font-size="16" font-weight="700">Firebase Cloud Messaging</text>
-                            <text x="825" y="249">Confirmaciones y cancelaciones</text>
-                            <text x="825" y="269">Avisos push al dispositivo</text>
-                            <rect x="360" y="270" width="230" height="40" rx="10" fill="#f3f6f4" stroke="#cbd8d2"/>
-                            <text x="475" y="295" font-size="13" font-weight="700">Laravel Cloud Scheduler</text>
+                            <text x="825" y="124">Motor según configuración</text>
+                            <rect x="360" y="270" width="600" height="48" rx="10" fill="#f3f6f4" stroke="#cbd8d2"/>
+                            <text x="660" y="290" font-size="13" font-weight="700">API Sanctum separada · no la consume la app actual</text>
+                            <text x="660" y="307" font-size="12">Push no está activo: el dispositivo no registra su token</text>
                         </g>
                     </svg>
                 </div>
-                <p class="small text-muted mt-2 mb-0">La web usa sesión Laravel; la app Android consume la API móvil por HTTPS con Sanctum y puede conservar su token si el usuario activa “Recordar este dispositivo”. El Scheduler marca citas vencidas cada hora y ejecuta recordatorios de citas confirmadas cada minuto. Laravel solicita a Firebase la entrega al dispositivo. La app incluye citas generales, citas de tratamientos, cancelaciones, ofertas y mapa; todos los datos clínicos requieren internet.</p>
+                <p class="small text-muted mt-2 mb-0">La app Android abre <code>/login?mobile=1</code> y utiliza una sesión Laravel para presentar el panel correspondiente al rol. Las pantallas y permisos se sirven desde el portal; los cambios web se publican en el servidor. La API Sanctum y parte de la infraestructura push permanecen en el repositorio, pero no son el flujo de la app actual.</p>
             </div>
         </section>
 
-        <section class="card border-0 shadow-sm mb-4" aria-labelledby="push-flow-title">
+        <section class="card border-0 shadow-sm mb-4" aria-labelledby="mobile-flow-title">
             <div class="card-body p-3 p-md-4">
-                <h2 id="push-flow-title" class="h5 fw-bold mb-1">Flujo de notificaciones móviles</h2>
-                <p class="small text-muted mb-3">Resumen de los pasos necesarios para que el paciente reciba un aviso.</p>
-                <div class="documentation-process" aria-label="Registro y envío de notificaciones push">
-                    <div class="documentation-process-step"><span class="small text-dentissa fw-semibold">01 · APK</span><strong>Android registra el dispositivo</strong><span class="small text-muted">Firebase genera un token push.</span></div>
+                <h2 id="mobile-flow-title" class="h5 fw-bold mb-1">Flujo de acceso desde la app</h2>
+                <p class="small text-muted mb-3">El contenedor Android conduce al portal; el servidor elige y protege el panel.</p>
+                <div class="documentation-process" aria-label="Inicio de sesión y acceso según el rol desde la aplicación">
+                    <div class="documentation-process-step"><span class="small text-dentissa fw-semibold">01 · ANDROID</span><strong>Abre el portal seguro</strong><span class="small text-muted">Usa la URL HTTPS configurada.</span></div>
                     <span class="documentation-process-arrow" aria-hidden="true">→</span>
-                    <div class="documentation-process-step"><span class="small text-dentissa fw-semibold">02 · API</span><strong>Laravel asocia el token</strong><span class="small text-muted">Se vincula a la cuenta autenticada.</span></div>
+                    <div class="documentation-process-step"><span class="small text-dentissa fw-semibold">02 · LOGIN</span><strong>Laravel inicia sesión</strong><span class="small text-muted">Valida cuenta y contraseña.</span></div>
                     <span class="documentation-process-arrow" aria-hidden="true">→</span>
-                    <div class="documentation-process-step"><span class="small text-dentissa fw-semibold">03 · EVENTO</span><strong>Cambio o recordatorio</strong><span class="small text-muted">El sistema genera el mensaje general.</span></div>
+                    <div class="documentation-process-step"><span class="small text-dentissa fw-semibold">03 · ROL</span><strong>Abre el panel autorizado</strong><span class="small text-muted">Admin, asistente o paciente.</span></div>
                     <span class="documentation-process-arrow" aria-hidden="true">→</span>
-                    <div class="documentation-process-step"><span class="small text-dentissa fw-semibold">04 · ENTREGA</span><strong>Firebase envía al teléfono</strong><span class="small text-muted">Android muestra el aviso permitido.</span></div>
+                    <div class="documentation-process-step"><span class="small text-dentissa fw-semibold">04 · SERVIDOR</span><strong>Verifica cada ruta</strong><span class="small text-muted">La sesión no elimina controles de rol.</span></div>
                 </div>
+                <p class="small text-muted mt-3 mb-0"><strong>Push:</strong> la app actual no registra el dispositivo. No se deben esperar notificaciones push aunque el repositorio conserve endpoints y componentes del backend.</p>
             </div>
         </section>
 
