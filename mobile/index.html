@@ -13,7 +13,7 @@
         <header class="brand">
             <div class="brand-mark" aria-hidden="true">D</div>
             <div>
-                <p class="eyebrow">Portal del paciente</p>
+                <p class="eyebrow">Portal Dentissa</p>
                 <h1>Dentissa</h1>
             </div>
         </header>
@@ -22,7 +22,7 @@
 
         <section id="login-view" class="panel">
             <h2>Iniciar sesión</h2>
-            <p class="muted">Ingresa con el usuario y la contraseña que te proporcionó el consultorio.</p>
+            <p class="muted">Ingresa con tu usuario de administrador, asistente o paciente.</p>
             <form id="login-form" class="form">
                 <label for="username">Usuario</label>
                 <input id="username" name="username" autocomplete="username" required>
@@ -46,7 +46,7 @@
         <section id="dashboard-view" hidden>
             <div class="welcome">
                 <div>
-                    <p class="eyebrow">Mi cuenta</p>
+                    <p id="account-eyebrow" class="eyebrow">Mi cuenta</p>
                     <h2 id="patient-name"></h2>
                 </div>
                 <button id="logout-button" class="button button-secondary" type="button">Salir</button>
@@ -83,6 +83,16 @@
             <section class="panel">
                 <h2>Mis tratamientos</h2>
                 <div id="treatments" class="treatments"></div>
+            </section>
+
+            <section id="staff-dashboard" class="panel" hidden>
+                <h2 id="staff-title">Panel del personal</h2>
+                <dl id="staff-profile" class="profile-grid"></dl>
+                <div id="staff-summary" class="summary-grid"></div>
+                <h3>Citas de hoy</h3>
+                <div id="staff-appointments" class="appointments"></div>
+                <h3>Pacientes recientes</h3>
+                <div id="staff-patients" class="appointments"></div>
             </section>
 
             <section class="panel">

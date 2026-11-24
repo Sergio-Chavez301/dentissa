@@ -21,7 +21,7 @@ class UserController extends Controller
 
     public function create()
     {
-        $roles = Role::all();
+        $roles = Role::whereIn('id', [1, 2])->get();
         return view('users.create', compact('roles'));
     }
 
@@ -32,7 +32,7 @@ class UserController extends Controller
             'apellidos' => 'required|string|max:255',
             'username' => 'required|string|max:50|unique:usuarios,username',
             'email' => 'required|string|email|max:255|unique:usuarios,email',
-            'role_id' => 'required|exists:roles,id',
+            'role_id' => 'required|in:1,2',
             'password' => 'required|string|min:8|confirmed',
         ], [
             'username.unique' => 'Este nombre de usuario ya está en uso.',
@@ -108,20 +108,33 @@ class UserController extends Controller
     public function showProfile()
     {
         $usuario = User::with('role')->find(Auth::id());
-        return view('users.profile', compact('usuario'));
+        $patient = (int) $usuario->role_id === 3 ? Patient::forUser($usuario) : null;
+
+        return view('users.profile', compact('usuario', 'patient'));
     }
 
     public function updateProfile(Request $request)
     {
         $usuario = Auth::user();
+        $isPatient = (int) $usuario->role_id === 3;
+        $patient = $isPatient ? Patient::forUser($usuario) : null;
 
-        $request->validate([
+        $rules = [
             'nombre' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
-            'username' => 'required|string|max:50|unique:usuarios,username,' . $usuario->id,
             'email' => 'required|string|email|max:255|unique:usuarios,email,' . $usuario->id,
             'password' => 'nullable|string|min:8|confirmed',
-        ], [
+        ];
+
+        if ($patient) {
+            $rules['telefono'] = 'required|string|max:20';
+        }
+
+        if (!$isPatient) {
+            $rules['username'] = 'required|string|max:50|unique:usuarios,username,' . $usuario->id;
+        }
+
+        $validated = $request->validate($rules, [
             'username.unique' => 'Este nombre de usuario ya está en uso.',
             'email.unique' => 'Este correo electrónico ya está registrado.',
             'password.confirmed' => 'Las contraseñas escritas no coinciden.',
@@ -129,19 +142,33 @@ class UserController extends Controller
         ]);
 
         $data = [
-            'nombre' => $request->nombre,
-            'apellidos' => $request->apellidos,
-            'username' => $request->username,
-            'email' => $request->email,
+            'nombre' => $validated['nombre'],
+            'apellidos' => $validated['apellidos'],
+            'email' => $validated['email'],
         ];
 
         if ($request->filled('password')) {
-            $data['password'] = Hash::make($request->password);
+            $data['password'] = Hash::make($validated['password']);
         }
 
-        DB::table('usuarios')->where('id', $usuario->id)->update($data);
+        if (!$isPatient) {
+            $data['username'] = $validated['username'];
+        }
 
-        return redirect()->route('profile.show')->with('success', 'Tu perfil ha sido actualizado correctamente.');
+        DB::transaction(function () use ($usuario, $data, $validated, $patient) {
+            $usuario->update($data);
+
+            if ($patient) {
+                $patient->update([
+                    'nombre' => $validated['nombre'],
+                    'apellidos' => $validated['apellidos'],
+                    'email' => $validated['email'],
+                    'telefono' => $validated['telefono'],
+                ]);
+            }
+        });
+
+        return redirect()->route('profile.show')->with('success', 'Tus datos se actualizaron correctamente.');
     }
 
     public function destroy(string $id)

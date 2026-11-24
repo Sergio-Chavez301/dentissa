@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -30,7 +31,7 @@ class MobileController extends Controller
 
         $user = User::where('username', $credentials['username'])
             ->where('activo', true)
-            ->where('role_id', 3)
+            ->whereIn('role_id', [1, 2, 3])
             ->first();
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
@@ -39,7 +40,7 @@ class MobileController extends Controller
             ], 401)->header('Cache-Control', 'no-store');
         }
 
-        if (!Patient::where('user_id', $user->id)->exists()) {
+        if ((int) $user->role_id === 3 && !Patient::where('user_id', $user->id)->exists()) {
             return response()->json([
                 'message' => 'La cuenta no tiene un perfil de paciente asociado. Contacta al consultorio.',
             ], 403)->header('Cache-Control', 'no-store');
@@ -51,6 +52,7 @@ class MobileController extends Controller
             'token' => $token,
             'user' => [
                 'name' => trim($user->nombre . ' ' . $user->apellidos),
+                'role_id' => (int) $user->role_id,
             ],
         ])->header('Cache-Control', 'no-store');
     }
@@ -127,6 +129,11 @@ class MobileController extends Controller
     public function dashboard(Request $request): JsonResponse
     {
         $user = $request->user();
+
+        if ((int) $user->role_id !== 3) {
+            return $this->staffDashboard($user);
+        }
+
         $patient = $this->patientFor($user);
 
         $appointments = Cita::with('servicio:id,nombre')
@@ -189,6 +196,7 @@ class MobileController extends Controller
             ]);
 
         return response()->json([
+            'role_id' => 3,
             'patient' => [
                 'name' => trim($patient->nombre . ' ' . $patient->apellidos),
                 'username' => $user->username,
@@ -329,6 +337,29 @@ class MobileController extends Controller
         ], 201)->header('Cache-Control', 'no-store');
     }
 
+    public function updateAppointmentStatus(Request $request, Cita $appointment): JsonResponse
+    {
+        if ((int) $request->user()->role_id === 3) {
+            abort(403, 'Solo el personal del consultorio puede actualizar citas.');
+        }
+
+        $validated = $request->validate([
+            'status' => ['required', Rule::in([
+                Cita::ESTADO_EN_ESPERA,
+                Cita::ESTADO_CONFIRMADA,
+                Cita::ESTADO_REALIZADA,
+                Cita::ESTADO_CANCELADA,
+                Cita::ESTADO_NO_PRESENTO,
+            ])],
+        ]);
+
+        $appointment->update(['estado' => $validated['status']]);
+
+        return response()->json([
+            'message' => 'El estado de la cita fue actualizado.',
+        ], 200)->header('Cache-Control', 'no-store');
+    }
+
     public function cancelAppointment(Request $request, Cita $appointment): JsonResponse
     {
         $patient = $this->patientFor($request->user());
@@ -348,6 +379,51 @@ class MobileController extends Controller
         return response()->json([
             'message' => 'La cita fue cancelada correctamente.',
         ])->header('Cache-Control', 'no-store');
+    }
+
+    private function staffDashboard(User $user): JsonResponse
+    {
+        $today = Carbon::today();
+        $appointments = Cita::with(['paciente:id,nombre,apellidos', 'servicio:id,nombre'])
+            ->whereDate('fecha', $today)
+            ->orderBy('hora')
+            ->limit(100)
+            ->get()
+            ->map(fn (Cita $appointment) => [
+                'id' => $appointment->id,
+                'date' => $appointment->fecha,
+                'time' => substr($appointment->hora, 0, 5),
+                'status' => $appointment->estado,
+                'patient' => trim(($appointment->paciente->nombre ?? '') . ' ' . ($appointment->paciente->apellidos ?? '')),
+                'service' => $appointment->tratamiento_realizado ?: ($appointment->servicio?->nombre ?? 'Consulta general'),
+            ]);
+
+        $recentPatients = Patient::latest()
+            ->limit(10)
+            ->get(['id', 'nombre', 'apellidos', 'telefono'])
+            ->map(fn (Patient $patient) => [
+                'id' => $patient->id,
+                'name' => trim($patient->nombre . ' ' . $patient->apellidos),
+                'phone' => $patient->telefono,
+            ]);
+
+        return response()->json([
+            'role_id' => (int) $user->role_id,
+            'staff' => [
+                'name' => trim($user->nombre . ' ' . $user->apellidos),
+                'username' => $user->username,
+                'role_name' => (int) $user->role_id === 1 ? 'Administrador' : 'Asistente',
+            ],
+            'summary' => [
+                'today_appointments' => Cita::whereDate('fecha', $today)->count(),
+                'patients' => Patient::count(),
+                'active_treatments' => CasoClinico::where('estado', 'activo')->where('progreso', '<', 100)->count(),
+                'services' => Servicio::count(),
+                'pending_requests' => \App\Models\SolicitudCita::where('estado', \App\Models\SolicitudCita::ESTADO_ESPERANDO_CONFIRMACION)->count(),
+            ],
+            'appointments' => $appointments,
+            'recent_patients' => $recentPatients,
+        ], 200)->header('Cache-Control', 'no-store');
     }
 
     private function patientFor(User $user): Patient

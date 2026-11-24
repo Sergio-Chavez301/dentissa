@@ -19,7 +19,7 @@
             --line: #dbe4df;
             --rose: #d84170;
             --rose-dark: #b82c59;
-            --lime: #d7e56b;
+            --pink: #ff5aa4;
             --serif: "DM Serif Display", Georgia, serif;
             --sans: "DM Sans", sans-serif;
         }
@@ -30,7 +30,7 @@
         button, input, select, textarea { font: inherit; }
         button, a { -webkit-tap-highlight-color: transparent; }
         .wrap { width: min(1180px, calc(100% - 48px)); margin-inline: auto; }
-        .topline { color: #e4efea; background: var(--ink); font-size: 12px; }
+        .topline { color: #fff; background: #d84170; font-size: 12px; }
         .topline-inner { min-height: 34px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
         .topline p { margin: 0; }
         .nav { position: sticky; top: 0; z-index: 5; border-bottom: 1px solid var(--line); background: #f7f8f5f5; backdrop-filter: blur(12px); }
@@ -44,7 +44,7 @@
         .button:hover { color: var(--white); background: var(--rose-dark); transform: translateY(-2px); }
         .button-outline { color: var(--ink); background: transparent; border-color: var(--ink); }
         .button-outline:hover { color: var(--white); background: var(--ink); }
-        .button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+        .button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
         .hero { padding: 30px 0 48px; overflow: hidden; }
         .hero-grid { display: grid; grid-template-columns: 1fr .88fr; align-items: center; gap: 70px; }
         .eyebrow { display: inline-flex; align-items: center; gap: 10px; color: var(--rose-dark); font-size: 12px; font-weight: 700; text-transform: uppercase; }
@@ -54,15 +54,15 @@
         .hero-copy { max-width: 530px; color: var(--ink-soft); font-size: 18px; line-height: 1.7; }
         .hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
         .hero-note { display: flex; align-items: center; gap: 12px; margin-top: 26px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 13px; }
-        .note-mark { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; color: var(--ink); background: var(--lime); font-weight: 700; }
+        .note-mark { width: 34px; height: 34px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 50%; color: var(--ink); background: var(--pink); font-weight: 700; }
         .hero-visual { position: relative; min-height: 410px; isolation: isolate; }
         .hero-photo { position: absolute; inset: 0 20px 28px 0; width: calc(100% - 20px); height: calc(100% - 28px); object-fit: cover; object-position: center 30%; border: 1px solid #ffffff8c; border-radius: 8px; box-shadow: 0 18px 42px #183a371c; transition: transform .35s ease, box-shadow .35s ease; }
         .hero-visual:hover .hero-photo { transform: scale(1.012); box-shadow: 0 22px 48px #183a3726; }
         .photo-expand { position: absolute; top: 14px; right: 34px; z-index: 1; min-height: 38px; display: inline-flex; align-items: center; gap: 8px; padding: 0 12px; border: 1px solid #ffffffb8; border-radius: 6px; color: var(--ink); background: #ffffffed; font-size: 12px; font-weight: 700; cursor: pointer; transition: background .2s ease; }
         .photo-expand:hover { background: var(--white); }
         .photo-expand:focus-visible, .close-button:focus-visible { outline: 3px solid var(--rose); outline-offset: 3px; }
-        .visual-caption { position: absolute; right: 0; bottom: 0; width: min(260px, 76%); padding: 18px 20px; color: var(--ink); background: var(--lime); }
-        .visual-caption span { display: block; margin-bottom: 5px; color: #4f5d25; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .visual-caption { position: absolute; right: 0; bottom: 0; width: min(260px, 76%); padding: 18px 20px; color: #fff; background: #d84170; }
+        .visual-caption span { display: block; margin-bottom: 5px; color: #fff; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .visual-caption strong { font: 22px/1.15 var(--serif); }
         .location-band { border-block: 1px solid var(--line); background: #eef3ef; }
         .location-inner { display: flex; align-items: center; justify-content: space-between; gap: 28px; }
@@ -83,12 +83,14 @@
         .service h3 { margin: 22px 0 10px; font: 26px/1.15 var(--serif); }
         .service p { max-width: 300px; margin: 0; color: var(--ink-soft); font-size: 14px; line-height: 1.7; }
         .process { color: var(--white); background: var(--ink); }
-        .process .eyebrow { color: var(--lime); }
-        .process .section-heading p { color: #c6d7d1; }
+        #proceso.process { background: #d84170; }
+        #proceso.process .eyebrow,
+        #proceso .step-number { color: #fff; }
+        .process .section-heading p { color: #e8cfdb; }
         .steps { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid #54716c; }
         .step { padding: 24px 24px 0 0; }
         .step + .step { padding-left: 24px; border-left: 1px solid #54716c; }
-        .step-number { color: var(--lime); font-size: 13px; font-weight: 700; }
+        .step-number { color: var(--pink); font-size: 13px; font-weight: 700; }
         .step h3 { margin: 24px 0 10px; font: 25px/1.15 var(--serif); }
         .step p { max-width: 290px; margin: 0; color: #c6d7d1; font-size: 14px; line-height: 1.7; }
         .closing { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 36px; padding: 58px 0; }
@@ -97,7 +99,7 @@
         footer { padding: 28px 0; color: #e4efea; background: #102b29; font-size: 13px; }
         .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
         footer p { margin: 0; }
-        footer a { color: var(--lime); text-underline-offset: 3px; }
+        footer a { color: var(--pink); text-underline-offset: 3px; }
         .notice { margin: 18px auto 0; padding: 14px 18px; border: 1px solid #afcfc0; color: var(--ink); background: #e4f2e9; }
         .notice-error { border-color: #efb7c8; background: #fff0f4; }
         dialog { width: min(720px, calc(100% - 28px)); max-height: min(90vh, 820px); padding: 0; border: 1px solid var(--line); border-radius: 4px; color: var(--ink); background: var(--paper); box-shadow: 0 24px 80px #102b2933; }
@@ -145,7 +147,7 @@
         .chat-send:disabled { opacity: .6; cursor: wait; }
         .chat-privacy { margin: 8px 0 0; color: var(--ink-soft); font-size: 11px; line-height: 1.4; }
         .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-        .chat-launcher:focus-visible, .chat-close:focus-visible, .chat-option:focus-visible { outline: 3px solid var(--lime); outline-offset: 3px; }
+        .chat-launcher:focus-visible, .chat-close:focus-visible, .chat-option:focus-visible { outline: 3px solid var(--pink); outline-offset: 3px; }
         @keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
         .hero-copy > * { animation: rise-in .6s both; }
         .hero-copy > :nth-child(2) { animation-delay: .08s; }
@@ -391,7 +393,7 @@
             </div>
         </section>
 
-        <section class="section process" id="casos-home" style="background:#f7f8f5;color:var(--ink);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+        <section class="section process" id="casos-home" style="background:var(--paper);color:var(--ink);border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
             <div class="wrap">
                 <div class="section-heading">
                     <span class="eyebrow" style="color:var(--rose-dark);">Casos</span>

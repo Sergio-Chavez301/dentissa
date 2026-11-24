@@ -12,7 +12,7 @@ class EnsureActiveMobilePatient
     {
         $user = $request->user();
 
-        if (!$user || (int) $user->role_id !== 3 || !$user->activo) {
+        if (!$user || !in_array((int) $user->role_id, [1, 2, 3], true) || !$user->activo) {
             return response()->json([
                 'message' => 'La cuenta no tiene acceso activo a la aplicación.',
             ], 403)->header('Cache-Control', 'no-store');

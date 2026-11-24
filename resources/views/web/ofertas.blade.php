@@ -9,11 +9,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         :root {
-            --dentissa-ink: #183a37;
-            --dentissa-muted: #60736e;
-            --dentissa-paper: #f7f8f5;
+            --dentissa-ink: #34212d;
+            --dentissa-muted: #65545e;
+            --dentissa-paper: #faf7f9;
             --dentissa-rose: #d84170;
-            --dentissa-line: #dbe4df;
+            --dentissa-line: #eadfe5;
         }
 
         body {
@@ -61,19 +61,44 @@
             border-color: #b82c59;
         }
 
+        .btn-public-rose {
+            color: #fff;
+            background: #ff5aa4;
+            border-color: #ff5aa4;
+        }
+
+        .btn-public-rose:hover,
+        .btn-public-rose:focus-visible {
+            color: #fff;
+            background: #df3f86;
+            border-color: #df3f86;
+        }
+
+        .btn-outline-public-rose {
+            color: var(--dentissa-rose);
+            border-color: var(--dentissa-rose);
+        }
+
+        .btn-outline-public-rose:hover,
+        .btn-outline-public-rose:focus-visible {
+            color: #fff;
+            background: var(--dentissa-rose);
+            border-color: var(--dentissa-rose);
+        }
+
         .public-main {
             padding-block: 42px 56px;
         }
 
         .offer-card {
-            border: 1px solid #e8eeea;
+            border: 1px solid #eee5e9;
             border-radius: 12px;
             transition: transform .18s ease, box-shadow .18s ease;
         }
 
         .offer-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 30px #183a3714 !important;
+            box-shadow: 0 12px 30px #34212d14 !important;
         }
 
         .offer-description {
@@ -127,11 +152,11 @@
                 @php
                     $generalMessage = rawurlencode('Hola, quisiera información sobre las ofertas de ' . $officeSettings->clinic_name . '.');
                 @endphp
-                <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $generalMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-success" onclick="return confirm('Se abrirá WhatsApp para solicitar información sobre las ofertas. ¿Deseas continuar?')">
+                <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $generalMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-public-rose" onclick="return confirm('Se abrirá WhatsApp para solicitar información sobre las ofertas. ¿Deseas continuar?')">
                     <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Consultar por WhatsApp
                 </a>
             @else
-                <button type="button" class="btn btn-success" onclick="alert('El WhatsApp del consultorio aún no está configurado. Contacta al administrador.')">
+                <button type="button" class="btn btn-public-rose" onclick="alert('El WhatsApp del consultorio aún no está configurado. Contacta al administrador.')">
                     <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Consultar por WhatsApp
                 </button>
             @endif
@@ -157,11 +182,11 @@
                                 @endif
                                 <p class="offer-description mb-4">{{ $oferta->descripcion }}</p>
                                 @if($officeSettings->whatsapp_digits)
-                                    <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $offerMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-success mt-auto" onclick="return confirm('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?')">
+                                    <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $offerMessage }}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-public-rose mt-auto" onclick="return confirm('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?')">
                                         <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Solicitar más información
                                     </a>
                                 @else
-                                    <button type="button" class="btn btn-outline-success mt-auto" onclick="alert('El WhatsApp del consultorio aún no está configurado. Contacta al administrador.')">
+                                    <button type="button" class="btn btn-outline-public-rose mt-auto" onclick="alert('El WhatsApp del consultorio aún no está configurado. Contacta al administrador.')">
                                         <i class="bi bi-whatsapp me-2" aria-hidden="true"></i>Solicitar más información
                                     </button>
                                 @endif

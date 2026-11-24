@@ -52,7 +52,7 @@
                     <span class="text-muted small text-uppercase fw-bold">Tu cuenta</span>
                     <h2 id="perfil-heading" class="h5 fw-bold mb-0 mt-1">Perfil personal</h2>
                 </div>
-                <a href="{{ route('profile.show') }}" class="btn btn-sm btn-outline-secondary">Editar perfil y contraseña</a>
+                <a href="{{ route('profile.show') }}" class="btn btn-sm btn-outline-secondary">Actualizar mis datos</a>
             </div>
             <div class="row g-3">
                 <div class="col-sm-6 col-lg-3">

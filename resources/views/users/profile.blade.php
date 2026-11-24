@@ -8,6 +8,9 @@
             3 => route('dashboard.paciente'),
             default => route('home'),
         };
+        $usernameValue = (int) $usuario->role_id === 3
+            ? $usuario->username
+            : old('username', $usuario->username);
     @endphp
 
     <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 pb-3 mb-4 border-bottom">
@@ -16,7 +19,7 @@
                 <i class="bi bi-arrow-left" aria-hidden="true"></i>Volver al panel
             </a>
             <h1 class="h2 fw-bold text-dark mb-1">Mi perfil</h1>
-            <p class="text-muted mb-0">Actualiza tus datos de acceso y la información de tu cuenta.</p>
+            <p class="text-muted mb-0">Actualiza tus datos personales y de acceso.</p>
         </div>
     </div>
 
@@ -47,14 +50,25 @@
                     </div>
                     <div class="col-md-6">
                         <label for="username" class="form-label fw-semibold">Nombre de usuario</label>
-                        <input id="username" name="username" value="{{ old('username', $usuario->username) }}" required maxlength="50" autocomplete="username" class="form-control @error('username') is-invalid @enderror">
-                        @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        <input id="username" name="username" value="{{ $usernameValue }}" required maxlength="50" autocomplete="username" class="form-control @error('username') is-invalid @enderror" @readonly((int) $usuario->role_id === 3)>
+                        @if($patient)
+                            <small class="form-text text-muted">El nombre de usuario no se puede cambiar desde la cuenta del paciente.</small>
+                        @else
+                            @error('username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        @endif
                     </div>
                     <div class="col-md-6">
                         <label for="email" class="form-label fw-semibold">Correo electrónico</label>
                         <input id="email" name="email" type="email" value="{{ old('email', $usuario->email) }}" required maxlength="255" autocomplete="email" class="form-control @error('email') is-invalid @enderror">
                         @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
+                    @if((int) $usuario->role_id === 3)
+                        <div class="col-md-6">
+                            <label for="telefono" class="form-label fw-semibold">Teléfono</label>
+                            <input id="telefono" name="telefono" type="tel" value="{{ old('telefono', $patient?->telefono) }}" required maxlength="20" autocomplete="tel" class="form-control @error('telefono') is-invalid @enderror">
+                            @error('telefono')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                    @endif
                 </div>
 
                 <div class="border-top mt-4 pt-4">

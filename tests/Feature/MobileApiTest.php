@@ -89,13 +89,30 @@ class MobileApiTest extends TestCase
             ->assertJsonMissing(['name' => 'Otro Paciente']);
     }
 
-    public function test_login_rejects_non_patient_disabled_and_unlinked_accounts(): void
+    public function test_staff_can_log_in_and_view_the_staff_dashboard(): void
+    {
+        foreach ([1 => 'Administrador', 2 => 'Asistente'] as $roleId => $roleName) {
+            $user = $this->createUser("staff{$roleId}", "staff{$roleId}@example.com", roleId: $roleId);
+            $login = $this->postJson('/api/mobile/login', [
+                'username' => $user->username,
+                'password' => 'password123',
+            ])->assertOk()
+                ->assertJsonPath('user.role_id', $roleId);
+
+            $this->withToken($login->json('token'))
+                ->getJson('/api/mobile/dashboard')
+                ->assertOk()
+                ->assertJsonPath('role_id', $roleId)
+                ->assertJsonPath('staff.role_name', $roleName);
+        }
+    }
+
+    public function test_login_rejects_disabled_and_unlinked_patient_accounts(): void
     {
         $this->createPatient('disabled', 'disabled@example.com', active: false);
-        $this->createUser('staff', 'staff@example.com', roleId: 1);
         $this->createUser('unlinked', 'unlinked@example.com');
 
-        foreach (['disabled', 'staff', 'unlinked'] as $username) {
+        foreach (['disabled', 'unlinked'] as $username) {
             $response = $this->postJson('/api/mobile/login', [
                 'username' => $username,
                 'password' => 'password123',
@@ -130,6 +147,38 @@ class MobileApiTest extends TestCase
         $this->assertDatabaseHas('citas', [
             'paciente_id' => $patient->id,
             'servicio_id' => $service->id,
+            'fecha' => $date,
+            'hora' => '09:00:00',
+            'estado' => Cita::ESTADO_EN_ESPERA,
+            'origen' => Cita::ORIGEN_APP,
+        ]);
+    }
+
+    public function test_patient_can_request_an_appointment_for_an_active_treatment(): void
+    {
+        $patient = $this->createPatient('patient', 'patient@example.com');
+        $treatment = CasoClinico::create([
+            'paciente_id' => $patient->id,
+            'tratamiento_base' => 'Ortodoncia',
+            'progreso' => 25,
+            'estado' => CasoClinico::ESTADO_ACTIVO,
+        ]);
+        $token = $patient->user->createToken('test')->plainTextToken;
+        $date = now()->addDays(2)->toDateString();
+
+        $this->withToken($token)
+            ->postJson('/api/mobile/treatment-appointments', [
+                'treatment_id' => $treatment->id,
+                'date' => $date,
+                'time' => '09:00',
+            ])
+            ->assertCreated()
+            ->assertJsonPath('appointment.status', Cita::ESTADO_EN_ESPERA)
+            ->assertJsonPath('appointment.service', 'Ortodoncia');
+
+        $this->assertDatabaseHas('citas', [
+            'paciente_id' => $patient->id,
+            'caso_clinico_id' => $treatment->id,
             'fecha' => $date,
             'hora' => '09:00:00',
             'estado' => Cita::ESTADO_EN_ESPERA,

@@ -17,9 +17,7 @@ class CasoClinicoController extends Controller
         $user = Auth::user();
 
         if ($user && $user->role_id == 3) {
-            $paciente = Patient::where('user_id', $user->id)
-                               ->orWhere('email', $user->email)
-                               ->first();
+            $paciente = Patient::forUser($user);
 
             $casos = $paciente 
                 ? CasoClinico::with('paciente')
@@ -137,9 +135,7 @@ class CasoClinicoController extends Controller
         $caso = CasoClinico::with(['paciente', 'citas.servicio'])->findOrFail($id);
 
         if ((int) Auth::user()->role_id === 3) {
-            $paciente = Patient::where('user_id', Auth::id())
-                ->orWhere('email', Auth::user()->email)
-                ->first();
+            $paciente = Patient::forUser(Auth::user());
             abort_unless($paciente && $caso->paciente_id === $paciente->id, 403);
         }
 

@@ -70,13 +70,14 @@ async function apiRequest(path, options = {}) {
     if (!response.ok) {
         if (response.status === 401 && token) {
             token = null;
+            localStorage.removeItem('dentissa_remembered_token');
             setView(false);
         }
 
         const validationMessage = Object.values(data.errors || {})
             .flat()
             .find(Boolean);
-        throw new Error(validationMessage || data.message || 'No se pudo completar la operación.');
+        throw new Error(validationMessage || data.message || `El servidor respondió con el error ${response.status}.`);
     }
 
     return data;
@@ -506,9 +507,117 @@ function renderOfficeLocation(location) {
     }
 }
 
+async function renderStaffDashboard(dashboard) {
+    document.querySelector('#patient-name').textContent = dashboard.staff.name;
+    document.querySelector('#account-eyebrow').textContent = dashboard.staff.role_name;
+
+    const patientSections = document.querySelectorAll('#dashboard-view > .panel, #dashboard-view > #appointment-summary');
+    patientSections.forEach((section) => {
+        section.hidden = section.id === 'staff-dashboard' ? false : true;
+    });
+
+    const profile = document.querySelector('#staff-profile');
+    profile.replaceChildren();
+    for (const [label, value] of [
+        ['Usuario', dashboard.staff.username],
+        ['Rol', dashboard.staff.role_name],
+    ]) {
+        const group = document.createElement('div');
+        const term = document.createElement('dt');
+        term.textContent = label;
+        const description = document.createElement('dd');
+        description.textContent = value;
+        group.append(term, description);
+        profile.append(group);
+    }
+
+    const summary = document.querySelector('#staff-summary');
+    summary.replaceChildren();
+    const summaryItems = [
+        ['Citas hoy', dashboard.summary.today_appointments],
+        ['Pacientes', dashboard.summary.patients],
+        ['Tratamientos', dashboard.summary.active_treatments],
+        ['Solicitudes', dashboard.summary.pending_requests],
+    ];
+    for (const [label, count] of summaryItems) {
+        const card = document.createElement('article');
+        card.className = 'summary-card';
+        const title = document.createElement('span');
+        title.textContent = label;
+        const value = document.createElement('strong');
+        value.textContent = count;
+        card.append(title, value);
+        summary.append(card);
+    }
+
+    const appointments = document.querySelector('#staff-appointments');
+    appointments.replaceChildren();
+    if (dashboard.appointments.length === 0) {
+        appointments.innerHTML = '<p class="muted">No hay citas programadas para hoy.</p>';
+    } else {
+        for (const appointment of dashboard.appointments) {
+            const item = document.createElement('article');
+            item.className = 'appointment';
+            const patient = document.createElement('strong');
+            patient.textContent = appointment.patient || 'Paciente sin nombre';
+            const details = document.createElement('p');
+            details.textContent = `${appointment.service} · ${appointment.time}`;
+            const status = document.createElement('span');
+            status.className = 'status';
+            status.textContent = appointment.status;
+            item.append(patient, details);
+            item.append(status);
+
+            const confirm = document.createElement('button');
+            confirm.type = 'button';
+            confirm.className = 'button button-secondary';
+            confirm.textContent = appointment.status === 'confirmada' ? 'Confirmada' : 'Confirmar';
+            confirm.disabled = appointment.status === 'confirmada';
+            confirm.addEventListener('click', async () => {
+                try {
+                    await apiRequest(`/appointments/${appointment.id}/status`, { method: 'POST', body: JSON.stringify({ status: 'confirmada' }) });
+                    showNotice('Cita confirmada.', true);
+                    await loadDashboard();
+                } catch (error) {
+                    showNotice(error.message);
+                }
+            });
+            item.append(confirm);
+            appointments.append(item);
+        }
+    }
+
+    const patients = document.querySelector('#staff-patients');
+    patients.replaceChildren();
+    for (const patient of dashboard.recent_patients) {
+        const item = document.createElement('article');
+        item.className = 'appointment';
+        const name = document.createElement('strong');
+        name.textContent = patient.name;
+        const phone = document.createElement('p');
+        phone.className = 'muted';
+        phone.textContent = patient.phone || 'Sin teléfono registrado';
+        item.append(name, phone);
+        patients.append(item);
+    }
+    if (dashboard.recent_patients.length === 0) {
+        patients.innerHTML = '<p class="muted">No hay pacientes registrados.</p>';
+    }
+}
+
 async function loadDashboard() {
     const dashboard = await apiRequest('/dashboard');
+    if (dashboard.role_id !== 3) {
+        await renderStaffDashboard(dashboard);
+        setView(true);
+        return;
+    }
+
     document.querySelector('#patient-name').textContent = dashboard.patient.name;
+    document.querySelector('#account-eyebrow').textContent = 'Mi cuenta';
+    document.querySelectorAll('#dashboard-view > .panel, #dashboard-view > #appointment-summary').forEach((section) => {
+        section.hidden = section.id === 'staff-dashboard';
+    });
     renderPatientProfile(dashboard.patient);
     renderAppointmentSummary(dashboard.appointment_counts);
     fillSelect(serviceSelect, dashboard.services, 'Selecciona un servicio', 'id', 'name');
@@ -580,6 +689,7 @@ loginForm.addEventListener('submit', async (event) => {
         }
     } catch (error) {
         token = null;
+        localStorage.removeItem('dentissa_remembered_token');
         setView(false);
         showNotice(error.message);
     } finally {

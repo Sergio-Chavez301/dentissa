@@ -22,9 +22,7 @@ class CitaController extends Controller
         $user = Auth::user();
 
         if ($user && $user->role_id == 3) {
-            $paciente = Patient::where('user_id', $user->id)
-                               ->orWhere('email', $user->email)
-                               ->first();
+            $paciente = Patient::forUser($user);
 
             $citas = $paciente 
                 ? Cita::with(['paciente', 'servicio'])
@@ -296,9 +294,7 @@ class CitaController extends Controller
             return null;
         }
 
-        return Patient::where('user_id', $user->id)
-            ->orWhere('email', $user->email)
-            ->first();
+        return Patient::forUser($user);
     }
 
     public function show(string $id)
