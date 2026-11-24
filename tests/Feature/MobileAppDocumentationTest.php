@@ -30,8 +30,10 @@ class MobileAppDocumentationTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Guía de la app móvil');
-        $response->assertSee('Abrir sistema web');
-        $response->assertSee('FIREBASE_SERVICE_ACCOUNT_JSON');
+        $response->assertSee('Presentación para la doctora');
+        $response->assertSee('/img/diagramas/arquitectura-dentissa.svg');
+        $response->assertSee('no registra el dispositivo Android');
+        $response->assertDontSee('FIREBASE_SERVICE_ACCOUNT_JSON');
     }
 
     public function test_non_administrator_cannot_view_the_mobile_app_guide(): void

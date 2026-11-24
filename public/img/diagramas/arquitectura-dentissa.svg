@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="470" viewBox="0 0 1100 470" role="img" aria-labelledby="title description">
+  <title id="title">Arquitectura de Dentissa</title>
+  <desc id="description">La web y la aplicación Android se conectan por internet al mismo sistema Laravel, que aplica permisos y consulta la base de datos.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#806b75"/>
+    </marker>
+    <style>
+      text{font-family:Arial,sans-serif;fill:#34212d}
+      .title{font-size:28px;font-weight:700}
+      .label{font-size:20px;font-weight:700}
+      .small{font-size:16px;fill:#68545f}
+      .system-title{font-size:20px;font-weight:700;fill:#fff}
+      .system-small{font-size:16px;fill:#fff}
+      .box{stroke:#eadde2;stroke-width:2}
+    </style>
+  </defs>
+  <rect width="1100" height="470" rx="24" fill="#fff9fb"/>
+  <text x="550" y="52" text-anchor="middle" class="title">Un solo sistema, dos formas de acceso</text>
+
+  <rect x="45" y="112" width="270" height="124" rx="18" fill="#fff" class="box"/>
+  <text x="180" y="153" text-anchor="middle" class="label">Web pública</text>
+  <text x="180" y="184" text-anchor="middle" class="small">Información y solicitudes</text>
+  <text x="180" y="209" text-anchor="middle" class="small">para cualquier visitante</text>
+
+  <rect x="45" y="270" width="270" height="124" rx="18" fill="#fff" class="box"/>
+  <text x="180" y="311" text-anchor="middle" class="label">App Dentissa</text>
+  <text x="180" y="342" text-anchor="middle" class="small">Acceso a paneles por rol</text>
+  <text x="180" y="367" text-anchor="middle" class="small">Requiere internet</text>
+
+  <path d="M315 174h103v69h63" fill="none" stroke="#806b75" stroke-width="3" marker-end="url(#arrow)"/>
+  <path d="M315 332h103v-69h63" fill="none" stroke="#806b75" stroke-width="3" marker-end="url(#arrow)"/>
+  <text x="377" y="158" text-anchor="middle" class="small">HTTPS</text>
+
+  <rect x="493" y="145" width="300" height="236" rx="22" fill="#d75078"/>
+  <text x="643" y="193" text-anchor="middle" class="system-title">Sistema Dentissa</text>
+  <text x="643" y="235" text-anchor="middle" class="system-small">Laravel + vistas web</text>
+  <text x="643" y="270" text-anchor="middle" class="system-small">Inicio de sesión y roles</text>
+  <text x="643" y="305" text-anchor="middle" class="system-small">Agenda y disponibilidad</text>
+  <text x="643" y="340" text-anchor="middle" class="system-small">Validación de permisos</text>
+
+  <path d="M793 263h75" fill="none" stroke="#806b75" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="882" y="186" width="176" height="154" rx="18" fill="#fff" class="box"/>
+  <text x="970" y="231" text-anchor="middle" class="label">Base de datos</text>
+  <text x="970" y="265" text-anchor="middle" class="small">Pacientes</text>
+  <text x="970" y="291" text-anchor="middle" class="small">Citas y tratamientos</text>
+  <text x="970" y="317" text-anchor="middle" class="small">Usuarios y servicios</text>
+
+  <text x="550" y="439" text-anchor="middle" class="small">La app no contiene otra web pública ni duplica los datos: consulta el sistema con la sesión del usuario.</text>
+</svg>

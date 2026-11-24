@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="410" viewBox="0 0 1100 410" role="img" aria-labelledby="title description">
+  <title id="title">Flujo de una cita en Dentissa</title>
+  <desc id="description">El paciente elige una fecha y horario, el sistema valida disponibilidad y el equipo confirma o cancela; después se registra el resultado de la atención.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0 0 10 5 0 10z" fill="#806b75"/>
+    </marker>
+    <style>
+      text{font-family:Arial,sans-serif;fill:#34212d}
+      .title{font-size:28px;font-weight:700}
+      .step{font-size:19px;font-weight:700}
+      .body{font-size:16px;fill:#594650}
+    </style>
+  </defs>
+  <rect width="1100" height="410" rx="24" fill="#fff9fb"/>
+  <text x="550" y="52" text-anchor="middle" class="title">De la solicitud a la atención</text>
+
+  <rect x="25" y="132" width="185" height="142" rx="18" fill="#fff" stroke="#eadde2" stroke-width="2"/>
+  <text x="117" y="176" text-anchor="middle" class="step">1. Solicitud</text>
+  <text x="117" y="211" text-anchor="middle" class="body">Paciente elige fecha,</text>
+  <text x="117" y="235" text-anchor="middle" class="body">horario y motivo</text>
+
+  <path d="M210 203h22" stroke="#806b75" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="238" y="132" width="185" height="142" rx="18" fill="#fff" stroke="#eadde2" stroke-width="2"/>
+  <text x="330" y="176" text-anchor="middle" class="step">2. Validación</text>
+  <text x="330" y="211" text-anchor="middle" class="body">Se revisan citas,</text>
+  <text x="330" y="235" text-anchor="middle" class="body">bloqueos y horario</text>
+
+  <path d="M423 203h22" stroke="#806b75" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="451" y="132" width="185" height="142" rx="18" fill="#fff4d8" stroke="#f0dfb6" stroke-width="2"/>
+  <text x="543" y="176" text-anchor="middle" class="step">3. En espera</text>
+  <text x="543" y="211" text-anchor="middle" class="body">El equipo revisa</text>
+  <text x="543" y="235" text-anchor="middle" class="body">la petición</text>
+
+  <path d="M636 203h22" stroke="#806b75" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="664" y="132" width="185" height="142" rx="18" fill="#fff" stroke="#eadde2" stroke-width="2"/>
+  <text x="756" y="176" text-anchor="middle" class="step">4. Respuesta</text>
+  <text x="756" y="211" text-anchor="middle" class="body">Asistente o doctora</text>
+  <text x="756" y="235" text-anchor="middle" class="body">confirma o cancela</text>
+
+  <path d="M849 203h22" stroke="#806b75" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect x="877" y="132" width="198" height="142" rx="18" fill="#eaf3c3" stroke="#d7e56b" stroke-width="2"/>
+  <text x="976" y="176" text-anchor="middle" class="step">5. Atención</text>
+  <text x="976" y="211" text-anchor="middle" class="body">Se registra como</text>
+  <text x="976" y="235" text-anchor="middle" class="body">realizada o inasistencia</text>
+
+  <rect x="145" y="320" width="810" height="54" rx="14" fill="#f6e8ed"/>
+  <text x="550" y="354" text-anchor="middle" class="body">La cita no queda confirmada automáticamente al enviar la solicitud.</text>
+</svg>

@@ -107,5 +107,11 @@
                 {!! $documentation !!}
             </div>
         </article>
+
+        <article class="card border-0 shadow-sm mt-4">
+            <div class="card-body p-3 p-md-5 mobile-guide-content">
+                {!! $presentation !!}
+            </div>
+        </article>
     </div>
 </x-plantilla>

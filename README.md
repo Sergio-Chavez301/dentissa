@@ -49,6 +49,7 @@ La documentación interactiva está en [`documentacion/informacion/`](documentac
 - [Flujos del sistema](documentacion/informacion/flujo-sistema.html)
 - [Referencia técnica, permisos y despliegue](documentacion/informacion/documentacion-sistema.html)
 - [Guía completa de la aplicación Android](docs/android-app.md)
+- [Presentación del sistema para la doctora](docs/presentacion-dentissa.md)
 
 El personal administrador también puede consultar estas guías y sus diagramas desde **Panel de administración > Documentación**. El área administrativa está protegida por autenticación y rol; la guía de Android se encuentra dentro del centro de documentación.
 
