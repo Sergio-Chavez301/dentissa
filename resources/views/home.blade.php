@@ -242,7 +242,7 @@
             <div class="nav-links">
                 <a href="#servicios">Tratamientos</a>
                 <a href="#proceso">Tu primera visita</a>
-                <a href="{{ route('login') }}">Acceso pacientes</a>
+                <a href="{{ route('login') }}">Acceder al sistema</a>
                 <button class="button" type="button" data-open-request>Solicitar cita <span aria-hidden="true">↗</span></button>
             </div>
         </div>

@@ -15,7 +15,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -29,12 +28,18 @@ class MobileController extends Controller
             'password' => ['required', 'string', 'max:255'],
         ]);
 
-        $user = User::where('username', $credentials['username'])
-            ->where('activo', true)
-            ->whereIn('role_id', [1, 2, 3])
-            ->first();
+        $identifier = trim($credentials['username']);
+        $user = User::where('username', $identifier)->first();
+        if (!$user && filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $user = User::where('email', $identifier)->first();
+        }
 
-        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+        if (
+            !$user
+            || !$user->activo
+            || !in_array((int) $user->role_id, [1, 2, 3], true)
+            || !Hash::check($credentials['password'], $user->password)
+        ) {
             return response()->json([
                 'message' => 'Usuario o contraseña incorrectos.',
             ], 401)->header('Cache-Control', 'no-store');
@@ -47,7 +52,6 @@ class MobileController extends Controller
         }
 
         $token = $user->createToken('dentissa-android')->plainTextToken;
-
         return response()->json([
             'token' => $token,
             'user' => [
@@ -57,30 +61,13 @@ class MobileController extends Controller
         ])->header('Cache-Control', 'no-store');
     }
 
-    public function forgotPassword(Request $request): JsonResponse
+    public function supportContact(): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'email', 'max:255'],
-        ]);
-
-        if (app()->environment('production') && config('mail.default') === 'log') {
-            return response()->json([
-                'message' => 'La recuperación por correo no está disponible temporalmente. Contacta al consultorio.',
-            ], 503)->header('Cache-Control', 'no-store');
-        }
-
-        try {
-            Password::sendResetLink(['email' => $validated['email']]);
-        } catch (\Throwable $exception) {
-            report($exception);
-
-            return response()->json([
-                'message' => 'No pudimos enviar el correo en este momento. Inténtalo más tarde.',
-            ], 503)->header('Cache-Control', 'no-store');
-        }
+        $officeSettings = OfficeSetting::current();
 
         return response()->json([
-            'message' => 'Si el correo corresponde a una cuenta activa, recibirás un enlace para restablecer la contraseña.',
+            'whatsapp_digits' => $officeSettings->whatsapp_digits,
+            'clinic_name' => $officeSettings->clinic_name,
         ])->header('Cache-Control', 'no-store');
     }
 

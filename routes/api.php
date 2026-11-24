@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('mobile')->group(function () {
     Route::post('/login', [MobileController::class, 'login'])->middleware('throttle:5,1');
-    Route::post('/forgot-password', [MobileController::class, 'forgotPassword'])->middleware('throttle:3,1');
+    Route::get('/support-contact', [MobileController::class, 'supportContact'])->middleware('throttle:20,1');
 
     Route::middleware(['auth:sanctum', EnsureActiveMobilePatient::class, 'throttle:60,1'])->group(function () {
         Route::post('/logout', [MobileController::class, 'logout']);

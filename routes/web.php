@@ -18,37 +18,41 @@ use App\Http\Controllers\MobileAppDocumentationController;
 use App\Http\Controllers\AdminDocumentationController;
 
 // --- VISTAS PÚBLICAS ---
-Route::get('/', function () {
-    return view('home', [
-        'ofertas' => \App\Models\Oferta::where('activo', true)
-            ->orderBy('orden')
-            ->orderBy('id')
-            ->get(),
-            'officeSettings' => \App\Models\OfficeSetting::current(),
-    ]);
-})->name('home');
-Route::get('/acerca-de', function(){
-    return view('acerca-de');
-})->name('acerca-de');
-Route::get('/ofertas', [OfertaController::class, 'publicIndex'])->name('ofertas.public');
-// Ruta pública para que el prospecto envíe su solicitud de cita
-Route::post('/solicitud-cita', [SolicitudController::class, 'storePublic'])->name('solicitud.storePublic');
-Route::post('/api/chatbot', [ChatbotController::class, 'respond'])
-    ->middleware('throttle:20,1')
-    ->name('api.chatbot');
-
-// Disponibilidad de citas (Pública para que cargue dinámicamente en el modal)
-Route::get('/api/disponibilidad', [CitaController::class, 'verificarDisponibilidad'])->name('api.disponibilidad');
-
+Route::middleware('mobile-app-roles-only')->group(function () {
+    Route::get('/', function () {
+        return view('home', [
+            'ofertas' => \App\Models\Oferta::where('activo', true)
+                ->orderBy('orden')
+                ->orderBy('id')
+                ->get(),
+                'officeSettings' => \App\Models\OfficeSetting::current(),
+        ]);
+    })->name('home');
+    Route::get('/acerca-de', function(){
+        return view('acerca-de');
+    })->name('acerca-de');
+    Route::get('/ofertas', [OfertaController::class, 'publicIndex'])->name('ofertas.public');
+    Route::post('/solicitud-cita', [SolicitudController::class, 'storePublic'])->name('solicitud.storePublic');
+    Route::post('/api/chatbot', [ChatbotController::class, 'respond'])
+        ->middleware('throttle:20,1')
+        ->name('api.chatbot');
+    Route::get('/api/disponibilidad', [CitaController::class, 'verificarDisponibilidad'])->name('api.disponibilidad');
+});
 // --- AUTENTICACIÓN (Solo Invitados) ---
 Route::middleware('guest')->group(function () {
-    Route::get('/login', function () {
-        return view('auth.login');
+    Route::get('/login', function (\Illuminate\Http\Request $request) {
+        if ($request->boolean('mobile')) {
+            $request->session()->put('mobile_app_mode', true);
+        }
+
+        return view('auth.login', [
+            'officeSettings' => \App\Models\OfficeSetting::current(),
+        ]);
     })->name('login');
 
     Route::get('/register', function () {
         return view('auth.register');
-    })->name('register');
+    })->middleware('mobile-app-roles-only')->name('register');
 
     Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 

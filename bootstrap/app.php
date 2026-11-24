@@ -9,6 +9,7 @@ use App\Http\Middleware\EnsureClinicUser;
 use App\Http\Middleware\EnsurePatient;
 use App\Http\Middleware\EnsureStaff;
 use App\Http\Middleware\UserOnlineStatus;
+use App\Http\Middleware\RedirectMobileAppToRole;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'clinic-user' => EnsureClinicUser::class,
             'staff' => EnsureStaff::class,
             'patient' => EnsurePatient::class,
+            'mobile-app-roles-only' => RedirectMobileAppToRole::class,
         ]);
 
         // Middleware que se ejecuta automáticamente en todas las rutas web

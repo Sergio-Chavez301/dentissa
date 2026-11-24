@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,9 @@ class AuthController extends Controller
 {
     public function showForgotPasswordForm()
     {
-        return view('auth.forgot-password');
+        return view('auth.forgot-password', [
+            'officeSettings' => \App\Models\OfficeSetting::current(),
+        ]);
     }
 
     public function sendResetLinkEmail(Request $request)
@@ -85,7 +88,14 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password'], 'activo' => 1], $request->filled('remember'))) {
+        $identifier = trim($credentials['username']);
+        $user = User::where('username', $identifier)->first();
+        if (!$user && filter_var($identifier, FILTER_VALIDATE_EMAIL)) {
+            $user = User::where('email', $identifier)->first();
+        }
+
+        if ($user && $user->activo && Hash::check($credentials['password'], $user->password)) {
+            Auth::login($user, $request->filled('remember'));
             
             $request->session()->regenerate();
 
@@ -113,6 +123,8 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        $mobileAppMode = (bool) $request->session()->get('mobile_app_mode', false);
+
         if (Auth::check()) {
             Cache::forget('user-is-online-' . Auth::id());
         }
@@ -120,6 +132,10 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if ($mobileAppMode) {
+            return redirect()->route('login', ['mobile' => 1]);
+        }
 
         return redirect()->route('home');
     }

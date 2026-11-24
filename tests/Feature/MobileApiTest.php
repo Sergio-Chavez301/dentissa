@@ -107,6 +107,29 @@ class MobileApiTest extends TestCase
         }
     }
 
+    public function test_mobile_support_contact_returns_the_clinic_whatsapp_number(): void
+    {
+        OfficeSetting::current()->update([
+            'whatsapp_phone' => '+52 55 1234 5678',
+        ]);
+
+        $this->getJson('/api/mobile/support-contact')
+            ->assertOk()
+            ->assertJsonPath('whatsapp_digits', '525512345678');
+    }
+
+    public function test_mobile_login_accepts_email_as_the_account_identifier(): void
+    {
+        $user = $this->createUser('staff', 'staff@example.com', roleId: 1);
+
+        $this->postJson('/api/mobile/login', [
+            'username' => $user->email,
+            'password' => 'password123',
+        ])->assertOk()
+            ->assertJsonPath('user.name', 'Ana Paciente')
+            ->assertJsonPath('user.role_id', 1);
+    }
+
     public function test_login_rejects_disabled_and_unlinked_patient_accounts(): void
     {
         $this->createPatient('disabled', 'disabled@example.com', active: false);

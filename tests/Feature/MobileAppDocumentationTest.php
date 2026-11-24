@@ -30,6 +30,7 @@ class MobileAppDocumentationTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Guía de la app móvil');
+        $response->assertSee('Abrir sistema web');
         $response->assertSee('FIREBASE_SERVICE_ACCOUNT_JSON');
     }
 

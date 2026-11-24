@@ -20,28 +20,21 @@
 <body class="min-h-screen bg-gray-50 flex items-center justify-center px-4">
     <div class="max-w-md w-full bg-white rounded-2xl shadow-sm border p-8">
         <h1 class="text-2xl font-bold mb-2">Recuperar contraseña</h1>
-        <p class="text-sm text-gray-600 mb-6">Ingresa tu correo. Si corresponde a una cuenta activa, recibirás un enlace para restablecerla.</p>
+        <p class="text-sm text-gray-600 mb-6">Para recuperar el acceso a tu cuenta, contacta directamente a la doctora por WhatsApp.</p>
 
-        @if (session('status'))
-            <div class="mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700">
-                {{ session('status') }}
-            </div>
+        @if($officeSettings->whatsapp_digits)
+            @php
+                $supportMessage = rawurlencode('Hola, necesito ayuda para recuperar el acceso a mi cuenta de Dentissa.');
+            @endphp
+            <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $supportMessage }}"
+               class="block w-full rounded-lg bg-dentissa hover:bg-[#c0466b] transition-colors px-4 py-3 text-center text-sm font-medium text-white shadow-sm">
+                Contactar por WhatsApp
+            </a>
+        @else
+            <p class="rounded-lg bg-amber-50 p-3 text-sm text-amber-800">El WhatsApp del consultorio aún no está configurado. Contacta directamente a la clínica.</p>
         @endif
 
-        <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
-            @csrf
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700">Correo electrónico</label>
-                <input id="email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-dentissa">
-            </div>
-            @error('email')
-                <p class="text-sm text-red-600">{{ $message }}</p>
-            @enderror
-
-            <button type="submit" class="w-full rounded-lg bg-dentissa hover:bg-[#c0466b] transition-colors px-4 py-2 text-sm font-medium text-white shadow-sm">Enviar enlace</button>
-        </form>
-
-        <a href="{{ route('login') }}" class="mt-4 inline-block text-sm text-dentissa hover:underline">Volver al inicio de sesión</a>
+        <a href="{{ route('login', request()->boolean('mobile') ? ['mobile' => 1] : []) }}" class="mt-4 inline-block text-sm text-dentissa hover:underline">Volver al inicio de sesión</a>
     </div>
 </body>
 </html>

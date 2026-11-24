@@ -2,7 +2,7 @@
 <html lang="es" class="h-full bg-gray-50">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Iniciar Sesión | Melissa López N.</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -17,11 +17,13 @@
     <div class="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-150">
         
         <div class="relative flex items-center justify-center mb-6">
-            <a href="/" class="absolute left-0 text-gray-400 hover:text-dentissa transition-colors" title="Regresar al inicio">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-            </a>
+            @unless(session('mobile_app_mode'))
+                <a href="/" class="absolute left-0 text-gray-400 hover:text-dentissa transition-colors" title="Regresar al inicio">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                </a>
+            @endunless
 
             <div class="text-center flex flex-col items-center">
                 <img src="{{ asset('img/logo.png') }}" alt="Logo Melissa López" class="mb-2" style="width: 180px; height: 75px; object-fit: contain; object-position: center;">
@@ -34,21 +36,25 @@
             </div>
         </div>
 
-        <form class="mt-8 space-y-6" action="{{ route('login.post') }}" method="POST">
+        <form class="mt-8 space-y-6" action="{{ route('login.post', request()->boolean('mobile') ? ['mobile' => 1] : []) }}" method="POST">
             @csrf
 
             <div class="space-y-4">
                 <div>
                     <label for="username" class="block text-sm font-medium text-gray-700">
-                        Nombre de Usuario
+                        Usuario o correo electrónico
                     </label>
                     <div class="mt-1">
                         <input id="username" 
                                name="username" 
                                type="text" 
+                               inputmode="text"
+                               autocomplete="username"
+                               autocapitalize="none"
+                               spellcheck="false"
                                required 
                                value="{{ old('username') }}" 
-                               placeholder="Ej. sergiochavez"
+                               placeholder="Ej. sergiochavez o correo@ejemplo.com"
                                class="appearance-none block w-full px-3 py-2 border {{ $errors->has('username') ? 'border-red-300 placeholder-red-300 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 placeholder-gray-400 focus:ring-[#d75078] focus:border-[#d75078]' }} rounded-lg shadow-sm focus:outline-none sm:text-sm">
                     </div>
                     @error('username')
@@ -64,6 +70,8 @@
                         <input id="password" 
                                name="password" 
                                type="password" 
+                               autocomplete="current-password"
+                               autocapitalize="none"
                                required 
                                placeholder="••••••••"
                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-[#d75078] focus:border-[#d75078] sm:text-sm">
@@ -97,9 +105,20 @@
             @endif
 
             <div class="text-sm text-center">
-                <a href="{{ route('password.request') }}" class="font-medium text-dentissa hover:text-[#c24066]">
-                    ¿Olvidaste tu contraseña?
-                </a>
+                @if($officeSettings->whatsapp_digits)
+                    @php
+                        $supportMessage = rawurlencode('Hola, necesito ayuda para recuperar el acceso a mi cuenta de Dentissa.');
+                    @endphp
+                    <a href="https://wa.me/{{ $officeSettings->whatsapp_digits }}?text={{ $supportMessage }}"
+                       target="_blank" rel="noopener noreferrer"
+                       class="font-medium text-dentissa hover:text-[#c24066]">
+                        ¿Olvidaste tu contraseña? Contacta a la doctora por WhatsApp
+                    </a>
+                @else
+                    <span class="font-medium text-dentissa">
+                        ¿Olvidaste tu contraseña? Contacta directamente al consultorio.
+                    </span>
+                @endif
             </div>
         </form>
         

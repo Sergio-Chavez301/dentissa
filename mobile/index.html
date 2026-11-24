@@ -6,7 +6,6 @@
     <meta name="theme-color" content="#d75078">
     <title>Dentissa</title>
     <link rel="stylesheet" href="./styles.css">
-    <script type="module" src="./app.js"></script>
 </head>
 <body>
     <main class="page">
@@ -21,85 +20,8 @@
         <p id="notice" class="notice" role="status" hidden></p>
 
         <section id="login-view" class="panel">
-            <h2>Iniciar sesión</h2>
-            <p class="muted">Ingresa con tu usuario de administrador, asistente o paciente.</p>
-            <form id="login-form" class="form">
-                <label for="username">Usuario</label>
-                <input id="username" name="username" autocomplete="username" required>
-                <label for="password">Contraseña</label>
-                <input id="password" name="password" type="password" autocomplete="current-password" required>
-                <label class="remember-option"><input id="remember-device" name="remember_device" type="checkbox"> Mantener mi sesión en este dispositivo</label>
-                <button class="button" type="submit">Entrar</button>
-                <button id="forgot-password-button" class="text-button" type="button">¿Olvidaste tu contraseña?</button>
-            </form>
-
-            <form id="forgot-password-form" class="form forgot-password-form" hidden>
-                <h3>Recuperar contraseña</h3>
-                <p class="muted">Escribe el correo asociado a tu cuenta.</p>
-                <label for="forgot-email">Correo electrónico</label>
-                <input id="forgot-email" name="email" type="email" autocomplete="email" required>
-                <button id="forgot-submit" class="button" type="submit">Enviar enlace de recuperación</button>
-                <button id="forgot-back-button" class="text-button" type="button">Volver a iniciar sesión</button>
-            </form>
-        </section>
-
-        <section id="dashboard-view" hidden>
-            <div class="welcome">
-                <div>
-                    <p id="account-eyebrow" class="eyebrow">Mi cuenta</p>
-                    <h2 id="patient-name"></h2>
-                </div>
-                <button id="logout-button" class="button button-secondary" type="button">Salir</button>
-            </div>
-
-            <section class="panel">
-                <h2>Perfil personal</h2>
-                <dl id="patient-profile" class="profile-grid"></dl>
-            </section>
-
-            <section id="appointment-summary" class="summary-grid" aria-label="Resumen de citas"></section>
-
-            <section class="panel">
-                <h2>Solicitar una cita</h2>
-                <p class="muted">El consultorio revisará la solicitud y te confirmará el horario.</p>
-                <form id="appointment-form" class="form">
-                    <label for="service">Servicio</label>
-                    <select id="service" name="service_id" required></select>
-                    <label for="date">Fecha</label>
-                    <input id="date" name="date" type="date" required>
-                    <label for="time">Horario disponible</label>
-                    <select id="time" name="time" required disabled>
-                        <option value="">Selecciona primero una fecha</option>
-                    </select>
-                    <button class="button" type="submit">Enviar solicitud</button>
-                </form>
-            </section>
-
-            <section class="panel">
-                <h2>Mis citas</h2>
-                <div id="appointments" class="appointments"></div>
-            </section>
-
-            <section class="panel">
-                <h2>Mis tratamientos</h2>
-                <div id="treatments" class="treatments"></div>
-            </section>
-
-            <section id="staff-dashboard" class="panel" hidden>
-                <h2 id="staff-title">Panel del personal</h2>
-                <dl id="staff-profile" class="profile-grid"></dl>
-                <div id="staff-summary" class="summary-grid"></div>
-                <h3>Citas de hoy</h3>
-                <div id="staff-appointments" class="appointments"></div>
-                <h3>Pacientes recientes</h3>
-                <div id="staff-patients" class="appointments"></div>
-            </section>
-
-            <section class="panel">
-                <h2>Ofertas activas</h2>
-                <div id="offers" class="offers"></div>
-                <div id="office-location" class="office-location"></div>
-            </section>
+            <h2>Conectando con Dentissa</h2>
+            <p class="muted">La aplicación necesita internet para cargar el portal seguro de la clínica.</p>
         </section>
     </main>
 </body>

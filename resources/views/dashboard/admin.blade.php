@@ -130,9 +130,9 @@
                     <a href="{{ route('casos.create')}}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
                         <i class="bi bi-clipboard-plus me-2"></i>Nuevo Tratamiento
                     </a>
-                    <a href="{{ route('admin.documentation.index') }}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
+                    <!-- <a href="{{ route('admin.documentation.index') }}" class="btn btn-outline-secondary py-2.5 btn-rosa-hover">
                         <i class="bi bi-journal-richtext me-2"></i>Documentación del sistema
-                    </a>
+                    </a> -->
                 </div>
             </div>
 

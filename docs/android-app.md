@@ -1,28 +1,26 @@
 # Guía completa de la aplicación Android de Dentissa
 
-Esta guía describe cómo preparar, compilar, instalar, configurar las notificaciones y distribuir la aplicación móvil de pacientes de Dentissa. Está dirigida al equipo que administra la aplicación Laravel y al personal que genera los APK.
+Esta guía describe cómo preparar, compilar, instalar y distribuir la aplicación móvil de Dentissa para pacientes y personal de la clínica. Está dirigida al equipo que administra la aplicación Laravel y al personal que genera los APK.
 
-> **Estado importante:** la app Android consulta los datos del sistema web por internet. Compilar el APK no activa por sí solo las notificaciones: también se necesitan las credenciales privadas de Firebase, las migraciones desplegadas y el Scheduler activo en Laravel Cloud.
+> **Estado importante:** la app abre el portal Laravel publicado dentro de Android. Se requiere internet y el sitio debe estar desplegado; las vistas no se copian al APK.
 
 ## 1. Qué hace la aplicación y qué necesita
 
-La app está construida con una interfaz web empaquetada localmente mediante Capacitor. El APK contiene la interfaz, el plugin nativo de notificaciones y la dirección HTTPS del backend que se utilizó al compilarlo.
+La app carga directamente el portal HTTPS de Dentissa dentro de la pantalla principal del WebView de Android. Usa las vistas Blade, las rutas web y la sesión normal de Laravel; no hace una redirección desde la API móvil. Por eso cada rol ve su propio panel y funciones, tal como en el sitio web.
 
-Los datos del paciente y las citas se consultan en Laravel; no se guardan como expediente clínico local ni se pueden consultar sin internet. Si el paciente activa **Recordar este dispositivo**, el token Sanctum se conserva de forma local para abrir el panel sin volver a escribir las credenciales; al cerrar sesión se elimina. Sin esa opción, la sesión es temporal.
+Se necesita conexión a internet. Los usuarios inician sesión una vez con sus credenciales web; la cookie de sesión de Laravel se conserva en el WebView y cerrar sesión desde el portal cierra esa sesión.
 
-La app incluye:
+La app ofrece las mismas funciones y plantillas del portal web según cada rol:
 
-- Inicio de sesión para cuentas de pacientes activas y opción **Mantener mi sesión en este dispositivo**; está desactivada por defecto y elimina el token al cerrar sesión.
-- Perfil del paciente, resumen de citas, citas próximas e historial de tratamientos.
-- Visualización y cancelación de citas pendientes o confirmadas.
-- Solicitud de citas generales con servicios, fechas y horarios disponibles.
-- Solicitud y cancelación de citas asociadas a cada tratamiento activo.
-- Ofertas activas con un botón **Solicitar más información** que abre WhatsApp y mapa del consultorio con dirección y enlace **Cómo llegar**.
-- Recuperación de contraseña desde **¿Olvidaste tu contraseña?** dentro de la app. La app solicita al backend enviar el enlace por correo; el restablecimiento se realiza desde el enlace web y requiere que el servidor tenga correo configurado.
-- Notificaciones push de confirmaciones y cancelaciones de citas.
-- Recordatorio push cuando una cita confirmada entra en la ventana aproximada de 24 horas. Se marca si FCM acepta al menos un envío (esto no confirma que Android lo haya mostrado); al reprogramar o volver a confirmar la cita se reinicia la marca.
+- Administración de la clínica, agenda y pacientes para administradora y asistente, respetando los permisos definidos en el servidor.
+- Perfil, citas e información clínica propia para pacientes.
+- En el acceso, **¿Olvidaste tu contraseña?** abre WhatsApp con el número del consultorio cuando está configurado.
 
-La confirmación de una solicitud de cita sigue siendo responsabilidad del consultorio y se realiza desde el sistema web.
+La app no guarda expedientes en el dispositivo y necesita internet para mostrar o actualizar información.
+
+Esta versión usa la sesión web de Laravel dentro del WebView. El registro nativo de dispositivos push de la app anterior no forma parte de este flujo; las notificaciones push deben validarse por separado antes de ofrecerlas en esta modalidad.
+
+> Las secciones de Firebase y notificaciones más abajo documentan la integración nativa anterior. No configures Firebase esperando activar notificaciones en esta versión de la app; el portal directo aún no registra el dispositivo.
 
 ## 2. Requisitos
 
@@ -30,7 +28,7 @@ Antes de generar un APK, prepara:
 
 - El código fuente actualizado de Dentissa.
 - Node.js y npm, para compilar la interfaz móvil.
-- Android Studio, Android SDK y las herramientas de compilación Android.
+- Android Studio, Android SDK 26 o posterior y JDK 21 para las herramientas de compilación Android.
 - Un dispositivo Android para instalar y probar el APK.
 - Una URL pública HTTPS del backend. Para producción de Dentissa se usa:
 
@@ -38,7 +36,6 @@ Antes de generar un APK, prepara:
   https://dentissa-production-5p0ftp.laravel.cloud
   ```
 
-- Para activar notificaciones: un proyecto Firebase, el archivo Android `google-services.json` y credenciales privadas de una cuenta de servicio en Laravel Cloud.
 
 No uses URLs locales como `http://127.0.0.1:8000` en una compilación destinada a pacientes: en el teléfono apuntarían al propio teléfono, no al servidor.
 
@@ -49,7 +46,7 @@ No uses URLs locales como `http://127.0.0.1:8000` en una compilación destinada 
 Desde la raíz del repositorio, ejecuta:
 
 ```sh
-DENTISSA_API_URL=https://dentissa-production-5p0ftp.laravel.cloud npm run android:sync
+DENTISSA_APP_URL=https://dentissa-production-5p0ftp.laravel.cloud npm run android:sync
 ```
 
 El comando:
@@ -57,10 +54,10 @@ El comando:
 1. Valida que la dirección use HTTPS.
 2. Construye los recursos de la app móvil con Vite.
 3. Genera `mobile/config.json` con la URL del backend.
-4. Copia los recursos al proyecto nativo Android.
-5. sincroniza los plugins de Capacitor, incluido Push Notifications.
+4. Genera recursos locales de respaldo.
+5. Configura la URL del portal como la pantalla inicial del WebView y sincroniza Capacitor.
 
-`mobile/config.json` es un archivo generado y no se debe subir a Git. Si se cambia de servidor o dominio, vuelve a ejecutar el comando antes de generar otro APK.
+`mobile/config.json` es un archivo generado y no se debe subir a Git. Si se cambia de servidor o dominio, vuelve a ejecutar el comando antes de generar otro APK. La app requiere Android 8 (API 26) o posterior.
 
 ### 3.2 Abrir Android Studio y sincronizar
 

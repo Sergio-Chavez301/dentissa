@@ -1,10 +1,10 @@
 import { writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
-const configuredUrl = process.env.DENTISSA_API_URL;
+const configuredUrl = process.env.DENTISSA_APP_URL || process.env.DENTISSA_API_URL;
 
 if (!configuredUrl) {
-    throw new Error('Define DENTISSA_API_URL con la URL HTTPS pública de Laravel.');
+    throw new Error('Define DENTISSA_APP_URL con la URL HTTPS pública del portal Dentissa.');
 }
 
 let apiUrl;
@@ -16,11 +16,11 @@ try {
 }
 
 if (apiUrl.protocol !== 'https:' || apiUrl.username || apiUrl.password || apiUrl.search || apiUrl.hash) {
-    throw new Error('DENTISSA_API_URL debe ser HTTPS y no incluir credenciales, parámetros ni fragmentos.');
+    throw new Error('DENTISSA_APP_URL debe ser HTTPS y no incluir credenciales, parámetros ni fragmentos.');
 }
 
 const config = {
-    apiBaseUrl: apiUrl.toString().replace(/\/+$/, ''),
+    portalUrl: apiUrl.toString().replace(/\/+$/, ''),
 };
 
 await writeFile(
@@ -29,4 +29,4 @@ await writeFile(
     'utf8',
 );
 
-console.log(`API móvil configurada para ${config.apiBaseUrl}`);
+console.log(`Portal Dentissa configurado para ${config.portalUrl}`);
