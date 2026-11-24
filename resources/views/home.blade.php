@@ -126,7 +126,7 @@
         .form-actions .button-outline { min-height: 46px; }
         .chat-launcher { position: fixed; right: 24px; bottom: 24px; z-index: 20; min-height: 54px; padding: 0 20px; border: 0; border-radius: 999px; color: var(--white); background: var(--rose); box-shadow: 0 8px 26px #102b2933; font-weight: 700; cursor: pointer; }
         .chat-launcher:hover { background: var(--rose-dark); }
-        .whatsapp-bubble { position: fixed; left: 24px; bottom: 24px; z-index: 20; min-height: 58px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 18px; border: 0; border-radius: 999px; color: #fff; background: #25d366; box-shadow: 0 8px 26px #102b2933; font-size: 14px; font-weight: 700; text-decoration: none; transition: transform .2s ease, background .2s ease; }
+        .whatsapp-bubble { position: fixed; right: 24px; bottom: 94px; z-index: 20; min-height: 58px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 18px; border: 0; border-radius: 999px; color: #fff; background: #25d366; box-shadow: 0 8px 26px #102b2933; font-size: 14px; font-weight: 700; text-decoration: none; transition: transform .2s ease, background .2s ease; }
         .whatsapp-bubble:hover { color: #fff; background: #1ebe5d; transform: translateY(-2px); }
         .whatsapp-bubble svg { width: 27px; height: 27px; flex: 0 0 auto; fill: currentColor; }
         .chat-panel { position: fixed; right: 24px; bottom: 90px; z-index: 20; width: min(380px, calc(100vw - 32px)); max-height: min(570px, calc(100vh - 120px)); display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 10px; background: var(--white); box-shadow: 0 18px 55px #102b2933; overflow: hidden; }
@@ -218,7 +218,7 @@
             .form-actions .button { width: 100%; }
             .chat-launcher { right: 16px; bottom: 16px; min-height: 50px; }
             .chat-panel { right: 16px; bottom: 78px; }
-            .whatsapp-bubble { left: 16px; bottom: 16px; min-height: 54px; padding: 0 15px; font-size: 13px; }
+            .whatsapp-bubble { right: 16px; bottom: 84px; min-height: 54px; padding: 0 15px; font-size: 13px; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
