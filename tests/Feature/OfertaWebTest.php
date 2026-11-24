@@ -42,7 +42,19 @@ class OfertaWebTest extends TestCase
         $response->assertSee('Limpieza + valoración');
         $response->assertSee('Solicitar más información');
         $response->assertSee('https://wa.me/525512345678?text=', false);
+        $informationMessage = rawurlencode('Hola, quisiera solicitar información sobre los servicios de Consultorio Dentissa.');
+        $response->assertSee('https://wa.me/525512345678?text=' . $informationMessage, false);
+        $response->assertSee('aria-label="Solicitar información por WhatsApp"', false);
         $response->assertSee('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?');
+    }
+
+    public function test_home_page_hides_whatsapp_bubble_when_clinic_number_is_not_configured(): void
+    {
+        OfficeSetting::query()->whereKey(1)->update(['whatsapp_phone' => null]);
+
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertDontSee('class="whatsapp-bubble"', false);
     }
 
     public function test_offer_page_is_public_and_links_each_offer_to_whatsapp(): void
