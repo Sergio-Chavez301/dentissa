@@ -25,7 +25,7 @@
                     <div class="fw-semibold">{{ $caso->paciente->nombre }} {{ $caso->paciente->apellidos }}</div>
                     <div class="text-muted small mt-2">La cita quedará registrada únicamente en el caso “{{ $caso->tratamiento_base }}”.</div>
                 </div>
-            @else
+            @elseif(!isset($patientRequest))
             <div class="mb-3">
                 <div class="form-check form-switch mb-2">
                     <input class="form-check-input" type="checkbox" name="nuevo_paciente" id="checkNuevo" onchange="togglePaciente(this)">

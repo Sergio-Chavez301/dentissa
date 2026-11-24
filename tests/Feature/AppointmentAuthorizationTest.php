@@ -44,6 +44,27 @@ class AppointmentAuthorizationTest extends TestCase
         $this->get(route('admin.documentation.index'))->assertForbidden()->assertSee('Acceso denegado');
     }
 
+    public function test_patient_can_open_the_general_appointment_request_form(): void
+    {
+        $user = $this->patientUser();
+        Patient::create([
+            'user_id' => $user->id,
+            'nombre' => 'Alex',
+            'apellidos' => 'Demo',
+            'telefono' => '5551234567',
+            'email' => $user->email,
+            'fecha_nacimiento' => '1990-01-01',
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('citas.patient.create'))
+            ->assertOk()
+            ->assertSee('Agendar Nueva Cita')
+            ->assertSee('Seleccione un servicio...')
+            ->assertDontSee('Registrar nuevo paciente para esta cita')
+            ->assertDontSee('Paciente Existente');
+    }
+
     public function test_assistant_cannot_access_administrator_only_routes(): void
     {
         $role = Role::create([
