@@ -139,6 +139,13 @@ class DashboardTest extends TestCase
         $response->assertSee(route('ofertas.public'));
         $response->assertSee('Descargar app Android');
         $response->assertSee('https://downloads.example.com/dentissa.apk');
+
+        $mobileResponse = $this->withSession(['mobile_app_mode' => true])
+            ->get(route('dashboard.paciente'));
+
+        $mobileResponse->assertOk();
+        $mobileResponse->assertDontSee('Descargar app Android');
+        $mobileResponse->assertDontSee('https://downloads.example.com/dentissa.apk');
     }
 
     public function test_paciente_without_linked_profile_sees_guidance_instead_of_error(): void
