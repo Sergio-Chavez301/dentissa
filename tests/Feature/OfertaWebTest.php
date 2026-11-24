@@ -45,6 +45,7 @@ class OfertaWebTest extends TestCase
         $informationMessage = rawurlencode('Hola, quisiera solicitar información sobre los servicios de Consultorio Dentissa.');
         $response->assertSee('https://wa.me/525512345678?text=' . $informationMessage, false);
         $response->assertSee('aria-label="Solicitar información por WhatsApp"', false);
+        $response->assertSee('<span>Solicitar información</span>', false);
         $response->assertSee('Se abrirá WhatsApp para solicitar más información sobre esta oferta. ¿Deseas continuar?');
     }
 
