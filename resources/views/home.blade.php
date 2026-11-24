@@ -126,10 +126,9 @@
         .form-actions .button-outline { min-height: 46px; }
         .chat-launcher { position: fixed; right: 24px; bottom: 24px; z-index: 20; min-height: 54px; padding: 0 20px; border: 0; border-radius: 999px; color: var(--white); background: var(--rose); box-shadow: 0 8px 26px #102b2933; font-weight: 700; cursor: pointer; }
         .chat-launcher:hover { background: var(--rose-dark); }
-        .whatsapp-bubble { min-height: 58px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 18px; border: 0; border-radius: 999px; color: #fff; background: #25d366; box-shadow: 0 8px 26px #102b2933; font-size: 14px; font-weight: 700; text-decoration: none; transition: transform .2s ease, background .2s ease; }
+        .whatsapp-bubble { position: fixed; left: 24px; bottom: 24px; z-index: 20; min-height: 58px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 0 18px; border: 0; border-radius: 999px; color: #fff; background: #25d366; box-shadow: 0 8px 26px #102b2933; font-size: 14px; font-weight: 700; text-decoration: none; transition: transform .2s ease, background .2s ease; }
         .whatsapp-bubble:hover { color: #fff; background: #1ebe5d; transform: translateY(-2px); }
         .whatsapp-bubble svg { width: 27px; height: 27px; flex: 0 0 auto; fill: currentColor; }
-        .location-whatsapp { width: min(1180px, calc(100% - 48px)); display: flex; justify-content: flex-end; margin: 20px auto 24px; }
         .chat-panel { position: fixed; right: 24px; bottom: 90px; z-index: 20; width: min(380px, calc(100vw - 32px)); max-height: min(570px, calc(100vh - 120px)); display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: 10px; background: var(--white); box-shadow: 0 18px 55px #102b2933; overflow: hidden; }
         .chat-panel[hidden] { display: none; }
         .chat-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; color: var(--white); background: var(--ink); }
@@ -219,8 +218,7 @@
             .form-actions .button { width: 100%; }
             .chat-launcher { right: 16px; bottom: 16px; min-height: 50px; }
             .chat-panel { right: 16px; bottom: 78px; }
-            .location-whatsapp { width: calc(100% - 32px); margin-block: 16px 20px; }
-            .whatsapp-bubble { min-height: 54px; padding: 0 15px; font-size: 13px; }
+            .whatsapp-bubble { left: 16px; bottom: 16px; min-height: 54px; padding: 0 15px; font-size: 13px; }
         }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -469,20 +467,6 @@
                 </iframe>
             @endif
             @if($informationWhatsappUrl)
-                <div class="location-whatsapp">
-                    <a
-                        class="whatsapp-bubble"
-                        href="{{ $informationWhatsappUrl }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label="Solicitar información por WhatsApp"
-                        title="Solicitar información por WhatsApp">
-                        <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
-                            <path d="M16.04 3C8.86 3 3.02 8.82 3.02 15.98c0 2.28.6 4.5 1.74 6.46L3 29l6.75-1.72a13.1 13.1 0 0 0 6.28 1.6h.01c7.18 0 13.02-5.82 13.02-12.98 0-3.47-1.36-6.73-3.82-9.18A12.94 12.94 0 0 0 16.04 3Zm0 23.66c-1.95 0-3.86-.52-5.52-1.5l-.4-.24-4.01 1.02 1.07-3.9-.26-.4a10.77 10.77 0 0 1-1.66-5.66c0-5.94 4.84-10.77 10.79-10.77 2.88 0 5.59 1.12 7.63 3.16a10.69 10.69 0 0 1 3.16 7.62c0 5.94-4.84 10.77-10.8 10.77Zm5.92-8.06c-.32-.16-1.9-.94-2.2-1.05-.3-.1-.51-.16-.73.16-.21.32-.84 1.05-1.03 1.27-.19.21-.38.24-.7.08-.32-.16-1.34-.49-2.55-1.56-.95-.84-1.6-1.88-1.79-2.2-.19-.31-.02-.49.14-.65.14-.14.32-.38.48-.57.16-.19.21-.32.32-.53.1-.22.05-.4-.03-.57-.08-.16-.73-1.75-1-2.4-.26-.63-.53-.54-.73-.55h-.62c-.22 0-.57.08-.87.4-.3.32-1.14 1.11-1.14 2.7 0 1.59 1.17 3.12 1.33 3.33.16.21 2.3 3.51 5.58 4.92.78.34 1.38.54 1.85.69.78.25 1.48.21 2.04.13.62-.1 1.9-.78 2.17-1.54.27-.76.27-1.4.19-1.54-.08-.14-.3-.22-.62-.38Z"/>
-                        </svg>
-                        <span>Solicitar información</span>
-                    </a>
-                </div>
             @endif
         </section>
     </main>
@@ -493,6 +477,21 @@
             <p>Lunes a sábado, 9:00 a 19:00 · <a href="mailto:contacto@melissalopez.com">Contacto</a></p>
         </div>
     </footer>
+
+    @if($informationWhatsappUrl)
+        <a
+            class="whatsapp-bubble"
+            href="{{ $informationWhatsappUrl }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Solicitar información por WhatsApp"
+            title="Solicitar información por WhatsApp">
+            <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <path d="M16.04 3C8.86 3 3.02 8.82 3.02 15.98c0 2.28.6 4.5 1.74 6.46L3 29l6.75-1.72a13.1 13.1 0 0 0 6.28 1.6h.01c7.18 0 13.02-5.82 13.02-12.98 0-3.47-1.36-6.73-3.82-9.18A12.94 12.94 0 0 0 16.04 3Zm0 23.66c-1.95 0-3.86-.52-5.52-1.5l-.4-.24-4.01 1.02 1.07-3.9-.26-.4a10.77 10.77 0 0 1-1.66-5.66c0-5.94 4.84-10.77 10.79-10.77 2.88 0 5.59 1.12 7.63 3.16a10.69 10.69 0 0 1 3.16 7.62c0 5.94-4.84 10.77-10.8 10.77Zm5.92-8.06c-.32-.16-1.9-.94-2.2-1.05-.3-.1-.51-.16-.73.16-.21.32-.84 1.05-1.03 1.27-.19.21-.38.24-.7.08-.32-.16-1.34-.49-2.55-1.56-.95-.84-1.6-1.88-1.79-2.2-.19-.31-.02-.49.14-.65.14-.14.32-.38.48-.57.16-.19.21-.32.32-.53.1-.22.05-.4-.03-.57-.08-.16-.73-1.75-1-2.4-.26-.63-.53-.54-.73-.55h-.62c-.22 0-.57.08-.87.4-.3.32-1.14 1.11-1.14 2.7 0 1.59 1.17 3.12 1.33 3.33.16.21 2.3 3.51 5.58 4.92.78.34 1.38.54 1.85.69.78.25 1.48.21 2.04.13.62-.1 1.9-.78 2.17-1.54.27-.76.27-1.4.19-1.54-.08-.14-.3-.22-.62-.38Z"/>
+            </svg>
+            <span>Solicitar información</span>
+        </a>
+    @endif
 
     <dialog id="modalSolicitud" aria-labelledby="modalSolicitudTitulo">
         <div class="dialog-head">
